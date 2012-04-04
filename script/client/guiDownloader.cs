@@ -2,9 +2,9 @@
 // Title: Glass Gui Client 
 //================================================
 
-if(!isObject(BLG_GDC)) new ScriptObject(BLG_GDC); //Main Object
-if(!isObject(BLG_GDCSG)) new ScriptGroup(BLG_GDCSG); //Clean-up group for disconnect
-BLG_GDC.SG = BLG_GDCSG;
+if(!isObject(BLG_GDC)) new ScriptObject(BLG_GDC){ //Main Object
+	SG = new ScriptGroup(BLG_GDCSG); //Clean-up group for disconnect
+};
 
 //Protocol:
 //----------
@@ -123,7 +123,7 @@ function BLG_GDC::handleMessage(%this, %msg) {
 				if(%root) {
 					%this.roots = trim(%this.roots SPC %objId);
 				}
-				%this.initiateObject(%this, %objId)
+				%this.initiateObject(%this, %objId, %objClass, %name, %root);
 			}
 
 		case 1: //Set Attribute
