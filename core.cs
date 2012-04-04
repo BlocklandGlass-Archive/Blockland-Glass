@@ -6,7 +6,7 @@ new ScriptGroup(BLG) {
 	loaded = false;
 
 	debugLevel = 1;
-	//0 = No Debug
+	//0 = Errors only
 	//1 = Standard
 	//2 = In-depth
 	//3 = Spam me. Please.
@@ -33,6 +33,8 @@ function BLG::debug(%this, %msg, %level) {
 	if(%level > %this.debugLevel) {
 		return;
 	}
-
+	if(%level == 0) {
+		echo("\c2BLG Error >> " @ %msg);
+	}
 	echo("\c5BLG Debug >>\c1 " @ %msg);
 }
