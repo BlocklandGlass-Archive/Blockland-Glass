@@ -15,10 +15,10 @@ new ScriptGroup(BLG) {
 function BLG::initiatorLoaded(%this) {
 	if(%this.implementation $= "server") {
 		echo("Loading BLG [" @ %this.internalVersion @ "] server implementation");
-		exec("./script/server/guiServer.cs");
+		exec("./script/server/guiDownloader.cs");
 	} else if(%this.implementation $= "client") {
 		echo("Loading BLG [" @ %this.internalVersion @ "] client implementation");
-		exec("./script/client/guiClient.cs");
+		exec("./script/client/guiDownloader.cs");
 	} else {
 		%this.debug("Unresolved Initiator");
 		error("Failed to load BLG [" @ %this.internalVersion @ "]. Please redownload from http://blocklandglass.com");
