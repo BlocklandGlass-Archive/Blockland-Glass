@@ -15,11 +15,13 @@ new ScriptGroup(BLG) {
 function BLG::initiatorLoaded(%this) {
 	if(%this.implementation $= "server") {
 		echo("Loading BLG [" @ %this.internalVersion @ "] server implementation");
+		exec("./script/server/guiServer.cs");
 	} else if(%this.implementation $= "client") {
 		echo("Loading BLG [" @ %this.internalVersion @ "] client implementation");
+		exec("./script/client/guiClient.cs");
 	} else {
 		%this.debug("Unresolved Initiator");
-		error("Failed to load BLG [" @ %this.internalVersion @ "]. Please redownload from blocklandglass.com");
+		error("Failed to load BLG [" @ %this.internalVersion @ "]. Please redownload from http://blocklandglass.com");
 	} 
 }
 
