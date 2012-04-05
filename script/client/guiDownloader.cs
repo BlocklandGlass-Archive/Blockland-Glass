@@ -112,6 +112,7 @@ function BLG_GDC::handleMessage(%this, %msg) {
 				if(!%this.verifyString(%objClass) || !%this.verifyString(%name)) {
 					//Watch out guys, we're dealing with a badass over here
 					BLG.debug("Verify String test returned false for objId [" @ %objId @ "]. Could be possible attempt to run malicious script");
+					BLG.debug("Message: [" @ %msg @ "]");
 				}
 
 				if(%objClass $= "") {
@@ -147,7 +148,7 @@ function BLG_GDC::handleMessage(%this, %msg) {
 		case 2: //Set Parent Object (After 0-1 are finished)
 			%parentId = getField(%msg, 2);
 			if(BLG_GDCSG.objData[%objId] $= "" || BLG_GDCSG.objData[%parentId] $= "") {
-				BLG.debug("GUI Object id [" @ %objId @ "] and/or [" @ %parentId @ "] is invalid, but tried to parent");
+				BLG.debug("GUI Object id [" @ %objId @ "] and/or [" @ %parentId @ "] is invalid, but tried to parent", 0);
 			} else {
 				%this.setObjectChild(%objId, %parentId);
 			}
