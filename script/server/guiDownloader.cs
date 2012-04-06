@@ -22,13 +22,13 @@ function BLG_GDS::registerObject(%this, %obj) {
 				class = BLG_GuiObject;
 
 				baseObj = %obj;
-				id = BLG_Objects.guis;
+				id = BLG_Objects.objs;
 				children = "";
 			};
 
-			BLG_Objects.gui[BLG_Objects.guis] = %obj;
+			BLG_Objects.obj[BLG_Objects.objs] = %obj;
 			BLG_Objects.add(%so);
-			BLG_Objects.guis++;
+			BLG_Objects.objs++;
 
 			%so.getAttributes();
 			return %so;
@@ -68,13 +68,12 @@ function BLG_GuiObject::getAttributes(%this) {
 				%value = strReplace(%value, "[[quotation]]", "\\\"");
 				%value = getSubStr(%value, 0, strLen(%value)-1);
 
-				%this.attributeData[%this.attributes] = %data;
-				%this.attributeValue[%this.attributes] = %value;
 				if(%data $= "command" || %data $= "altCommand" || %data $= "closeCommand") {
 					continue;
 				}
-				echo("Data: [" @ %data @ "]");
-				echo("Value: [" @ %value @ "]");
+
+				%this.attributeData[%this.attributes] = %data;
+				%this.attributeValue[%this.attributes] = %value;
 				%this.attributes++;
 			}
 		}
@@ -85,11 +84,26 @@ function BLG_GuiObject::getAttributes(%this) {
 }
 
 function BLG_GuiObject::transfer(%this, %client) {
-	commandtoclient(%client, 'BLG_ObjectInfo', "0" TAB %this.id TAB %this.baseObj.getClassName() TAB %this.baseObj.getName() TAB ((%this.baseObj.children $= "") ? 0 : 1));
-	commandtoclient(%client, 'BLG_ObjectInfo', "1" TAB %this.id TAB "command" TAB %this.specialValue["command"]);
-	commandtoclient(%client, 'BLG_ObjectInfo', "1" TAB %this.id TAB "altCommand" TAB %this.specialValue["altCommand"]);
-	commandtoclient(%client, 'BLG_ObjectInfo', "1" TAB %this.id TAB "closeCommand" TAB %this.specialValue["closeCommand"]);
-	
+	%time = 0;
+	%delay = 5;
+
+	%this.schedule(%time+=%delay, send, "0" TAB %this.id TAB %this.baseObj.getClassName() TAB %this.baseObj.getName() TAB ((%this.baseObj.children $= "") ? 0 : 1));
+	%this.schedule(%time+=%delay, send, "1" TAB %this.id TAB "command" TAB %this.specialValue["command"]);
+	%this.schedule(%time+=%delay, send, "1" TAB %this.id TAB "altCommand" TAB %this.specialValue["altCommand"]);
+	%this.schedule(%time+=%delay, send, "1" TAB %this.id TAB "closeCommand" TAB %this.specialValue["closeCommand"]);
+
+	for(%i = 0; %i < %this.attributes; %i++) {
+		%this.schedule(%time+=%delay, send, "1" TAB %this.id TAB %this.attributeData[%i] TAB %this.attributeValue[%i]);
+	}
+
+	for(%i = 0; %i < getWordCount(%this.children); %i++) {
+		%childId = getWord(%this.children, %i);
+		%this.schedule(%time+=%delay, send, "2" TAB %this.id TAB %childId);
+	}
+}
+
+function BLG_GuiObject::send(%this, %client, %msg) {
+	commandtoclient(%client, 'BLG_ObjectInfo', %msg);
 }
 
 function BLG_GuiObject::updateAttribute(%this, %client, %data, %value) {

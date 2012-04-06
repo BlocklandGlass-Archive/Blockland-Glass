@@ -3,8 +3,9 @@
 //================================================
 
 if(!isObject(BLG_GDC)) new ScriptObject(BLG_GDC){ //Main Object
-	SG = new ScriptGroup(BLG_GDCSG); //Clean-up group for disconnect
+	SG = ""; //Clean-up group for disconnect
 };
+BLG_GDC.SG = new ScriptGroup();
 
 //Protocol:
 //----------
@@ -167,9 +168,49 @@ function BLG_GDC::handleMessage(%this, %msg) {
 	}
 }
 
+function clientCmdBLG_ObjectInfo(%msg) {
+	BLG_GDC.handleMessage(%msg);
+}
+
+function clientCmdMissionPreparePhaseBLG(%crc, %gui, %elements)
+{
+   if($RTB::CGUITransfer::Cache::isReceiving !$= "")
+   {
+      echo("\c2*** Prep-Phase 2: Download GUI - Skipped (Not Receiving)");
+      commandToServer('MissionPreparePhase2Ack',2);
+      return;
+   }
+      
+   if(!$RTB::Options::GT::Enable)
+   {
+      $RTB::CGUITransfer::Cache::isReceiving = 0;
+      echo("\c2*** Prep-Phase 2: Download GUI - Skipped (Downloading Disabled)");
+      commandToServer('MissionPreparePhase2Ack',2);
+      return;
+   }    
+   else if(%crc !$= RTBCT_getControlCRC())
+   {
+      $RTB::CGUITransfer::Cache::isReceiving = 0;
+      echo("\c2*** Prep-Phase 2: Download GUI - Skipped (CRC MISMATCH)");
+      commandToServer('MissionPreparePhase2Ack',1);
+      return;
+   }
+   echo("*** Prep-Phase 2: Download GUI");
+   commandToServer('MissionPreparePhase2Ack');
+   
+   LoadingProgress.setValue(0);
+   $RTB::CGUITransfer::Cache::isReceiving = 1;   
+   
+   $RTB::CGUITransfer::Cache::Load::GUI = %gui;
+   $RTB::CGUITransfer::Cache::Load::GUIDone = 0;
+   $RTB::CGUITransfer::Cache::Load::Elements = %elements;
+   $RTB::CGUITransfer::Cache::Load::ElementsDone = 0;
+   $RTB::CGUITransfer::Cache::Load::TotalElements = 0;
+}
+
 package BLG_GDC_Package {
-	function disconnect() {
-		parent::disconnect();
+	function disconnectedCleanup() {
+		parent::disconnectedCleanup();
 		for(%i = 0; %i < BLG_GDCSG.getCount(); %i++) {
 			%obj = BLG_GDCSG.getObject(%i);
 			canvas.popDialog(%obj);
@@ -177,4 +218,5 @@ package BLG_GDC_Package {
 		BLG_GDCSG.deleteAll();
 	}
 };
+
 activatePackage(BLG_GDC_Package);

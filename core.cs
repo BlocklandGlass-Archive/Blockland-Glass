@@ -14,12 +14,27 @@ new ScriptGroup(BLG) {
 
 function BLG::start(%this, %implementation) {
 	%this.implementation = %implementation;
+
 	if(%this.implementation $= "server") {
 		echo("Loading BLG [" @ %this.internalVersion @ "] server implementation");
 		exec("./script/server/guiDownloader.cs");
+
+		if(isFile("Add-Ons/System_ReturnToBlockland/server.cs")) {
+			exec("./script/server/hooks/RTB.cs");
+		} else {
+			exec("./script/server/hooks/default.cs");
+		}
+
 	} else if(%this.implementation $= "client") {
 		echo("Loading BLG [" @ %this.internalVersion @ "] client implementation");
 		exec("./script/client/guiDownloader.cs");
+
+		if(isFile("Add-Ons/System_ReturnToBlockland/server.cs")) {
+			exec("./script/client/hooks/RTB.cs");
+		} else {
+			exec("./script/client/hooks/default.cs");
+		}
+
 	} else {
 		%this.debug("Unresolved Initiator");
 		error("Failed to load BLG [" @ %this.internalVersion @ "]. Please redownload from http://blocklandglass.com");
