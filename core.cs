@@ -2,9 +2,6 @@ new ScriptGroup(BLG) {
 	internalVersion = "1.0.A1";
 	externalVersion = "1.0 Alpha 1";
 
-	implementation = ""; //server or client
-	loaded = false;
-
 	debugLevel = 1;
 	//0 = Errors only
 	//1 = Standard
@@ -15,7 +12,7 @@ new ScriptGroup(BLG) {
 function BLG::start(%this, %implementation) {
 	%this.implementation = %implementation;
 
-	if(%this.implementation $= "server") {
+	if(%implementation $= "server") {
 		echo("Loading BLG [" @ %this.internalVersion @ "] server implementation");
 		exec("./script/server/guiDownloader.cs");
 
@@ -25,7 +22,7 @@ function BLG::start(%this, %implementation) {
 			exec("./script/server/hooks/default.cs");
 		}
 
-	} else if(%this.implementation $= "client") {
+	} else if(%implementation $= "client") {
 		echo("Loading BLG [" @ %this.internalVersion @ "] client implementation");
 		exec("./script/client/guiDownloader.cs");
 
