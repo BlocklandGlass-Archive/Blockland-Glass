@@ -172,40 +172,10 @@ function clientCmdBLG_ObjectInfo(%msg) {
 	BLG_GDC.handleMessage(%msg);
 }
 
-function clientCmdMissionPreparePhaseBLG(%crc, %gui, %elements)
-{
-   if($RTB::CGUITransfer::Cache::isReceiving !$= "")
-   {
-      echo("\c2*** Prep-Phase 2: Download GUI - Skipped (Not Receiving)");
-      commandToServer('MissionPreparePhase2Ack',2);
-      return;
-   }
-      
-   if(!$RTB::Options::GT::Enable)
-   {
-      $RTB::CGUITransfer::Cache::isReceiving = 0;
-      echo("\c2*** Prep-Phase 2: Download GUI - Skipped (Downloading Disabled)");
-      commandToServer('MissionPreparePhase2Ack',2);
-      return;
-   }    
-   else if(%crc !$= RTBCT_getControlCRC())
-   {
-      $RTB::CGUITransfer::Cache::isReceiving = 0;
-      echo("\c2*** Prep-Phase 2: Download GUI - Skipped (CRC MISMATCH)");
-      commandToServer('MissionPreparePhase2Ack',1);
-      return;
-   }
-   echo("*** Prep-Phase 2: Download GUI");
-   commandToServer('MissionPreparePhase2Ack');
-   
-   LoadingProgress.setValue(0);
-   $RTB::CGUITransfer::Cache::isReceiving = 1;   
-   
-   $RTB::CGUITransfer::Cache::Load::GUI = %gui;
-   $RTB::CGUITransfer::Cache::Load::GUIDone = 0;
-   $RTB::CGUITransfer::Cache::Load::Elements = %elements;
-   $RTB::CGUITransfer::Cache::Load::ElementsDone = 0;
-   $RTB::CGUITransfer::Cache::Load::TotalElements = 0;
+function clientCmdMissionPreparePhaseBLG(%parts) {
+	BLG_GDC.prepareParts = %parts;
+	commandtoserver('MissionPreparePhaseBLGAck');
+	echo(" *** Starting BLG GUI Download Phase - (" @ %parts @ " parts)");
 }
 
 package BLG_GDC_Package {

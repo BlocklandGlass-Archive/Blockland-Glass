@@ -24,6 +24,7 @@ function BLG_GDS::registerObject(%this, %obj) {
 				baseObj = %obj;
 				id = BLG_Objects.objs;
 				children = "";
+				parent = "";
 			};
 
 			BLG_Objects.obj[BLG_Objects.objs] = %obj;
@@ -35,6 +36,11 @@ function BLG_GDS::registerObject(%this, %obj) {
 		}
 	}
 }
+
+
+//================================================
+// BLG_GuiObject
+//================================================
 
 function BLG_GuiObject::getAttributes(%this) {
 	if(isObject(%this.baseObj)) {
@@ -96,10 +102,7 @@ function BLG_GuiObject::transfer(%this, %client) {
 		%this.schedule(%time+=%delay, send, "1" TAB %this.id TAB %this.attributeData[%i] TAB %this.attributeValue[%i]);
 	}
 
-	for(%i = 0; %i < getWordCount(%this.children); %i++) {
-		%childId = getWord(%this.children, %i);
-		%this.schedule(%time+=%delay, send, "2" TAB %this.id TAB %childId);
-	}
+	BLG_GDS.sendNextObject(%client, %this.id);
 }
 
 function BLG_GuiObject::send(%this, %client, %msg) {
@@ -108,4 +111,42 @@ function BLG_GuiObject::send(%this, %client, %msg) {
 
 function BLG_GuiObject::updateAttribute(%this, %client, %data, %value) {
 
+}
+
+//================================================
+// Mission Prepare Phase stuff
+//================================================
+
+function BLG_GDS::startTransfer(%this, %client) {
+	%obj = BLG_Objects.getObject(0);
+	if(isObject(%obj)) {
+		%obj.transfer(%client);
+	}
+}
+
+function BLG_GDS::sendNextObject(%this, %client, %objId) {
+	if(isObject(BLG_Objects.obj[%objId+1])) {
+		BLG_Objects.obj[%objId+1].transfer(%client);
+	} else {
+		%time = 0;
+		%delay = 0;
+		for(%i = 0; %i < BLG_Objects.getCount(); %i++) {
+			%obj = BLG_Objects.getObject(%i);
+			if(%obj.parent !$= "") {
+				%this.schedule(%time+=%delay, send, "2" TAB %obj.parent TAB %obj.id);
+			}
+		}
+		%this.schedule(%time+=%delay, transferFinished);
+	}
+} 
+
+function serverCmdMissionPreparePhaseBLGAck(%client) {
+	BLG_GDS.startTransfer(%client);
+
+}
+
+function BLG_GDS::transferFinished(%client) {
+	%client.currentPhase = 0;
+	%client.BLG_DownloadedGUI = true;
+	commandToClient(%client,'MissionStartPhase1', $missionSequence, $Server::MissionFile);
 }
