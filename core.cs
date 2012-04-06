@@ -12,7 +12,8 @@ new ScriptGroup(BLG) {
 	//3 = Spam me. Please.
 };
 
-function BLG::initiatorLoaded(%this) {
+function BLG::start(%this, %implementation) {
+	%this.implementation = %implementation;
 	if(%this.implementation $= "server") {
 		echo("Loading BLG [" @ %this.internalVersion @ "] server implementation");
 		exec("./script/server/guiDownloader.cs");

@@ -70,6 +70,9 @@ function BLG_GuiObject::getAttributes(%this) {
 
 				%this.attributeData[%this.attributes] = %data;
 				%this.attributeValue[%this.attributes] = %value;
+				if(%data $= "command" || %data $= "altCommand" || %data $= "closeCommand") {
+					continue;
+				}
 				echo("Data: [" @ %data @ "]");
 				echo("Value: [" @ %value @ "]");
 				%this.attributes++;
@@ -83,7 +86,9 @@ function BLG_GuiObject::getAttributes(%this) {
 
 function BLG_GuiObject::transfer(%this, %client) {
 	commandtoclient(%client, 'BLG_ObjectInfo', "0" TAB %this.id TAB %this.baseObj.getClassName() TAB %this.baseObj.getName() TAB ((%this.baseObj.children $= "") ? 0 : 1));
-	commandtoclient(%client, 'BLG_ObjectInfo', "1" TAB %this.id TAB "command");
+	commandtoclient(%client, 'BLG_ObjectInfo', "1" TAB %this.id TAB "command" TAB %this.specialValue["command"]);
+	commandtoclient(%client, 'BLG_ObjectInfo', "1" TAB %this.id TAB "altCommand" TAB %this.specialValue["altCommand"]);
+	commandtoclient(%client, 'BLG_ObjectInfo', "1" TAB %this.id TAB "closeCommand" TAB %this.specialValue["closeCommand"]);
 	
 }
 
