@@ -25,6 +25,17 @@ function BLG_GDC::verifyString(%this, %string) { //Checks sent message to make s
 		}
 	}
 
+	for(%i = 0; %i < strLen(%string); %i++) {
+		%char = getSubStr(%string, %i, 1);
+		if(%char $= "\"") {
+			if(getSubStr(%string, %i-1, 1) $= "\\") {
+				//false alarm
+			} else {
+				return false;
+			}
+		}
+	}
+
 	return true;
 }
 
@@ -182,10 +193,13 @@ function BLG_GDC::handleMessage(%this, %msg) {
 				if(%data $= "") {
 					BLG.debug("GUI Object attribute change for objId [" @ %objId @ "] is trying to change a blank attribute!", 0);
 					return;
+				} else if(!%this.verifyAlphabetic(%data)) {
+					BLG.debug("Bad data name", 0);
+					return;
 				}
 				%value = "\"" @ %value @ "\"";
 				if(%data $= "command" || %data $= "altcommand" || %data $= "closecommand") {
-					BLG.debug("GUI Object id [" @ %objId @ "] tried to set a callback invalidly. Possible attemp to run bad code.", 0);
+					BLG.debug("GUI Object id [" @ %objId @ "] tried to set a callback invalidly. Possible attempt to run bad code.", 0);
 				}
 
 				%this.setObjectAttribute(%objId, %data, %value);
@@ -228,7 +242,7 @@ function BLG_GDC::handleMessage(%this, %msg) {
 			%obj = BLG_GDC.SG.objData[%objId];
 			%base = %obj.object;
 			%value = getField(%msg, 2);
-			if(%this.verifyString(%value)) {
+			if(%this.verifyAlphabetic(%value)) {
 				eval("%v = " @ %obj @ "." @ %value @ ";");
 				commandtoserver('BLG_GuiReturn', "2" TAB %objId TAB %value TAB %v);
 			}
