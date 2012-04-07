@@ -50,11 +50,11 @@ function BLG_GDC::finalizeObject(%this, %objId) {
 
 		for(%i = 0; %i < %obj.children; %i++) {
 			if(!%obj.child[%i].finalized) {
-				%obj2 = %obj.child[%i].initiateObject();
+				%obj2 = %this.finalizeObject(%obj.child[%i].id);
 			} else {
 				%obj2 = %obj.child[%i].object;
 			}
-			%obj.add(%obj2);
+			%obj.object.add(%obj2);
 		}
 
 		%this.SG.add(%obj.object);
@@ -75,6 +75,7 @@ function BLG_GDC::setObjectChild(%this, %objId, %subId) {
 	if(%child.parent $= "") {
 		%obj.child[%obj.children] = %child;
 		%child.parent = %obj;
+		%obj.children++;
 	}
 }
 
@@ -95,6 +96,7 @@ function BLG_GDC::initiateObject(%this, %objId, %objClass, %name, %root) {
 		attributes = 0;
 	};
 
+	%this.SG.objs++;
 	%this.SG.objData[%objId] = %obj;
 	%this.SG.add(%obj);
 }
@@ -132,6 +134,9 @@ function BLG_GDC::handleMessage(%this, %msg) {
 					%this.roots = trim(%this.roots SPC %objId);
 				}
 				%this.initiateObject(%objId, %objClass, %name, %root);
+				%this.setObjectAttribute(%objId, "command", "\"BLG_GDC.commandCallback(" @ %objId @ ");\"");
+				%this.setObjectAttribute(%objId, "altCommand", "\"BLG_GDC.altCommandCallback(" @ %objId @ ");\"");
+				%this.setObjectAttribute(%objId, "closeCommand", "\"BLG_GDC.closeCommandCallback(" @ %objId @ ");\"");
 			}
 
 		case 1: //Set Attribute
@@ -147,9 +152,9 @@ function BLG_GDC::handleMessage(%this, %msg) {
 					return;
 				}
 				%value = "\"" @ %value @ "\"";
-				//if(%data $= "command") {
-				//	BLG.debug("GUI Object id [" @ %objId @ "] tried to register a callback invalidly. Possible attemp to run bad code.", 0);
-				//}
+				if(%data $= "command" || %data $= "altcommand" || %data $= "closecommand") {
+					BLG.debug("GUI Object id [" @ %objId @ "] tried to set a callback invalidly. Possible attemp to run bad code.", 0);
+				}
 
 				%this.setObjectAttribute(%objId, %data, %value);
 			}
@@ -169,10 +174,10 @@ function BLG_GDC::handleMessage(%this, %msg) {
 
 		//All from here are non-registry calls
 
-		case 4: //Set custom callback
-			%command = "\"BLG_GDC.handleCallback(" @ %objId @ ");\"";
-			%obj = BLG_GDC.SG.objData[%objId];
-			%obj.command = %command;
+		//case 4: //Set custom callback
+		//	%command = "\"BLG_GDC.handleCallback(" @ %objId @ ");\"";
+		//	%obj = BLG_GDC.SG.objData[%objId];
+		//	%obj.command = %command;
 
 		case 5: //Open/Close
 			%open = getField(%msg, 2);
@@ -196,6 +201,18 @@ function BLG_GDC::handleMessage(%this, %msg) {
 				commandtoserver('BLG_GuiReturn', "2" TAB %objId TAB %value TAB $BLG::GC::TempProp);
 			}
 	}
+}
+
+function BLG_GDC::commandCallback(%this, %objId) {
+	commandtoserver('BLG_GuiReturn', "0" TAB %objId TAB "command");	
+}
+
+function BLG_GDC::closeCommandCallback(%this, %objId) {
+	commandtoserver('BLG_GuiReturn', "0" TAB %objId TAB "close");	
+}
+
+function BLG_GDC::altCommandCallback(%this, %objId) {
+	commandtoserver('BLG_GuiReturn', "0" TAB %objId TAB "alt");
 }
 
 function clientCmdBLG_ObjectInfo(%msg) {

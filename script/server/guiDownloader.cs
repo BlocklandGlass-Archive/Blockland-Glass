@@ -27,6 +27,10 @@ function BLG_GDS::registerObject(%this, %obj) {
 				children = "";
 				parent = "";
 				sent = false;
+
+				handlers = 0;
+				altHandlers = 0;
+				closeHandlers = 0;
 			};
 
 			BLG_Objects.obj[BLG_Objects.objs] = %so;
@@ -44,6 +48,15 @@ function BLG_GDS::registerObject(%this, %obj) {
 			}
 
 			return %so;
+		}
+	}
+}
+
+function BLG_GDS::getDataObject(%this, %object) {
+	for(%i = 0; %i < BLG_Objects.objs; %i++) {
+		%obj = BLG_Objects.obj[%i];
+		if(%obj.baseObj.getId() == %object.getId()) {
+			return %obj;
 		}
 	}
 }
@@ -104,9 +117,6 @@ function BLG_GuiObject::transfer(%this, %client) {
 	%delay = 1000;
 
 	%this.schedule(%time+=%delay, "send", %client, "0" TAB %this.id TAB %this.baseObj.getClassName() TAB %this.baseObj.getName() TAB (%this.parent $= ""));
-	%this.schedule(%time+=%delay, "send", %client, "1" TAB %this.id TAB "command" TAB %this.specialValue["command"]);
-	%this.schedule(%time+=%delay, "send", %client, "1" TAB %this.id TAB "altCommand" TAB %this.specialValue["altCommand"]);
-	%this.schedule(%time+=%delay, "send", %client, "1" TAB %this.id TAB "closeCommand" TAB %this.specialValue["closeCommand"]);
 
 	for(%i = 0; %i < %this.attributes; %i++) {
 		%this.schedule(%time+=%delay, "send", %client, "1" TAB %this.id TAB %this.attributeData[%i] TAB %this.attributeValue[%i]);
@@ -138,24 +148,23 @@ function BLG_GuiObject::push(%this, %client) {
 }
 
 function BLG_GuiObject::registerHandler(%this, %call) {
-	%this.handlers += 0;
 	%this.handler[%this.handlers] = %call;
 	%this.handlers++;
 }
 
 function BLG_GuiObject::registerAltHandler(%this, %call) {
-	%this.altHandlers += 0;
 	%this.altHandler[%this.altHandlers] = %call;
 	%this.altHandlers++;
 }
 
-function BLG_GuiObject::registerEscapeHandler(%this, %call) {
-	%this.escapeHandlers += 0;
-	%this.escapeHandler[%this.escapeHandlers] = %call;
-	%this.escapeHandlers++;
+function BLG_GuiObject::registerCloseHandler(%this, %call) {
+	%this.closeHandler[%this.closeHandlers] = %call;
+	echo("closeHandler[" @ %this.closeHandlers @ "] = " @ %call);
+	%this.closeHandlers++;
 }
 
 function serverCmdBLG_GuiReturn(%client, %msg) {
+	echo("GuiReturn: [" @ %msg @ "]");
 	%funcId = getField(%msg, 0);
 	%objId = getField(%msg, 1);
 
@@ -163,22 +172,28 @@ function serverCmdBLG_GuiReturn(%client, %msg) {
 		case 0: //Callback
 			%obj = BLG_Objects.obj[%objId];
 			%type = getField(%msg, 2);
+			echo("Callback: [" @ %objId @ "] - [" @ %type @ "]");
 			if(%type $= "command") {
-				for(%i = 0; %i < %this.handlers; %i++) {
-					%call = %this.handler[%i];
-					eval(%call @ "(" @ %client @ "," @ %this @ ");");
+				for(%i = 0; %i < %obj.handlers; %i++) {
+					%call = %obj.handler[%i];
+					eval(%call @ "(" @ %client @ "," @ %obj @ ");");
 				}
 			} else if(%type $= "alt") {
-				for(%i = 0; %i < %this.altHandlers; %i++) {
-					%call = %this.altHandler[%i];
+				for(%i = 0; %i < %obj.altHandlers; %i++) {
+					%call = %obj.altHandler[%i];
+					eval(%call @ "(" @ %client @ "," @ %obj @ ");");
 				}
-			} else if(%type $= "escape") {
-				for(%i = 0; %i < %this.escapeHandlers; %i++) {
-					%call = %this.escapeHandler[%i];
+			} else if(%type $= "close") {
+				echo("Close with " @ %obj.closeHandlers @ " handlers.");
+				for(%i = 0; %i < %obj.closeHandlers; %i++) {
+					echo("loop");
+					%call = %obj.closeHandler[%i];
+					echo(%call @ "(" @ %client @ "," @ %obj @ ");");
+					eval(%call @ "(" @ %client @ "," @ %obj @ ");");
 				}
 			}
 
-		case 1: 
+		//case 1: 
 	}
 }
 
@@ -231,7 +246,7 @@ function BLG_GDS::getPartCount(%this) {
 	%parts = 0;
 	for(%i = 0; %i < BLG_Objects.getCount(); %i++) {
 		%obj = BLG_Objects.getObject(%i);
-		%parts += 4; //Initiation, command values
+		%parts += 1; //Initiation
 		%parts += %obj.attributes;
 		if(%obj.parent !$= "") {
 			%parts += 1;

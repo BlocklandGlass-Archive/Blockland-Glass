@@ -8,7 +8,7 @@ new GuiControl(BLG_TestGui) {
    minExtent = "8 2";
    visible = "1";
 
-   new GuiWindowCtrl() {
+   new GuiWindowCtrl(BLG_TestGuiWindow) {
       profile = "GuiWindowProfile";
       horizSizing = "center";
       vertSizing = "center";
