@@ -51,7 +51,7 @@ function BLG_GDC::verifyAlphabetic(%this, %string) {
 }
 
 function BLG_GDC::verifyNumeric(%this, %num) {
-	if(%num == (%num+=0)) {
+	if(%num $= (%num + 0)) {
 		return true;
 	} else {
 		return false;
@@ -70,20 +70,21 @@ function BLG_GDC::verifyAlphanumeric(%this, %string) {
 function BLG_GDC::finalizeObject(%this, %objId) {
 	%obj = %this.SG.objData[%objId];
 	if(isObject(%obj)) {
-		%eval = "%newobj = new " @ %obj.objClass @ "(" @ %obj.name @ "){";
+		if (%obj.objClass $= "GuiWindow" || %obj.objClass $= "GuiButton" || %obj.objClass $= "GuiProfile")
+		%newobj = eval("return new " @ %obj.objClass @ "();");
+		%newobj.setName(%obj.name);
 
 		for(%i = 0; %i < %obj.attributes; %i++) {
-			%eval = %eval @ %obj.attributeDat[%i] @ "=" @ %obj.attributeVal[%i] @ ";";
+			eval("%newobj." @ %obj.attributeDat[%i] @ "=" @ %obj.attributeVal[%i]@";"); // TODO: remove eval
 		}
 
-		%eval = %eval @ "BLG__OBJID=" @ %objId @ ";";
+		%newobj.BLG__OBJID = %objId;
 		if(%obj.command !$= "") {
-			%eval = %eval @ "command=" @ %obj.command @ ";";
+			%newobj.command = %obj.command;
 		}
-		%eval = %eval @ "};";
+
 		BLG.debug("Executing Object [" @ %objId @ "]...");
 		BLG.debug(%eval, 3);
-		eval(%eval);
 
 		%obj.finalized = true;
 		%obj.object = %newobj;
