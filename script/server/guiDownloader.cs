@@ -135,7 +135,7 @@ function BLG_GuiObject::updateAttribute(%this, %client, %data, %value) {
 			return;
 		}
 
-		%this.send("1" TAB %this.id TAB %data TAB %value);
+		%this.send(%client, "1" TAB %this.id TAB %data TAB %value);
 	}
 }
 
