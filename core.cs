@@ -48,6 +48,7 @@ function BLG::debug(%this, %msg, %level) {
 	}
 	if(%level == 0) {
 		echo("\c2BLG Error >> " @ %msg);
+	} else {
+		echo("\c5BLG Debug >>\c1 " @ %msg);
 	}
-	echo("\c5BLG Debug >>\c1 " @ %msg);
 }

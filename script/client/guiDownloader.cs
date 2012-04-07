@@ -2,10 +2,12 @@
 // Title: Glass Gui Client 
 //================================================
 
-if(!isObject(BLG_GDC)) new ScriptObject(BLG_GDC){ //Main Object
-	SG = ""; //Clean-up group for disconnect
-};
-BLG_GDC.SG = new ScriptGroup();
+if(!isObject(BLG_GDC)) {
+	new ScriptObject(BLG_GDC){ //Main Object
+		SG = ""; //Clean-up group for disconnect
+	};
+	BLG_GDC.SG = new ScriptGroup();
+}
 
 //Protocol:
 //----------
@@ -24,6 +26,25 @@ function BLG_GDC::verifyString(%this, %string) { //Checks sent message to make s
 	}
 
 	return true;
+}
+
+function BLG_GDC::verifyAlphabetic(%this, %string) {
+	%allowed = "abcdefghijklmnopqrstuvwxyz";
+	for(%i = 0; %i < strLen(%illegal); %i++) {
+		if(strPos(getSubStr(%string, %i, 1), %allowed) == -1) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
+function BLG_GDC::verifyNumeric(%this, %num) {
+	if(%num == (%num+=0)) {
+		return true;
+	} else {
+		return false;
+	}
 }
 
 function BLG_GDC::finalizeObject(%this, %objId) {
@@ -66,6 +87,7 @@ function BLG_GDC::setObjectAttribute(%this, %objId, %data, %value) {
 	%obj = %this.SG.objData[%objId];
 	if(isObject(%obj.object)) {
 		eval(%obj.object @ "." @ %data @ " = " @ %value @ ";");
+		BLG.debug("Attribute update");
 	} else {
 		%obj.attributeDat[%obj.attributes] = %data; 
 		%obj.attributeVal[%obj.attributes] = %value;
@@ -109,8 +131,14 @@ function BLG_GDC::handleMessage(%this, %msg) {
 	echo("[" @ %msg @ "]");
 	%funcId = getField(%msg, 0);
 	%objId = getField(%msg, 1);
-	%this.partsReceived++;
-	LoadingProgress.setValue(%this.partsReceived/%this.prepareParts);
+	if(%this.loading) {
+		%this.partsReceived++;
+		LoadingProgress.setValue(%this.partsReceived/%this.prepareParts);
+	}
+	if(!%this.verifyNumeric(%objId)) {
+		BLG.debug("Invalid ObjId", 0);
+		return;
+	}
 
 	switch(%funcId) {
 		case 0: //New Object
@@ -122,7 +150,7 @@ function BLG_GDC::handleMessage(%this, %msg) {
 				%name = getField(%msg, 3);
 				%root = getField(%msg, 4);
 
-				if(!%this.verifyString(%objClass) || !%this.verifyString(%name)) {
+				if(!%this.verifyAlphabetic(%objClass) || !%this.verifyAlphabetic(%name)) {
 					//Watch out guys, we're dealing with a badass over here
 					BLG.debug("Verify String test returned false for objId [" @ %objId @ "]. Could be possible attempt to run malicious script");
 					BLG.debug("Message: [" @ %msg @ "]");
@@ -201,8 +229,8 @@ function BLG_GDC::handleMessage(%this, %msg) {
 			%base = %obj.object;
 			%value = getField(%msg, 2);
 			if(%this.verifyString(%value)) {
-				eval("$BLG::GC::TempProp = " @ %obj @ "." @ %value @ ";");
-				commandtoserver('BLG_GuiReturn', "2" TAB %objId TAB %value TAB $BLG::GC::TempProp);
+				eval("%v = " @ %obj @ "." @ %value @ ";");
+				commandtoserver('BLG_GuiReturn', "2" TAB %objId TAB %value TAB %v);
 			}
 	}
 }
@@ -225,6 +253,7 @@ function clientCmdBLG_ObjectInfo(%msg) {
 
 function clientCmdBLG_guiTransferFinished() {
 	%this = BLG_GDC;
+	%this.loading = false;
 	for(%i = 0; %i < getWordCount(%this.roots); %i++) {
 		%this.finalizeObject(getWord(%this.roots, %i));
 	}
@@ -233,6 +262,7 @@ function clientCmdBLG_guiTransferFinished() {
 function clientCmdMissionPreparePhaseBLG(%parts) {
 	BLG_GDC.prepareParts = %parts;
 	BLG_GDC.partsReceived = 0;
+	BLG_GDC.loaded = true;
 	LoadingProgressTxt.setValue("Downloading BLG GUI Elements");
 	LoadingProgress.setValue(0);
 	commandtoserver('MissionPreparePhaseBLGAck');
