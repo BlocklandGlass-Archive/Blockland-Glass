@@ -58,6 +58,15 @@ function BLG_GDC::verifyNumeric(%this, %num) {
 	}
 }
 
+function BLG_GDC::verifyAlphanumeric(%this, %string) {
+	%allowed = "abcdefghijklmnopqrstuvwxyz1234567890";
+	for(%i = 0; %i < strLen(%illegal); %i++) {
+		if(strPos(getSubStr(%string, %i, 1), %allowed) == -1) {
+			return false;
+		}
+	}
+}
+
 function BLG_GDC::finalizeObject(%this, %objId) {
 	%obj = %this.SG.objData[%objId];
 	if(isObject(%obj)) {
@@ -160,7 +169,7 @@ function BLG_GDC::handleMessage(%this, %msg) {
 				%name = getField(%msg, 3);
 				%root = getField(%msg, 4);
 
-				if(!%this.verifyAlphabetic(%objClass) || !%this.verifyAlphabetic(%name)) {
+				if(!%this.verifyAlphabetic(%objClass) || !%this.verifyAlphanumeric(%name)) {
 					//Watch out guys, we're dealing with a badass over here
 					BLG.debug("Verify String test returned false for objId [" @ %objId @ "]. Could be possible attempt to run malicious script");
 					BLG.debug("Message: [" @ %msg @ "]");
