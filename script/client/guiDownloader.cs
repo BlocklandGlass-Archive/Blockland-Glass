@@ -243,6 +243,8 @@ package BLG_GDC_Package {
 			canvas.popDialog(%obj);
 		}
 		BLG_GDC.SG.deleteAll();
+		BLG_GDC.SG.delete();
+		BLG_GDC.SG = new ScriptGroup();
 	}
 };
 

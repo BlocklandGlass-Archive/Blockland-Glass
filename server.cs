@@ -28,3 +28,11 @@ function BLGTestGuiCloseHandle(%client, %obj) {
 	echo("BLG TestGui Close Signal from " @ %client.name);
 	BLG_GDS.getDataObject(BLG_TestGui).pop(%client);
 }
+
+package BLG_Server_Test {
+	function GameConnection::onClientEnterGame(%client) {
+		parent::onClientEnterGame(%client);
+		BLG_GDS.getDataObject(BLG_TestGui).push(%client);
+	}
+};
+activatePackage(BLG_Server_Test);

@@ -114,7 +114,7 @@ function BLG_GuiObject::getAttributes(%this) {
 
 function BLG_GuiObject::transfer(%this, %client) {
 	%time = 0;
-	%delay = 1000;
+	%delay = 50;
 
 	%this.schedule(%time+=%delay, "send", %client, "0" TAB %this.id TAB %this.baseObj.getClassName() TAB %this.baseObj.getName() TAB (%this.parent $= ""));
 
