@@ -79,7 +79,6 @@ function BLG_GDC::finalizeObject(%this, %objId) {
 
 		%obj.finalized = true;
 		%obj.object = %newobj;
-		echo(%obj @ ".object = " @ %obj.object);
 
 		for(%i = 0; %i < %obj.children; %i++) {
 			if(!%obj.child[%i].finalized) {
@@ -140,7 +139,7 @@ function BLG_GDC::initiateObject(%this, %objId, %objClass, %name, %root) {
 }
 
 function BLG_GDC::handleMessage(%this, %msg) {
-	echo("[" @ %msg @ "]");
+	BLG.debug("[" @ %msg @ "]");
 	%funcId = getField(%msg, 0);
 	%objId = getField(%msg, 1);
 	if(%this.loading) {

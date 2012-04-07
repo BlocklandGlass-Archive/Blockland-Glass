@@ -159,12 +159,11 @@ function BLG_GuiObject::registerAltHandler(%this, %call) {
 
 function BLG_GuiObject::registerCloseHandler(%this, %call) {
 	%this.closeHandler[%this.closeHandlers] = %call;
-	echo("closeHandler[" @ %this.closeHandlers @ "] = " @ %call);
 	%this.closeHandlers++;
 }
 
 function serverCmdBLG_GuiReturn(%client, %msg) {
-	echo("GuiReturn: [" @ %msg @ "]");
+	BLG.debug("GuiReturn: [" @ %msg @ "]");
 	%funcId = getField(%msg, 0);
 	%objId = getField(%msg, 1);
 
@@ -172,7 +171,6 @@ function serverCmdBLG_GuiReturn(%client, %msg) {
 		case 0: //Callback
 			%obj = BLG_Objects.obj[%objId];
 			%type = getField(%msg, 2);
-			echo("Callback: [" @ %objId @ "] - [" @ %type @ "]");
 			if(%type $= "command") {
 				for(%i = 0; %i < %obj.handlers; %i++) {
 					%call = %obj.handler[%i];
@@ -184,11 +182,8 @@ function serverCmdBLG_GuiReturn(%client, %msg) {
 					eval(%call @ "(" @ %client @ "," @ %obj @ ");");
 				}
 			} else if(%type $= "close") {
-				echo("Close with " @ %obj.closeHandlers @ " handlers.");
 				for(%i = 0; %i < %obj.closeHandlers; %i++) {
-					echo("loop");
 					%call = %obj.closeHandler[%i];
-					echo(%call @ "(" @ %client @ "," @ %obj @ ");");
 					eval(%call @ "(" @ %client @ "," @ %obj @ ");");
 				}
 			}
@@ -202,7 +197,6 @@ function serverCmdBLG_GuiReturn(%client, %msg) {
 //================================================
 
 function BLG_GDS::startTransfer(%this, %client) {
-	echo("start transfer");
 	if(BLG_Objects.objs > 0) {
 		%obj = BLG_Objects.obj[0];
 		if(isObject(%obj)) {
@@ -214,7 +208,6 @@ function BLG_GDS::startTransfer(%this, %client) {
 }
 
 function BLG_GDS::sendNextObject(%this, %client, %objId) {
-	echo(%objId @ " finished, checking for " @ %objId+1);
 	if(isObject(BLG_Objects.obj[%objId+1])) {
 		BLG_Objects.obj[%objId+1].transfer(%client);
 	} else {
@@ -223,7 +216,6 @@ function BLG_GDS::sendNextObject(%this, %client, %objId) {
 		for(%i = 0; %i < BLG_Objects.objs; %i++) {
 			%obj = BLG_Objects.obj[%i];
 			if(%obj.parent !$= "") {
-				echo(%obj.id @ " has parental");
 				%obj.schedule(%time+=%delay, "send", %client, "2" TAB %obj.parent TAB %obj.id);
 			}
 		}
