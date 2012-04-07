@@ -17,7 +17,7 @@ if(!isObject(BLG_GDC)) {
 // - Finalize parent objects
 
 function BLG_GDC::verifyString(%this, %string) { //Checks sent message to make sure it has no unwanted code
-	%illegal = ";";
+	%illegal = ";.";
 
 	for(%i = 0; %i < strLen(%illegal); %i++) {
 		if(strPos(%string, getSubStr(%illegal, %i, 1)) != -1) {
@@ -70,7 +70,6 @@ function BLG_GDC::verifyAlphanumeric(%this, %string) {
 function BLG_GDC::finalizeObject(%this, %objId) {
 	%obj = %this.SG.objData[%objId];
 	if(isObject(%obj)) {
-		if (%obj.objClass $= "GuiWindow" || %obj.objClass $= "GuiButton" || %obj.objClass $= "GuiProfile")
 		%newobj = eval("return new " @ %obj.objClass @ "();");
 		%newobj.setName(%obj.name);
 
