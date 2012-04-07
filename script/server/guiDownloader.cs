@@ -162,6 +162,10 @@ function BLG_GuiObject::registerCloseHandler(%this, %call) {
 	%this.closeHandlers++;
 }
 
+function BLG_GuiObject::setValue(%this, %client, %value) {
+	
+}
+
 function serverCmdBLG_GuiReturn(%client, %msg) {
 	BLG.debug("GuiReturn: [" @ %msg @ "]");
 	%funcId = getField(%msg, 0);

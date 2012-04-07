@@ -254,6 +254,9 @@ function BLG_GDC::handleMessage(%this, %msg) {
 				eval("%v = " @ %obj @ "." @ %value @ ";");
 				commandtoserver('BLG_GuiReturn', "2" TAB %objId TAB %value TAB %v);
 			}
+
+		case 8: //setValue
+			
 	}
 }
 
