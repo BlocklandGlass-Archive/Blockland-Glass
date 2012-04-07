@@ -29,7 +29,7 @@ function BLG_GDC::verifyString(%this, %string) { //Checks sent message to make s
 function BLG_GDC::finalizeObject(%this, %objId) {
 	%obj = %this.SG.objData[%objId];
 	if(isObject(%obj)) {
-		%eval = "%obj = new " @ %obj.objClass @ "(" @ %obj.name @ "){";
+		%eval = "%newobj = new " @ %obj.objClass @ "(" @ %obj.name @ "){";
 
 		for(%i = 0; %i < %obj.attributes; %i++) {
 			%eval = %eval @ %obj.attributeDat[%i] @ "=" @ %obj.attributeVal[%i] @ ";";
@@ -39,19 +39,20 @@ function BLG_GDC::finalizeObject(%this, %objId) {
 		if(%obj.command !$= "") {
 			%eval = %eval @ "command=" @ %obj.command @ ";";
 		}
-		%eval = %eval @ "};$BLG::GC::TempObj = %obj;";
+		%eval = %eval @ "};";
 		BLG.debug("Executing Object [" @ %objId @ "]...");
 		BLG.debug(%eval, 3);
 		eval(%eval);
 
 		%obj.finalized = true;
-		%obj.object = $BLG::GC::TempObj;
+		%obj.object = %newobj;
+		echo(%obj @ ".object = " @ %obj.object);
 
-		for(%i = 0; %i < %obj.subclasses; %i++) {
-			if(!%obj.subclass[%i].finalized) {
-				%obj2 = %obj.subclass[%i].initiateObject();
+		for(%i = 0; %i < %obj.children; %i++) {
+			if(!%obj.child[%i].finalized) {
+				%obj2 = %obj.child[%i].initiateObject();
 			} else {
-				%obj2 = %obj.subclass[%i].object;
+				%obj2 = %obj.child[%i].object;
 			}
 			%obj.add(%obj2);
 		}
@@ -102,6 +103,8 @@ function BLG_GDC::handleMessage(%this, %msg) {
 	echo("[" @ %msg @ "]");
 	%funcId = getField(%msg, 0);
 	%objId = getField(%msg, 1);
+	%this.partsReceived++;
+	LoadingProgress.setValue(%this.partsReceived/%this.prepareParts);
 
 	switch(%funcId) {
 		case 0: //New Object
@@ -133,7 +136,7 @@ function BLG_GDC::handleMessage(%this, %msg) {
 
 		case 1: //Set Attribute
 			if(BLG_GDC.SG.objData[%objId] $= "") {
-				//Object already exists, someone broke the server mod
+				//Object doesnt exist, someone broke the server mod
 				BLG.debug("GUI Object attribute change for objId [" @ %objId @ "] is trying to change a non-existant object!", 0);
 			} else {
 				%data = getField(%msg, 2);
@@ -143,9 +146,7 @@ function BLG_GDC::handleMessage(%this, %msg) {
 					BLG.debug("GUI Object attribute change for objId [" @ %objId @ "] is trying to change a blank attribute!", 0);
 					return;
 				}
-				if(%value $= "") {
-					%value = "\"\"";
-				}
+				%value = "\"" @ %value @ "\"";
 				//if(%data $= "command") {
 				//	BLG.debug("GUI Object id [" @ %objId @ "] tried to register a callback invalidly. Possible attemp to run bad code.", 0);
 				//}
@@ -166,12 +167,34 @@ function BLG_GDC::handleMessage(%this, %msg) {
 		//		%this.finalizeObject(getWord(%this.roots, %i));
 		//	}
 
-		//All from here are non-generic calls
+		//All from here are non-registry calls
 
 		case 4: //Set custom callback
 			%command = "\"BLG_GDC.handleCallback(" @ %objId @ ");\"";
 			%obj = BLG_GDC.SG.objData[%objId];
 			%obj.command = %command;
+
+		case 5: //Open/Close
+			%open = getField(%msg, 2);
+			%obj = BLG_GDC.SG.objData[%objId];
+			if(%open) {
+				canvas.pushDialog(%obj.object);
+			} else {
+				canvas.popDialog(%obj.object);
+			}
+
+		case 6: //Get Value
+			%obj = BLG_GDC.SG.objData[%objId];
+			commandtoserver('BLG_GuiReturn', "1" TAB %objId TAB %obj.object.getValue());
+
+		case 7: //Get Property
+			%obj = BLG_GDC.SG.objData[%objId];
+			%base = %obj.object;
+			%value = getField(%msg, 2);
+			if(%this.verifyString(%value)) {
+				eval("$BLG::GC::TempProp = " @ %obj @ "." @ %value @ ";");
+				commandtoserver('BLG_GuiReturn', "2" TAB %objId TAB %value TAB $BLG::GC::TempProp);
+			}
 	}
 }
 
@@ -188,6 +211,9 @@ function clientCmdBLG_guiTransferFinished() {
 
 function clientCmdMissionPreparePhaseBLG(%parts) {
 	BLG_GDC.prepareParts = %parts;
+	BLG_GDC.partsReceived = 0;
+	LoadingProgressTxt.setValue("Downloading BLG GUI Elements");
+	LoadingProgress.setValue(0);
 	commandtoserver('MissionPreparePhaseBLGAck');
 	echo("*** Starting BLG GUI Download Phase - (" @ %parts @ " parts)");
 }

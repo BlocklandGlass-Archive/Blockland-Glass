@@ -26,6 +26,7 @@ function BLG_GDS::registerObject(%this, %obj) {
 				id = BLG_Objects.objs;
 				children = "";
 				parent = "";
+				sent = false;
 			};
 
 			BLG_Objects.obj[BLG_Objects.objs] = %so;
@@ -33,6 +34,15 @@ function BLG_GDS::registerObject(%this, %obj) {
 			BLG_Objects.objs++;
 
 			%so.getAttributes();
+
+			//init child registration
+			for(%i = 0; %i < %obj.getCount(); %i++) {
+				%ob = %obj.getObject(%i);
+				%sob = %this.registerObject(%ob);
+				%so.children = trim(%so.children SPC %sob.id);
+				%sob.parent = %so.id;
+			}
+
 			return %so;
 		}
 	}
@@ -91,7 +101,7 @@ function BLG_GuiObject::getAttributes(%this) {
 
 function BLG_GuiObject::transfer(%this, %client) {
 	%time = 0;
-	%delay = 5;
+	%delay = 1000;
 
 	%this.schedule(%time+=%delay, "send", %client, "0" TAB %this.id TAB %this.baseObj.getClassName() TAB %this.baseObj.getName() TAB (%this.parent $= ""));
 	%this.schedule(%time+=%delay, "send", %client, "1" TAB %this.id TAB "command" TAB %this.specialValue["command"]);
@@ -101,7 +111,7 @@ function BLG_GuiObject::transfer(%this, %client) {
 	for(%i = 0; %i < %this.attributes; %i++) {
 		%this.schedule(%time+=%delay, "send", %client, "1" TAB %this.id TAB %this.attributeData[%i] TAB %this.attributeValue[%i]);
 	}
-
+	%this.sent = true;
 	BLG_GDS.schedule(%time+=%delay, "sendNextObject", %client, %this.id);
 }
 
@@ -110,7 +120,66 @@ function BLG_GuiObject::send(%this, %client, %msg) {
 }
 
 function BLG_GuiObject::updateAttribute(%this, %client, %data, %value) {
+	if(%this.sent) {
+		if(%data $= "command" || %data $= "altCommand" || %data $= "closeCommand") {
+			return;
+		}
 
+		%this.send("1" TAB %this.id TAB %data TAB %value);
+	}
+}
+
+function BLG_GuiObject::pop(%this, %client) {
+	%this.send(%client, "5" TAB %this.id TAB "0");
+}
+
+function BLG_GuiObject::push(%this, %client) {
+	%this.send(%client, "5" TAB %this.id TAB "1");
+}
+
+function BLG_GuiObject::registerHandler(%this, %call) {
+	%this.handlers += 0;
+	%this.handler[%this.handlers] = %call;
+	%this.handlers++;
+}
+
+function BLG_GuiObject::registerAltHandler(%this, %call) {
+	%this.altHandlers += 0;
+	%this.altHandler[%this.altHandlers] = %call;
+	%this.altHandlers++;
+}
+
+function BLG_GuiObject::registerEscapeHandler(%this, %call) {
+	%this.escapeHandlers += 0;
+	%this.escapeHandler[%this.escapeHandlers] = %call;
+	%this.escapeHandlers++;
+}
+
+function serverCmdBLG_GuiReturn(%client, %msg) {
+	%funcId = getField(%msg, 0);
+	%objId = getField(%msg, 1);
+
+	switch(%funcid) {
+		case 0: //Callback
+			%obj = BLG_Objects.obj[%objId];
+			%type = getField(%msg, 2);
+			if(%type $= "command") {
+				for(%i = 0; %i < %this.handlers; %i++) {
+					%call = %this.handler[%i];
+					eval(%call @ "(" @ %client @ "," @ %this @ ");");
+				}
+			} else if(%type $= "alt") {
+				for(%i = 0; %i < %this.altHandlers; %i++) {
+					%call = %this.altHandler[%i];
+				}
+			} else if(%type $= "escape") {
+				for(%i = 0; %i < %this.escapeHandlers; %i++) {
+					%call = %this.escapeHandler[%i];
+				}
+			}
+
+		case 1: 
+	}
 }
 
 //================================================
@@ -136,10 +205,11 @@ function BLG_GDS::sendNextObject(%this, %client, %objId) {
 	} else {
 		%time = 0;
 		%delay = 5;
-		for(%i = 0; %i < BLG_Objects.getCount(); %i++) {
-			%obj = BLG_Objects.getObject(%i);
+		for(%i = 0; %i < BLG_Objects.objs; %i++) {
+			%obj = BLG_Objects.obj[%i];
 			if(%obj.parent !$= "") {
-				%this.schedule(%time+=%delay, "send", %client, "2" TAB %obj.parent TAB %obj.id);
+				echo(%obj.id @ " has parental");
+				%obj.schedule(%time+=%delay, "send", %client, "2" TAB %obj.parent TAB %obj.id);
 			}
 		}
 		%this.schedule(%time+=%delay, "transferFinished", %client);
@@ -163,6 +233,9 @@ function BLG_GDS::getPartCount(%this) {
 		%obj = BLG_Objects.getObject(%i);
 		%parts += 4; //Initiation, command values
 		%parts += %obj.attributes;
+		if(%obj.parent !$= "") {
+			%parts += 1;
+		}
 	}
 	return %parts;
 }

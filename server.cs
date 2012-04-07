@@ -19,3 +19,6 @@ package BLG_Server_Package {
 	}
 };
 activatePackage(BLG_Server_Package);
+
+exec("./BLG_TestGui.gui");
+$BTG = BLG_GDS.registerObject(BLG_TestGui);
