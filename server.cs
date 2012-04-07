@@ -5,14 +5,12 @@ BLG.start("server");
 
 package BLG_Server_Package {
 	function GameConnection::onConnectRequest(%client, %ip, %lan, %net, %prefix, %suffix, %arg5, %rtb, %arg7, %arg8, %arg9, %arg10, %arg11, %arg12, %arg13, %arg14, %arg15) {
+		%client.hasBLG = false;
 		for(%a = 0; %a < getLineCount(%arg[8]); %a++) {
 			%line = getLine(%arg[8], %a);
 			if(getField(%line, 0) $= "BLG") {
-				%version = getField(%line, 1);
-				%version = mFloathLength(%line, 2);
-				
 				%client.hasBLG = true;
-				%client.BLGVersion = %version;
+				%client.BLGVersion = getField(%line, 1);
 				break;
 			}
 		}

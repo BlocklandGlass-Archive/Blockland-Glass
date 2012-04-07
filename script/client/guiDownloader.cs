@@ -78,7 +78,9 @@ function BLG_GDC::setObjectChild(%this, %objId, %subId) {
 }
 
 function BLG_GDC::initiateObject(%this, %objId, %objClass, %name, %root) {
-	%obj = new ScriptObject(BLG_GDC_ObjectConstructor) {
+	%obj = new ScriptObject() {
+		class = BLG_GDC_ObjectConstructor;
+
 		id = %objId;
 		finalized = false;
 
@@ -97,12 +99,13 @@ function BLG_GDC::initiateObject(%this, %objId, %objClass, %name, %root) {
 }
 
 function BLG_GDC::handleMessage(%this, %msg) {
+	echo("[" @ %msg @ "]");
 	%funcId = getField(%msg, 0);
 	%objId = getField(%msg, 1);
 
 	switch(%funcId) {
 		case 0: //New Object
-			if(BLG_GDCSG.objData[%objId] !$= "") {
+			if(BLG_GDC.SG.objData[%objId] !$= "") {
 				//Object already exists, someone broke the server mod
 				BLG.debug("GUI Object sent for creation with objId [" @ %objId @ "] is using a already existing objId", 0);
 			} else {
@@ -125,11 +128,11 @@ function BLG_GDC::handleMessage(%this, %msg) {
 				if(%root) {
 					%this.roots = trim(%this.roots SPC %objId);
 				}
-				%this.initiateObject(%this, %objId, %objClass, %name, %root);
+				%this.initiateObject(%objId, %objClass, %name, %root);
 			}
 
 		case 1: //Set Attribute
-			if(BLG_GDCSG.objData[%objId] $= "") {
+			if(BLG_GDC.SG.objData[%objId] $= "") {
 				//Object already exists, someone broke the server mod
 				BLG.debug("GUI Object attribute change for objId [" @ %objId @ "] is trying to change a non-existant object!", 0);
 			} else {
@@ -138,32 +141,36 @@ function BLG_GDC::handleMessage(%this, %msg) {
 
 				if(%data $= "") {
 					BLG.debug("GUI Object attribute change for objId [" @ %objId @ "] is trying to change a blank attribute!", 0);
+					return;
 				}
-				if(%value $= "command") {
-					BLG.debug("GUI Object id [" @ %objId @ "] tried to register a callback invalidly. Possible attemp to run bad code.", 0);
+				if(%value $= "") {
+					%value = "\"\"";
 				}
+				//if(%data $= "command") {
+				//	BLG.debug("GUI Object id [" @ %objId @ "] tried to register a callback invalidly. Possible attemp to run bad code.", 0);
+				//}
 
 				%this.setObjectAttribute(%objId, %data, %value);
 			}
 
 		case 2: //Set Parent Object (After 0-1 are finished)
 			%parentId = getField(%msg, 2);
-			if(BLG_GDCSG.objData[%objId] $= "" || BLG_GDCSG.objData[%parentId] $= "") {
+			if(BLG_GDC.SG.objData[%objId] $= "" || BLG_GDC.SG.objData[%parentId] $= "") {
 				BLG.debug("GUI Object id [" @ %objId @ "] and/or [" @ %parentId @ "] is invalid, but tried to parent", 0);
 			} else {
 				%this.setObjectChild(%objId, %parentId);
 			}
 
-		case 3: //Finished with setting items
-			for(%i = 0; %i < getWordCount(%this.roots); %i++) {
-				%this.finalizeObject(getWord(%this.roots, %i));
-			}
+		//case 3: //Finished with setting items
+		//	for(%i = 0; %i < getWordCount(%this.roots); %i++) {
+		//		%this.finalizeObject(getWord(%this.roots, %i));
+		//	}
 
 		//All from here are non-generic calls
 
 		case 4: //Set custom callback
 			%command = "\"BLG_GDC.handleCallback(" @ %objId @ ");\"";
-			%obj = BLG_GDCSG.objData[%objId];
+			%obj = BLG_GDC.SG.objData[%objId];
 			%obj.command = %command;
 	}
 }
@@ -172,20 +179,27 @@ function clientCmdBLG_ObjectInfo(%msg) {
 	BLG_GDC.handleMessage(%msg);
 }
 
+function clientCmdBLG_guiTransferFinished() {
+	%this = BLG_GDC;
+	for(%i = 0; %i < getWordCount(%this.roots); %i++) {
+		%this.finalizeObject(getWord(%this.roots, %i));
+	}
+}
+
 function clientCmdMissionPreparePhaseBLG(%parts) {
 	BLG_GDC.prepareParts = %parts;
 	commandtoserver('MissionPreparePhaseBLGAck');
-	echo(" *** Starting BLG GUI Download Phase - (" @ %parts @ " parts)");
+	echo("*** Starting BLG GUI Download Phase - (" @ %parts @ " parts)");
 }
 
 package BLG_GDC_Package {
 	function disconnectedCleanup() {
 		parent::disconnectedCleanup();
-		for(%i = 0; %i < BLG_GDCSG.getCount(); %i++) {
-			%obj = BLG_GDCSG.getObject(%i);
+		for(%i = 0; %i < BLG_GDC.SG.getCount(); %i++) {
+			%obj = BLG_GDC.SG.getObject(%i);
 			canvas.popDialog(%obj);
 		}
-		BLG_GDCSG.deleteAll();
+		BLG_GDC.SG.deleteAll();
 	}
 };
 

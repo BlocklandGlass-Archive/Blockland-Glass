@@ -2,7 +2,7 @@ new ScriptGroup(BLG) {
 	internalVersion = "1.0.A1";
 	externalVersion = "1.0 Alpha 1";
 
-	debugLevel = 1;
+	debugLevel = 3;
 	//0 = Errors only
 	//1 = Standard
 	//2 = In-depth

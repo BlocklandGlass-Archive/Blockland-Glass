@@ -8,7 +8,7 @@ if(!isObject(BLG_GDS)) {
 	};
 
 	new ScriptGroup(BLG_Objects) {
-		guis = 0;
+		objs = 0;
 	};
 
 	BLG_GDS.sg = BLG_Objects;
@@ -21,13 +21,14 @@ function BLG_GDS::registerObject(%this, %obj) {
 			%so = new ScriptObject() {
 				class = BLG_GuiObject;
 
+				attributes = 0;
 				baseObj = %obj;
 				id = BLG_Objects.objs;
 				children = "";
 				parent = "";
 			};
 
-			BLG_Objects.obj[BLG_Objects.objs] = %obj;
+			BLG_Objects.obj[BLG_Objects.objs] = %so;
 			BLG_Objects.add(%so);
 			BLG_Objects.objs++;
 
@@ -36,7 +37,6 @@ function BLG_GDS::registerObject(%this, %obj) {
 		}
 	}
 }
-
 
 //================================================
 // BLG_GuiObject
@@ -60,13 +60,13 @@ function BLG_GuiObject::getAttributes(%this) {
 					break;
 				} else {
 					%started = true;
+					continue;
 				}
 			} else if(strPos(%line, "};") == 0) {
 				break;
 			} else if(%line $= "") {
 				continue;
 			} else if(%started) {
-				echo("Line: [" @ %line @ "]");
 				%data = getSubStr(%line, 0, strPos(%line, " = "));
 				%value = getSubStr(%line, strPos(%line, " = ")+3, strLen(%line));
 				%value = strReplace(%value, "\\\"", "[[quotation]]");
@@ -93,16 +93,16 @@ function BLG_GuiObject::transfer(%this, %client) {
 	%time = 0;
 	%delay = 5;
 
-	%this.schedule(%time+=%delay, send, "0" TAB %this.id TAB %this.baseObj.getClassName() TAB %this.baseObj.getName() TAB ((%this.baseObj.children $= "") ? 0 : 1));
-	%this.schedule(%time+=%delay, send, "1" TAB %this.id TAB "command" TAB %this.specialValue["command"]);
-	%this.schedule(%time+=%delay, send, "1" TAB %this.id TAB "altCommand" TAB %this.specialValue["altCommand"]);
-	%this.schedule(%time+=%delay, send, "1" TAB %this.id TAB "closeCommand" TAB %this.specialValue["closeCommand"]);
+	%this.schedule(%time+=%delay, "send", %client, "0" TAB %this.id TAB %this.baseObj.getClassName() TAB %this.baseObj.getName() TAB (%this.parent $= ""));
+	%this.schedule(%time+=%delay, "send", %client, "1" TAB %this.id TAB "command" TAB %this.specialValue["command"]);
+	%this.schedule(%time+=%delay, "send", %client, "1" TAB %this.id TAB "altCommand" TAB %this.specialValue["altCommand"]);
+	%this.schedule(%time+=%delay, "send", %client, "1" TAB %this.id TAB "closeCommand" TAB %this.specialValue["closeCommand"]);
 
 	for(%i = 0; %i < %this.attributes; %i++) {
-		%this.schedule(%time+=%delay, send, "1" TAB %this.id TAB %this.attributeData[%i] TAB %this.attributeValue[%i]);
+		%this.schedule(%time+=%delay, "send", %client, "1" TAB %this.id TAB %this.attributeData[%i] TAB %this.attributeValue[%i]);
 	}
 
-	BLG_GDS.sendNextObject(%client, %this.id);
+	BLG_GDS.schedule(%time+=%delay, "sendNextObject", %client, %this.id);
 }
 
 function BLG_GuiObject::send(%this, %client, %msg) {
@@ -118,35 +118,51 @@ function BLG_GuiObject::updateAttribute(%this, %client, %data, %value) {
 //================================================
 
 function BLG_GDS::startTransfer(%this, %client) {
-	%obj = BLG_Objects.getObject(0);
-	if(isObject(%obj)) {
-		%obj.transfer(%client);
+	echo("start transfer");
+	if(BLG_Objects.objs > 0) {
+		%obj = BLG_Objects.obj[0];
+		if(isObject(%obj)) {
+			%obj.transfer(%client);
+		}
+	} else {
+		%this.transferFinished(%client);
 	}
 }
 
 function BLG_GDS::sendNextObject(%this, %client, %objId) {
+	echo(%objId @ " finished, checking for " @ %objId+1);
 	if(isObject(BLG_Objects.obj[%objId+1])) {
 		BLG_Objects.obj[%objId+1].transfer(%client);
 	} else {
 		%time = 0;
-		%delay = 0;
+		%delay = 5;
 		for(%i = 0; %i < BLG_Objects.getCount(); %i++) {
 			%obj = BLG_Objects.getObject(%i);
 			if(%obj.parent !$= "") {
-				%this.schedule(%time+=%delay, send, "2" TAB %obj.parent TAB %obj.id);
+				%this.schedule(%time+=%delay, "send", %client, "2" TAB %obj.parent TAB %obj.id);
 			}
 		}
-		%this.schedule(%time+=%delay, transferFinished);
+		%this.schedule(%time+=%delay, "transferFinished", %client);
 	}
 } 
 
 function serverCmdMissionPreparePhaseBLGAck(%client) {
 	BLG_GDS.startTransfer(%client);
-
 }
 
-function BLG_GDS::transferFinished(%client) {
+function BLG_GDS::transferFinished(%this, %client) {
 	%client.currentPhase = 0;
 	%client.BLG_DownloadedGUI = true;
+	commandToClient(%client,'BLG_guiTransferFinished');
 	commandToClient(%client,'MissionStartPhase1', $missionSequence, $Server::MissionFile);
+}
+
+function BLG_GDS::getPartCount(%this) {
+	%parts = 0;
+	for(%i = 0; %i < BLG_Objects.getCount(); %i++) {
+		%obj = BLG_Objects.getObject(%i);
+		%parts += 4; //Initiation, command values
+		%parts += %obj.attributes;
+	}
+	return %parts;
 }
