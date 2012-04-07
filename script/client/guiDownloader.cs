@@ -64,9 +64,13 @@ function BLG_GDC::finalizeObject(%this, %objId) {
 
 function BLG_GDC::setObjectAttribute(%this, %objId, %data, %value) {
 	%obj = %this.SG.objData[%objId];
-	%obj.attributeDat[%obj.attributes] = %data; 
-	%obj.attributeVal[%obj.attributes] = %value;
-	%obj.attributes++;
+	if(isObject(%obj.object)) {
+		eval(%obj.object @ "." @ %data @ " = " @ %value @ ";");
+	} else {
+		%obj.attributeDat[%obj.attributes] = %data; 
+		%obj.attributeVal[%obj.attributes] = %value;
+		%obj.attributes++;
+	}
 }
 
 function BLG_GDC::setObjectChild(%this, %objId, %subId) {
