@@ -163,7 +163,7 @@ function BLG_GuiObject::registerCloseHandler(%this, %call) {
 }
 
 function BLG_GuiObject::setValue(%this, %client, %value) {
-	
+	%this.send(%client, "8" TAB %this.id TAB %value);
 }
 
 function serverCmdBLG_GuiReturn(%client, %msg) {

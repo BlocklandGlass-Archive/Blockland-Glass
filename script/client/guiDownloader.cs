@@ -256,7 +256,7 @@ function BLG_GDC::handleMessage(%this, %msg) {
 			}
 
 		case 8: //setValue
-			
+			BLG_GDC.SG.objData[%objId].setValue(getField(%msg, 2));
 	}
 }
 
