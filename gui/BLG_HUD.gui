@@ -1,0 +1,43 @@
+//--- OBJECT WRITE BEGIN ---
+new GuiControl(BLG_HUD) {
+   profile = "GuiDefaultProfile";
+   horizSizing = "relative";
+   vertSizing = "relative";
+   position = "0 0";
+   extent = "640 480";
+   minExtent = "8 2";
+   visible = "1";
+
+   new GuiSwatchCtrl() {
+      profile = "GuiDefaultProfile";
+      horizSizing = "left";
+      vertSizing = "top";
+      position = "430 435";
+      extent = "200 30";
+      minExtent = "8 2";
+      visible = "1";
+      color = "50 50 50 192";
+
+      new GuiTextCtrl() {
+         profile = "BLG_HudText";
+         horizSizing = "right";
+         vertSizing = "center";
+         position = "5 2";
+         extent = "95 25";
+         minExtent = "8 2";
+         visible = "1";
+         text = "\c3Ammo";
+         maxLength = "255";
+      };
+      new GuiProgressCtrl() {
+         profile = "GuiProgressProfile";
+         horizSizing = "right";
+         vertSizing = "center";
+         position = "90 5";
+         extent = "105 20";
+         minExtent = "8 2";
+         visible = "1";
+      };
+   };
+};
+//--- OBJECT WRITE END ---

@@ -24,6 +24,8 @@ function BLG::start(%this, %implementation) {
 
 	} else if(%implementation $= "client") {
 		echo("Loading BLG [" @ %this.internalVersion @ "] client implementation");
+		exec("./gui/profile.cs");
+		exec("./gui/BLG_HUD.gui");
 		exec("./script/client/guiDownloader.cs");
 
 		if(isFile("Add-Ons/System_ReturnToBlockland/server.cs")) {
