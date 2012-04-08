@@ -16,7 +16,7 @@ if(!isObject(BLG_HUDC)) {
 
 function BLG_HUDC::registerNewHUDValue(%this, %type, %title, %value) {
 	if(%this.serverCache.itemTitle[%title] $= "") {
-		if(%type !$= "text" || %type !$= "progressbar") {
+		if(%type !$= "text" && %type !$= "progressbar") {
 			return;
 		}
 
