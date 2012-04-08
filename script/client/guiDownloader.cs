@@ -41,7 +41,7 @@ function BLG_GDC::verifyString(%this, %string) { //Checks sent message to make s
 
 function BLG_GDC::verifyAlphabetic(%this, %string) {
 	%allowed = "abcdefghijklmnopqrstuvwxyz";
-	for(%i = 0; %i < strLen(%illegal); %i++) {
+	for(%i = 0; %i < strLen(%string); %i++) {
 		if(strPos(getSubStr(%string, %i, 1), %allowed) == -1) {
 			return false;
 		}
@@ -60,11 +60,13 @@ function BLG_GDC::verifyNumeric(%this, %num) {
 
 function BLG_GDC::verifyAlphanumeric(%this, %string) {
 	%allowed = "abcdefghijklmnopqrstuvwxyz1234567890";
-	for(%i = 0; %i < strLen(%illegal); %i++) {
+	for(%i = 0; %i < strLen(%string); %i++) {
 		if(strPos(getSubStr(%string, %i, 1), %allowed) == -1) {
 			return false;
 		}
 	}
+
+	return true;
 }
 
 function BLG_GDC::finalizeObject(%this, %objId) {
