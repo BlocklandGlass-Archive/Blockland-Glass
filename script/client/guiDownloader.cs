@@ -17,7 +17,7 @@ if(!isObject(BLG_GDC)) {
 // - Finalize parent objects
 
 function BLG_GDC::verifyString(%this, %string) { //Checks sent message to make sure it has no unwanted code
-	%illegal = ";.";
+	%illegal = ";.\"()";
 
 	for(%i = 0; %i < strLen(%illegal); %i++) {
 		if(strPos(%string, getSubStr(%illegal, %i, 1)) != -1) {
@@ -251,7 +251,7 @@ function BLG_GDC::handleMessage(%this, %msg) {
 			%base = %obj.object;
 			%value = getField(%msg, 2);
 			if(%this.verifyAlphabetic(%value)) {
-				eval("%v = " @ %obj @ "." @ %value @ ";");
+				%v = eval("return" SPC %obj @ "." @ %value @ ";");
 				commandtoserver('BLG_GuiReturn', "2" TAB %objId TAB %value TAB %v);
 			}
 
