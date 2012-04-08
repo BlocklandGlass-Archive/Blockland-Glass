@@ -16,6 +16,12 @@ if(!isObject(BLG_GDC)) {
 // - Register Subclasses
 // - Finalize parent objects
 
+function BLG_GDC::cleanString(%this, %string) {
+	%string = strReplace(%string, "\\", "\\\\"); // \ to \\
+	%string = strReplace(%string, "\"", "\\\""); // " to \"
+	return %string;
+}
+
 function BLG_GDC::verifyString(%this, %string) { //Checks sent message to make sure it has no unwanted code
 	%illegal = "\"";
 
@@ -186,15 +192,13 @@ function BLG_GDC::handleMessage(%this, %msg) {
 				BLG.debug("GUI Object attribute change for objId [" @ %objId @ "] is trying to change a non-existant object!", 0);
 			} else {
 				%data = getField(%msg, 2);
-				%value = getField(%msg, 3);
+				%value = %this.cleanString(getField(%msg, 3));
 
 				if(%data $= "") {
 					BLG.debug("GUI Object attribute change for objId [" @ %objId @ "] is trying to change a blank attribute!", 0);
 					return;
 				} else if(!%this.verifyAlphabetic(%data)) {
 					BLG.debug("Bad data name", 0);
-					return;
-				} else if(!%this.verifyString(%value)) {
 					return;
 				}
 				%value = "\"" @ %value @ "\"";
