@@ -14,3 +14,11 @@ if(!isObject(BLG_HudTextRight)) new GuiControlProfile(BLG_HudTextRight)
    fontType = "Impact";
    justify = "Right";
 };
+
+if(!isObject(BLG_HudTextCenter)) new GuiControlProfile(BLG_HudTextCenter)
+{
+   fontColor = "255 255 255 255";
+   fontSize = 20;
+   fontType = "Impact";
+   justify = "Center";
+};

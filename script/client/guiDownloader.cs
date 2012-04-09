@@ -34,9 +34,9 @@ function BLG_GDC::verifyString(%this, %string) { //Checks sent message to make s
 }
 
 function BLG_GDC::verifyAlphabetic(%this, %string) {
-	%allowed = "abcdefghijklmnopqrstuvwxyz";
+	%allowed = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	for(%i = 0; %i < strLen(%string); %i++) {
-		if(strPos(getSubStr(%string, %i, 1), %allowed) == -1) {
+		if(strPos(%allowed, getSubStr(%string, %i, 1)) == -1) {
 			return false;
 		}
 	}
@@ -53,9 +53,9 @@ function BLG_GDC::verifyNumeric(%this, %num) {
 }
 
 function BLG_GDC::verifyAlphanumeric(%this, %string) {
-	%allowed = "abcdefghijklmnopqrstuvwxyz1234567890";
+	%allowed = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_";
 	for(%i = 0; %i < strLen(%string); %i++) {
-		if(strPos(getSubStr(%string, %i, 1), %allowed) == -1) {
+		if(strPos(%allowed, getSubStr(%string, %i, 1)) == -1) {
 			return false;
 		}
 	}
@@ -77,9 +77,6 @@ function BLG_GDC::finalizeObject(%this, %objId) {
 		if(%obj.command !$= "") {
 			%newobj.command = %obj.command;
 		}
-
-		BLG.debug("Executing Object [" @ %objId @ "]...");
-		BLG.debug(%eval, 3);
 
 		%obj.finalized = true;
 		%obj.object = %newobj;
@@ -165,16 +162,19 @@ function BLG_GDC::handleMessage(%this, %msg) {
 				%name = getField(%msg, 3);
 				%root = getField(%msg, 4);
 
-				if(!%this.verifyAlphabetic(%objClass) || !%this.verifyAlphanumeric(%name)) {
+				if(!%this.verifyAlphanumeric(%name)) {
 					//Watch out guys, we're dealing with a badass over here
-					BLG.debug("Verify String test returned false for objId [" @ %objId @ "]. Could be possible attempt to run malicious script");
+					BLG.debug("Verify String alphanumeric returned false for objId [" @ %objId @ "]. Could be possible attempt to run malicious script");
 					BLG.debug("Message: [" @ %msg @ "]");
+					return;
 				}
 
 				if(%objClass $= "") {
 					BLG.debug("Invalid initiate message [" @ %msg @ "] (bad class)", 0);
+					return;
 				} else if(%root != 1 && %root != 0 && %root !$= "") {
 					BLG.debug("Invalid initiate message [" @ %msg @ "] (bad root value)", 0);
+					return;
 				}
 
 				if(%root) {
@@ -197,8 +197,8 @@ function BLG_GDC::handleMessage(%this, %msg) {
 				if(%data $= "") {
 					BLG.debug("GUI Object attribute change for objId [" @ %objId @ "] is trying to change a blank attribute!", 0);
 					return;
-				} else if(!%this.verifyAlphabetic(%data)) {
-					BLG.debug("Bad data name", 0);
+				} else if(!%this.verifyAlphanumeric(%data)) {
+					BLG.debug("Bad data name \"" @ %data @ "\"", 0);
 					return;
 				}
 				%value = "\"" @ %value @ "\"";
@@ -283,7 +283,7 @@ function clientCmdBLG_guiTransferFinished() {
 function clientCmdMissionPreparePhaseBLG(%parts) {
 	BLG_GDC.prepareParts = %parts;
 	BLG_GDC.partsReceived = 0;
-	BLG_GDC.loaded = true;
+	BLG_GDC.loading = true;
 	LoadingProgressTxt.setValue("Downloading BLG GUI Elements");
 	LoadingProgress.setValue(0);
 	commandtoserver('MissionPreparePhaseBLGAck');

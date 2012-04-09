@@ -6,7 +6,6 @@ if(!isObject(BLG_HUDC)) {
 	new ScriptObject(BLG_HUDC);
 	BLG_HUDC.serverCache = new ScriptGroup() {
 		items = 0;
-		y = 435;
 	};
 }
 
@@ -39,13 +38,14 @@ function BLG_HUDC::updateValue(%this, %title, %value) {
 }
 
 function BLG_HUDC::draw(%this) {
+	%y = 435;
 	if(%this.serverCache.items > 0) {
 		for(%i = 0; %i < %this.serverCache.items; %i++) {
 			%bar = new GuiSwatchCtrl() {
 				profile = "GuiDefaultProfile";
 				horizSizing = "left";
 				vertSizing = "top";
-				position = "430" SPC %y-(35*%i);
+				position = 430 SPC %y-(35*%i);
 				extent = "200 30";
 				minExtent = "8 2";
 				visible = "1";
@@ -69,9 +69,9 @@ function BLG_HUDC::draw(%this) {
 					profile = "BLG_HudTextRight";
 					horizSizing = "right";
 					vertSizing = "center";
-					position = "5 2";
+					position = "90 2";
 					extent = "100 25";
-					minExtent = "8 2";
+					minExtent = "100 25";
 					visible = "1";
 					text = getLine(%this.serverCache.item[%i], 2);
 					maxLength = "255";
@@ -81,18 +81,18 @@ function BLG_HUDC::draw(%this) {
 					profile = "GuiProgressProfile";
 					horizSizing = "right";
 					vertSizing = "center";
-					position = "90 5";
-					extent = "105 20";
-					minExtent = "8 2";
+					position = "90 2";
+					extent = "105 25";
+					minExtent = "105 25";
 					visible = "1";
 
 					new GuiTextCtrl() {
-						profile = "BLG_HudText";
+						profile = "BLG_HudTextCenter";
 						horizSizing = "center";
 						vertSizing = "center";
-						position = "5 2";
-						extent = "100 25";
-						minExtent = "8 2";
+						position = "0 0";
+						extent = "105 25";
+						minExtent = "105 25";
 						visible = "1";
 						text = getLine(%this.serverCache.item[%i], 3);
 						maxLength = "255";
@@ -106,7 +106,8 @@ function BLG_HUDC::draw(%this) {
 	 		BLG_HUD.add(%bar);
 		}
 
-		PlayGui.add(BLG_HUD);
+	 	canvas.pushDialog(BLG_HUD);
+		PlayGui.schedule(50, "add", BLG_HUD);
 	}
 }
 
@@ -140,6 +141,11 @@ package BLG_HUDC_Package {
 		};
 
 		parent::disconnectedCleanup();
+	}
+
+	function clientCmdBLG_guiTransferFinished() {
+		parent::clientCmdBLG_guiTransferFinished();
+		BLG_HUDC.draw();
 	}
 };
 activatePackage(BLG_HUDC_Package);
