@@ -20,7 +20,7 @@ function BLG_HUDS::registerValue(%this, %type, %title, %value) {
 
 function GameConnection::updateHUD(%client, %title, %value) {
 	if(%this.itemTitle[%title] !$= "") {
-		commandtoclient('BLG_HUD', "1", %title, %value);
+		commandtoclient(%client, 'BLG_HUD', "1", %title, %value);
 	}
 }
 
