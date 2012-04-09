@@ -1,6 +1,6 @@
 new ScriptGroup(BLG) {
-	internalVersion = "1.0.A2";
-	externalVersion = "1.0 Alpha 2";
+	internalVersion = "1.0.B1";
+	externalVersion = "1.0 Beta 1";
 
 	debugLevel = 3;
 	//0 = Errors only
@@ -26,7 +26,7 @@ function BLG::start(%this, %implementation) {
 
 	} else if(%implementation $= "client") {
 		echo("Loading BLG [" @ %this.internalVersion @ "] client implementation");
-		
+
 		exec("./gui/profile.cs");
 		exec("./gui/BLG_HUD.gui");
 
