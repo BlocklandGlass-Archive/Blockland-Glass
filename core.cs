@@ -32,6 +32,7 @@ function BLG::start(%this, %implementation) {
 
 		exec("./script/client/guiDownloader.cs");
 		exec("./script/client/hudManager.cs");
+		exec("./script/client/bindManager.cs");
 
 		if(isFile("Add-Ons/System_ReturnToBlockland/server.cs")) {
 			exec("./script/client/hooks/RTB.cs");
