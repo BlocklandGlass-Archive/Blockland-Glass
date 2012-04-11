@@ -35,12 +35,11 @@ function BLG_GKC::activateBinds(%this) {
 
 function BLG_GKC::deactivateBinds(%this) {
 	for(%i = 0; %i < %this.binds; %i++) {
-		GlobalActionMap.unbind(getField(%this.bindData[%i], 0), getField(%this.bindData, 1));
+		GlobalActionMap.unbind(getField(%this.bindData[%i], 0), getField(%this.bindData[%i], 1));
 	}
 }
 
 function BLG_GKC::bindCallback(%this, %id, %tog) {
-	echo("Bind callback " @ %id);
 	if(%tog) {
 		commandtoserver('BLG_BindCallback', %this.bindName[%id]);
 	}
@@ -62,7 +61,7 @@ package BLG_GKC_Package {
 
 		if(BLG_GKC.playGui) {
 			if(%canvas.getCount() == 2) {
-				BLG.activateBinds();
+				BLG_GKC.activateBinds();
 			}
 		}
 
