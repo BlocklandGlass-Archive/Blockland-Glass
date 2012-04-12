@@ -2,13 +2,18 @@
 // Title: Glass Keybind Client 
 //================================================
 
+$remapDivision[$remapCount] = "Blockland Glass";
+$remapName[$remapCount] = "Open Keybind Gui";
+$remapCmd[$remapCount] = "BLG_GKC.openBindGui";
+$remapCount++;
+
 if(!isObject(BLG_GKC)) {
 	new ScriptObject(BLG_GKC) {
 		binds = 0;
 	};
 }
 
-function BLG_GKC::load(%this) {
+function BLG_GKC::loadData(%this) {
 	%fo = new FileObject();
 	%fo.openForRead("config/BLG/client/binds.txt");
 	while(!%fo.isEOF()) {
@@ -22,7 +27,7 @@ function BLG_GKC::load(%this) {
 	%fo.delete();
 }
 
-function BLG_GKC::save(%this) {
+function BLG_GKC::saveData(%this) {
 	%fo = new FileObject();
 	%fo.openForWrite("config/BLG/client/binds.txt");
 	for(%i = 0; %i < %this.binds; %i++) {
@@ -69,17 +74,25 @@ function BLG_GKC::bindCallback(%this, %id, %tog) {
 function BLG_GKC::pushSetBindGui(%this) {
 	BLG_keybindGui.text = "Set New Keybinds";
 	BLG_keybindGui.closeCommand = "BLG_GKC.checkFinished();";
+	BLG_keybindList.clear();
 	for(%i = 0; %i < %this.binds; %i++) {
-		BLG_keybindList.addRow(BLG_keybindList.rowCount(), %this.bind[%i] TAB "\c5" @ getField(%this.bindData[%i], 1));
+		if(getField(%this.bindData[%i], 1) $= "") {
+			BLG_keybindList.addRow(BLG_keybindList.rowCount(), %this.bind[%i] TAB "\c5" @ getField(%this.bindData[%i], 1));
+		}
 	}
+	BLG_keybindGui.mode = "new";
+	canvas.pushDialog(BLG_keybindGui);
 }
 
 function BLG_GKC::openBindGui(%this) {
 	BLG_keybindGui.text = "Edit Keybinds";
 	BLG_keybindGui.closeCommand = "BLG_GKC.checkFinished();";
+	BLG_keybindList.clear();
 	for(%i = 0; %i < %this.binds; %i++) {
 		BLG_keybindList.addRow(BLG_keybindList.rowCount(), %this.bind[%i] TAB "\c5" @ getField(%this.bindData[%i], 1));
 	}
+	BLG_keybindGui.mode = "edit";
+	canvas.pushDialog();
 }
 
 function BLG_GKC::checkFinished() {
@@ -90,11 +103,11 @@ function BLG_GKC::checkFinished() {
 		}
 	}
 
-	canvas.popDialog(BLG_BindCallback);
+	canvas.popDialog(BLG_keybindGui);
 }
 
 function BLG_keybindList::onSelect(%this, %id, %text) {
-	%name = getField(%text, 0)
+	%name = getField(%text, 0);
 	canvas.pushDialog(BLG_remapGui);
 	BLG_remapGuiText.setValue("Select Bind For: " @ %name);
 	BLG_GKC.currentRemap = %name;
@@ -109,12 +122,29 @@ function BLG_Remapper::onInputEvent(%this, %device, %key) {
 		return;
 	}
 
-	BLG_GKC.newBind(BLG_GKC.currentRemap, %device, %name);
-	BLG_GKC.save();
-	canvas.popDialog(BLG_remapGui);
+	%disallow = "wasdbq1234567890";
+
+	if(strPos(%key, %disallow) != -1) {
+		messageBoxOk("Key Disallowed");
+		canvas.popDialog(BLG_remapGui);
+		%this.delete()
+		return;
+	}
+
+
+	BLG_GKC.setBind(BLG_GKC.currentRemap, %device, %key);
+	BLG_GKC.saveData();
 	BLG_keybindList.clear();
-	for(%i = 0; %i < %this.binds; %i++) {
-		BLG_keybindList.addRow(BLG_keybindList.rowCount(), %this.bind[%i] TAB "\c5" @ getField(%this.bindData[%i], 1));
+	if(BLG_GKC.mode $= "edit") {
+		for(%i = 0; %i < BLG_GKC.binds; %i++) {
+			BLG_keybindList.addRow(BLG_keybindList.rowCount(), BLG_GKC.bind[%i] TAB "\c5" @ getField(BLG_GKC.bindData[%i], 1));
+		}
+	} else {
+		for(%i = 0; %i < BLG_GKC.binds; %i++) {
+			if(BLG_GKC.bindData[%i]) {
+				BLG_keybindList.addRow(BLG_keybindList.rowCount(), BLG_GKC.bind[%i] TAB "\c5" @ getField(BLG_GKC.bindData[%i], 1));
+			}
+		}
 	}
 	%this.delete();
 }
@@ -173,4 +203,4 @@ package BLG_GKC_Package {
 };
 activatePackage(BLG_GKC_Package);
 
-BLG_GKC.load();
+BLG_GKC.loadData();

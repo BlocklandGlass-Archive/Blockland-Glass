@@ -15,6 +15,7 @@ function BLG_GKS::newBind(%this, %name, %callback) {
 }
 
 function serverCmdBLG_bindCallback(%client, %name) {
+	%this = BLG_GKS;
 	for(%i = 0; %i < BLG_GKS.binds; %i++) {
 		if(%this.bind[%i] $= %name) {
 			eval(%this.bindCb[%i] @ "(" @ %client @ ");");
@@ -27,7 +28,7 @@ package BLG_GKS_Package {
 	function clientCmdMissionPreparePhaseBLGAck(%client) {
 		parent::clientCmdMissionPreparePhaseBLGAck(%client);
 		for(%i = 0; %i < BLG_GKS.binds; %i++) {
-			commandtoclient('BLG_requireBind', BLG_GKS.bind[%i]);
+			commandtoclient(%client, 'BLG_requireBind', BLG_GKS.bind[%i]);
 		}
 	}
 };
