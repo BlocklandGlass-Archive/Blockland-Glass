@@ -57,8 +57,66 @@ function BLG_GKC::deactivateBinds(%this) {
 
 function BLG_GKC::bindCallback(%this, %id, %tog) {
 	if(%tog) {
-		commandtoserver('BLG_BindCallback', %this.bindName[%id]);
+		%data = %this.bindData[%id];
+		for(%i = 0; %i < %this.binds; %i++) {
+			if(%this.bindData[%i] $= %data) {
+				commandtoserver('BLG_BindCallback', %this.bindName[%i]);
+			}
+		}
 	}
+}
+
+function BLG_GKC::pushSetBindGui(%this) {
+	BLG_keybindGui.text = "Set New Keybinds";
+	BLG_keybindGui.closeCommand = "BLG_GKC.checkFinished();";
+	for(%i = 0; %i < %this.binds; %i++) {
+		BLG_keybindList.addRow(BLG_keybindList.rowCount(), %this.bind[%i] TAB "\c5" @ getField(%this.bindData[%i], 1));
+	}
+}
+
+function BLG_GKC::openBindGui(%this) {
+	BLG_keybindGui.text = "Edit Keybinds";
+	BLG_keybindGui.closeCommand = "BLG_GKC.checkFinished();";
+	for(%i = 0; %i < %this.binds; %i++) {
+		BLG_keybindList.addRow(BLG_keybindList.rowCount(), %this.bind[%i] TAB "\c5" @ getField(%this.bindData[%i], 1));
+	}
+}
+
+function BLG_GKC::checkFinished() {
+	for(%i = 0; %i < %this.binds; %i++) {
+		if(getField(%this.bindData[%i], 1) $= "") {
+			messageBoxOk("Whoops!", "You forgot to bind a bind!");
+			return;
+		}
+	}
+
+	canvas.popDialog(BLG_BindCallback);
+}
+
+function BLG_keybindList::onSelect(%this, %id, %text) {
+	%name = getField(%text, 0)
+	canvas.pushDialog(BLG_remapGui);
+	BLG_remapGuiText.setValue("Select Bind For: " @ %name);
+	BLG_GKC.currentRemap = %name;
+
+	%ctrl = new GuiInputCtrl(BLG_Remapper);
+	BLG_remapGui.add(%ctrl);
+	%ctrl.makeFirstResponder(1);
+}
+
+function BLG_Remapper::onInputEvent(%this, %device, %key) {
+	if(%device $= "mouse0") {
+		return;
+	}
+
+	BLG_GKC.newBind(BLG_GKC.currentRemap, %device, %name);
+	BLG_GKC.save();
+	canvas.popDialog(BLG_remapGui);
+	BLG_keybindList.clear();
+	for(%i = 0; %i < %this.binds; %i++) {
+		BLG_keybindList.addRow(BLG_keybindList.rowCount(), %this.bind[%i] TAB "\c5" @ getField(%this.bindData[%i], 1));
+	}
+	%this.delete();
 }
 
 function clientcmdBLG_requireBind(%name) {
@@ -115,5 +173,4 @@ package BLG_GKC_Package {
 };
 activatePackage(BLG_GKC_Package);
 
-BLG_GKC.newBind("BLG Test Bind");
-BLG_GKC.setBind("BLG Test Bind", "keyboard", "b");
+BLG_GKC.load();

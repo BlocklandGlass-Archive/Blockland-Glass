@@ -30,6 +30,8 @@ function BLG::start(%this, %implementation) {
 
 		exec("./gui/profile.cs");
 		exec("./gui/BLG_HUD.gui");
+		exec("./gui/BLG_remapGui.gui");
+		exec("./gui/BLG_keybindGui.gui");
 
 		exec("./script/client/guiDownloader.cs");
 		exec("./script/client/hudManager.cs");

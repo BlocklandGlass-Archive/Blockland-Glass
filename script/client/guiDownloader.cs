@@ -253,11 +253,25 @@ function BLG_GDC::handleMessage(%this, %msg) {
 
 		case 8: //setValue
 			BLG_GDC.SG.objData[%objId].setValue(getField(%msg, 2));
+
+		case 9:
+			%obj = BLG_GDC.SG.objData[%objId];
+			if(isObject(%obj.object)) {
+				%sta = strLen(getField(%msg, 0)+1+strLen(getField(%msg, 1)+1+strLen(getField(%msg, 2)))+1);
+				%obj.object.addRow(getField(%msg, 2), getSubStr(%msg, %sta, strLen(%msg)-%sta));
+			}
+
+		case 10:
+			%obj = BLG_GDC.SG.objData[%objId];
+			if(isObject(%obj.object)) {
+				%obj.object.removeRow(getField(%msg, 2));
+			}
 	}
 }
 
 function BLG_GDC::commandCallback(%this, %objId) {
 	commandtoserver('BLG_GuiReturn', "0" TAB %objId TAB "command");	
+	commandtoserver('BLG_GuiReturn', "1" TAB %objId TAB BLG_GDC.SG.objData[%objId].object.getValue());
 }
 
 function BLG_GDC::closeCommandCallback(%this, %objId) {

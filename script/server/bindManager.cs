@@ -2,7 +2,7 @@
 // Title: Glass Keybind Server
 //================================================
 
-is(!isObject(BLG_GKS)) {
+if(!isObject(BLG_GKS)) {
 	new ScriptObject(BLG_GKS){
 		binds = 0;
 	};
@@ -22,3 +22,13 @@ function serverCmdBLG_bindCallback(%client, %name) {
 		}
 	}
 }
+
+package BLG_GKS_Package {
+	function clientCmdMissionPreparePhaseBLGAck(%client) {
+		parent::clientCmdMissionPreparePhaseBLGAck(%client);
+		for(%i = 0; %i < BLG_GKS.binds; %i++) {
+			commandtoclient('BLG_requireBind', BLG_GKS.bind[%i]);
+		}
+	}
+};
+activatePackage(BLG_GKS_Package);

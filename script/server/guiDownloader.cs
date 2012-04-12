@@ -164,6 +164,21 @@ function BLG_GuiObject::registerCloseHandler(%this, %call) {
 
 function BLG_GuiObject::setValue(%this, %client, %value) {
 	%this.send(%client, "8" TAB %this.id TAB %value);
+	%client.BLG_valueCache[%objId] = %value;
+}
+
+function BLG_GuiObject::addRow(%this, %client, %index, %text) {
+	%this.rows++;
+	%this.send(%client, "9" TAB %index TAB %text);
+}
+
+function BLG_GuiObject::removeRow(%this, %client, %index) {
+	%this.rows--;
+	%this.send(%client, "10" TAB %index);
+}
+
+function BLG_GuiObject::getValue(%this, %client) {
+	return %client.BLG_valueCache[%this.id];
 }
 
 function serverCmdBLG_GuiReturn(%client, %msg) {
@@ -192,7 +207,9 @@ function serverCmdBLG_GuiReturn(%client, %msg) {
 				}
 			}
 
-		//case 1: 
+		case 1: //Set cache value 
+			%obj = BLG_Objects.obj[%objId];
+			%client.BLG_valueCache[%objId] = getField(%msg, 2);
 	}
 }
 
