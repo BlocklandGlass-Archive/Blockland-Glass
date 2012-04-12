@@ -107,7 +107,7 @@ function BLG_HUDC::draw(%this) {
 		}
 
 	 	canvas.pushDialog(BLG_HUD);
-		PlayGui.schedule(50, "add", BLG_HUD);
+		PlayGui.schedule(1, "add", BLG_HUD);
 	}
 }
 

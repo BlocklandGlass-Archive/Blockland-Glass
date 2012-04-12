@@ -25,11 +25,13 @@ function serverCmdBLG_bindCallback(%client, %name) {
 }
 
 package BLG_GKS_Package {
-	function clientCmdMissionPreparePhaseBLGAck(%client) {
-		parent::clientCmdMissionPreparePhaseBLGAck(%client);
+	function serverCmdMissionPreparePhaseBLGAck(%client) {
+		parent::serverCmdMissionPreparePhaseBLGAck(%client);
 		for(%i = 0; %i < BLG_GKS.binds; %i++) {
 			commandtoclient(%client, 'BLG_requireBind', BLG_GKS.bind[%i]);
 		}
 	}
 };
 activatePackage(BLG_GKS_Package);
+
+BLG_GKS.newBind("BLG Testes", "echo");

@@ -4,8 +4,14 @@
 
 $remapDivision[$remapCount] = "Blockland Glass";
 $remapName[$remapCount] = "Open Keybind Gui";
-$remapCmd[$remapCount] = "BLG_GKC.openBindGui";
+$remapCmd[$remapCount] = "BLG_openBindGui";
 $remapCount++;
+
+function BLG_openBindGui(%tog) {
+	if(%tog) {
+		BLG_GKC.openBindGui();
+	}
+}
 
 if(!isObject(BLG_GKC)) {
 	new ScriptObject(BLG_GKC) {
@@ -65,7 +71,7 @@ function BLG_GKC::bindCallback(%this, %id, %tog) {
 		%data = %this.bindData[%id];
 		for(%i = 0; %i < %this.binds; %i++) {
 			if(%this.bindData[%i] $= %data) {
-				commandtoserver('BLG_BindCallback', %this.bindName[%i]);
+				commandtoserver('BLG_BindCallback', %this.bind[%i]);
 			}
 		}
 	}
@@ -92,13 +98,15 @@ function BLG_GKC::openBindGui(%this) {
 		BLG_keybindList.addRow(BLG_keybindList.rowCount(), %this.bind[%i] TAB "\c5" @ getField(%this.bindData[%i], 1));
 	}
 	BLG_keybindGui.mode = "edit";
-	canvas.pushDialog();
+	canvas.pushDialog(BLG_keybindGui);
 }
 
-function BLG_GKC::checkFinished() {
+function BLG_GKC::checkFinished(%this, %msg) {
 	for(%i = 0; %i < %this.binds; %i++) {
 		if(getField(%this.bindData[%i], 1) $= "") {
-			messageBoxOk("Whoops!", "You forgot to bind a bind!");
+			if(!%msg){
+				messageBoxOk("Whoops!", "You forgot to bind a bind!");
+			}
 			return;
 		}
 	}
@@ -122,12 +130,13 @@ function BLG_Remapper::onInputEvent(%this, %device, %key) {
 		return;
 	}
 
-	%disallow = "wasdbq1234567890";
+	%disallow = "wasdqb1234567890~`";
 
-	if(strPos(%key, %disallow) != -1) {
-		messageBoxOk("Key Disallowed");
+	if(strPos(%disallow, %key) != -1) {
+		return;
+	} else if(%key $= "escape") {
 		canvas.popDialog(BLG_remapGui);
-		%this.delete()
+		%this.delete();
 		return;
 	}
 
@@ -145,7 +154,9 @@ function BLG_Remapper::onInputEvent(%this, %device, %key) {
 				BLG_keybindList.addRow(BLG_keybindList.rowCount(), BLG_GKC.bind[%i] TAB "\c5" @ getField(BLG_GKC.bindData[%i], 1));
 			}
 		}
+		BLG_GKC.checkFinished(1);
 	}
+	canvas.popDialog(BLG_remapGui);
 	%this.delete();
 }
 

@@ -7,6 +7,7 @@ new ScriptGroup(BLG) {
 	//1 = Standard
 	//2 = In-depth
 	//3 = Spam me. Please.
+	required = false;
 };
 
 function BLG::start(%this, %implementation) {
@@ -62,4 +63,8 @@ function BLG::debug(%this, %msg, %level) {
 	} else {
 		echo("\c5BLG Debug >>\c1 " @ %msg);
 	}
+}
+
+function BLG::setRequired(%this) {
+	%this.required = true;
 }
