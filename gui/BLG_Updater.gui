@@ -1,0 +1,250 @@
+//--- OBJECT WRITE BEGIN ---
+new GuiControl(BLG_Updater) {
+   profile = "GuiDefaultProfile";
+   horizSizing = "right";
+   vertSizing = "bottom";
+   position = "0 0";
+   extent = "640 480";
+   minExtent = "8 2";
+   visible = "1";
+
+   new GuiWindowCtrl() {
+      profile = "GuiWindowProfile";
+      horizSizing = "center";
+      vertSizing = "center";
+      position = "70 117";
+      extent = "500 245";
+      minExtent = "8 2";
+      visible = "1";
+      text = "Blockland Glass Update";
+      maxLength = "255";
+      resizeWidth = "0";
+      resizeHeight = "0";
+      canMove = "0";
+      canClose = "0";
+      canMinimize = "0";
+      canMaximize = "0";
+      minSize = "50 50";
+
+      new GuiProgressCtrl(BLG_GUI_Updater_progress) {
+         profile = "BLG_ProgressProfile";
+         horizSizing = "right";
+         vertSizing = "bottom";
+         position = "15 200";
+         extent = "470 30";
+         minExtent = "8 2";
+         visible = "1";
+
+         new GuiTextCtrl(BLG_GUI_Updater_progressText) {
+            profile = "BLG_TextCenterProfile";
+            horizSizing = "center";
+            vertSizing = "center";
+            position = "185 6";
+            extent = "100 18";
+            minExtent = "100 18";
+            visible = "1";
+            text = "N/A";
+            maxLength = "255";
+         };
+      };
+      new GuiTextCtrl() {
+         profile = "BLG_BlockButtonProfile";
+         horizSizing = "center";
+         vertSizing = "bottom";
+         position = "0 33";
+         extent = "500 18";
+         minExtent = "500 18";
+         visible = "1";
+         text = "There is an Blockland Glass update ready for download!";
+         maxLength = "255";
+      };
+      new GuiTextCtrl() {
+         profile = "BLG_TextProfile";
+         horizSizing = "right";
+         vertSizing = "bottom";
+         position = "10 168";
+         extent = "48 18";
+         minExtent = "8 2";
+         visible = "1";
+         text = "Received:";
+         maxLength = "255";
+      };
+      new GuiTextCtrl(BLG_GUI_Updater_downloaded) {
+         profile = "BLG_TextProfile";
+         horizSizing = "right";
+         vertSizing = "bottom";
+         position = "80 168";
+         extent = "18 18";
+         minExtent = "8 2";
+         visible = "1";
+         text = "0kB";
+         maxLength = "255";
+      };
+      new GuiTextCtrl() {
+         profile = "BLG_TextProfile";
+         horizSizing = "right";
+         vertSizing = "bottom";
+         position = "10 65";
+         extent = "41 18";
+         minExtent = "8 2";
+         visible = "1";
+         text = "Version:";
+         maxLength = "255";
+      };
+      new GuiTextCtrl(BLG_GUI_Updater_version) {
+         profile = "BLG_TextProfile";
+         horizSizing = "right";
+         vertSizing = "bottom";
+         position = "80 65";
+         extent = "15 18";
+         minExtent = "8 2";
+         visible = "1";
+         text = "1.0";
+         maxLength = "255";
+      };
+      new GuiSwatchCtrl() {
+         profile = "GuiDefaultProfile";
+         horizSizing = "right";
+         vertSizing = "bottom";
+         position = "10 190";
+         extent = "480 1";
+         minExtent = "1 1";
+         visible = "1";
+         color = "150 150 150 255";
+      };
+      new GuiTextCtrl() {
+         profile = "BLG_TextProfile";
+         horizSizing = "right";
+         vertSizing = "bottom";
+         position = "10 83";
+         extent = "24 18";
+         minExtent = "8 2";
+         visible = "1";
+         text = "Size:";
+         maxLength = "255";
+      };
+      new GuiTextCtrl(BLG_GUI_Updater_size) {
+         profile = "BLG_TextProfile";
+         horizSizing = "right";
+         vertSizing = "bottom";
+         position = "80 83";
+         extent = "36 18";
+         minExtent = "8 2";
+         visible = "1";
+         text = "1024kB";
+         maxLength = "255";
+      };
+      new GuiSwatchCtrl() {
+         profile = "GuiDefaultProfile";
+         horizSizing = "right";
+         vertSizing = "bottom";
+         position = "10 60";
+         extent = "490 1";
+         minExtent = "1 1";
+         visible = "1";
+         color = "150 150 150 255";
+      };
+      new GuiTextCtrl() {
+         profile = "BLG_TextProfile";
+         horizSizing = "right";
+         vertSizing = "bottom";
+         position = "10 101";
+         extent = "48 18";
+         minExtent = "8 2";
+         visible = "1";
+         text = "Released:";
+         maxLength = "255";
+      };
+      new GuiTextCtrl() {
+         profile = "BLG_TextProfile";
+         horizSizing = "right";
+         vertSizing = "bottom";
+         position = "10 150";
+         extent = "34 18";
+         minExtent = "8 2";
+         visible = "1";
+         text = "Speed:";
+         maxLength = "255";
+      };
+      new GuiTextCtrl(BLG_GUI_Updater_released) {
+         profile = "BLG_TextProfile";
+         horizSizing = "right";
+         vertSizing = "bottom";
+         position = "80 101";
+         extent = "103 18";
+         minExtent = "8 2";
+         visible = "1";
+         text = "December 21st, 2012";
+         maxLength = "255";
+      };
+      new GuiTextCtrl(BLG_GUI_Updater_time) {
+         profile = "BLG_TextProfile";
+         horizSizing = "right";
+         vertSizing = "bottom";
+         position = "80 150";
+         extent = "76 18";
+         minExtent = "8 2";
+         visible = "1";
+         text = "N/A";
+         maxLength = "255";
+      };
+      new GuiSwatchCtrl() {
+         profile = "GuiDefaultProfile";
+         horizSizing = "right";
+         vertSizing = "bottom";
+         position = "10 60";
+         extent = "480 1";
+         minExtent = "1 1";
+         visible = "1";
+         color = "150 150 150 255";
+      };
+      new GuiSwatchCtrl() {
+         profile = "GuiDefaultProfile";
+         horizSizing = "right";
+         vertSizing = "bottom";
+         position = "250 70";
+         extent = "1 110";
+         minExtent = "1 1";
+         visible = "1";
+         color = "150 150 150 255";
+      };
+      new GuiBitmapButtonCtrl() {
+         profile = "BLG_BlockButtonProfile";
+         horizSizing = "right";
+         vertSizing = "bottom";
+         position = "320 85";
+         extent = "100 25";
+         minExtent = "8 2";
+         visible = "1";
+         text = "Download";
+         groupNum = "-1";
+         buttonType = "PushButton";
+         bitmap = "base/client/ui/button2";
+         lockAspectRatio = "0";
+         alignLeft = "0";
+         overflowImage = "0";
+         mKeepCached = "0";
+         mColor = "255 255 255 255";
+         command = "BLG_GAU.confirmUpdate();";
+      };
+      new GuiBitmapButtonCtrl() {
+         profile = "BLG_BlockButtonProfile";
+         horizSizing = "right";
+         vertSizing = "bottom";
+         position = "320 140";
+         extent = "100 25";
+         minExtent = "8 2";
+         visible = "1";
+         text = "Changes";
+         groupNum = "-1";
+         buttonType = "PushButton";
+         bitmap = "base/client/ui/button2";
+         lockAspectRatio = "0";
+         alignLeft = "0";
+         overflowImage = "0";
+         mKeepCached = "0";
+         mColor = "255 255 255 255";
+      };
+   };
+};
+//--- OBJECT WRITE END ---
