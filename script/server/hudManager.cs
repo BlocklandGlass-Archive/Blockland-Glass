@@ -33,6 +33,3 @@ package BLG_HUDS_Package {
 	}
 };
 activatePackage(BLG_HUDS_Package);
-
-BLG_HUDS.registerValue("text", "AMMO", "None");
-BLG_HUDS.registerValue("progressbar", "HEALTH", "1\n%100");

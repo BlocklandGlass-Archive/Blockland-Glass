@@ -33,5 +33,3 @@ package BLG_GKS_Package {
 	}
 };
 activatePackage(BLG_GKS_Package);
-
-BLG_GKS.newBind("BLG Testes", "echo");

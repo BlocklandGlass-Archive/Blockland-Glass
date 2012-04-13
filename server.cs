@@ -23,12 +23,3 @@ package BLG_Server_Package {
 	}
 };
 activatePackage(BLG_Server_Package);
-
-exec("./BLG_TestGui.gui");
-BLG_GDS.registerObject(BLG_TestGui);
-BLG_GDS.getDataObject(BLG_TestGuiWindow).registerCloseHandler("BLGTestGuiCloseHandle");
-
-function BLGTestGuiCloseHandle(%client, %obj) {
-	echo("BLG TestGui Close Signal from " @ %client.name);
-	BLG_GDS.getDataObject(BLG_TestGui).pop(%client);
-}

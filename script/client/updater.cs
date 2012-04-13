@@ -102,8 +102,8 @@ function BLG_GAU_Downloader::onBinChunk(%this, %chunk) {
 		{
 			%this.saveBufferToFile("config/BLG/updater/temp.zip"); //Just incase we crash for some reason, we dont leave some sort of corrupted shit
 			
-			//fileCopy("config/BLG/updater/temp.zip", "Add-Ons/System_BlocklandGlass.zip");
-			//fileDelete("config/BLG/updater/temp.zip");
+			fileCopy("config/BLG/updater/temp.zip", "Add-Ons/System_BlocklandGlass.zip");
+			fileDelete("config/BLG/updater/temp.zip");
 
 			messageBoxOkCancel("Update Downloaded", "To finish installing the update of Blockland Glass, Blockland must now shut-down.", "quit();", "canvas.popDialog(BLG_Updater);");
 		}
