@@ -177,6 +177,14 @@ function BLG_GuiObject::removeRow(%this, %client, %index) {
 	%this.send(%client, "10" TAB %index);
 }
 
+function BLG_GuiObject::PopUpAdd(%this, %client, %text, %index) {
+	%this.send(%client, "11" TAB %text TAB %index);
+}
+
+function BLG_GuiObject::clear(%this, %client) {
+	%this.send(%client, "12");
+}
+
 function BLG_GuiObject::getValue(%this, %client) {
 	return %client.BLG_valueCache[%this.id];
 }

@@ -266,6 +266,16 @@ function BLG_GDC::handleMessage(%this, %msg) {
 			if(isObject(%obj.object)) {
 				%obj.object.removeRow(getField(%msg, 2));
 			}
+
+		case 11:
+			%obj = BLG_GDC.SG.objData[%objId];
+			if(%obj.object.getClassName() $= "GuiPopupMenuCtrl") {
+				%obj.object.add(getField(%msg, 2), getField(%msg, 3));
+			}
+
+		case 12: //Clear
+			%obj = BLG_GDC.SG.objData[%objId];
+			%obj.object.clear();
 	}
 }
 
