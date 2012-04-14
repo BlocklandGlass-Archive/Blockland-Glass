@@ -38,6 +38,12 @@ function BLG_HUDC::updateValue(%this, %title, %value) {
 }
 
 function BLG_HUDC::draw(%this) {
+	canvas.popDialog(BLG_HUD);
+	BLG_HUD.deleteAll();
+	if(PlayGui.isMemeber(BLG_HUD)) {
+		PlayGui.remove(BLG_HUD);
+	}
+	
 	%y = 435;
 	if(%this.serverCache.items > 0) {
 		for(%i = 0; %i < %this.serverCache.items; %i++) {
@@ -143,8 +149,8 @@ package BLG_HUDC_Package {
 		parent::disconnectedCleanup();
 	}
 
-	function clientCmdBLG_guiTransferFinished() {
-		parent::clientCmdBLG_guiTransferFinished();
+	function PlayGui::onWake(%gui) {
+		parent::onWake(%gui);
 		BLG_HUDC.draw();
 	}
 };
