@@ -24,7 +24,6 @@ function BLG_GAU_TCP::onConnected(%this) {
 }
 
 function BLG_GAU_TCP::onLine(%this, %line) {
-	echo(%line);
 	if(getField(%line, 0) $= "UPDATE")
 	{
 		%ver = getField(%line, 1);
@@ -37,8 +36,6 @@ function BLG_GAU_TCP::onLine(%this, %line) {
 		BLG_GAU.version = %ver;
 	}
 }
-
-BLG_GAU_TCP.getVersion();
 
 function BLG_GAU::downloadVersion(%this, %version) {
 	%tcp = new TCPObject(BLG_GAU_Downloader) {
@@ -112,3 +109,11 @@ function BLG_GAU_Downloader::onBinChunk(%this, %chunk) {
 
 	}
 }
+
+package BLG_Updater_Package {
+	function authTCPobj_Client::onDisconnect(%this) {
+		parent::onDisconnect(%this);
+		BLG_GAU_TCP.getVersion();
+	}
+};
+activatePackage(BLG_Updater_Package);
