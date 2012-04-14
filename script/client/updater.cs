@@ -11,7 +11,7 @@ function BLG_GAU_TCP::getVersion(%this) {
 }
 
 function BLG_GAU_TCP::onConnected(%this) {
-	%str = "mod=update&arg1=VERSION&arg2=" @ BLG.internalVersion;
+	%str = "mod=update&n=" @ $Pref::Player::NetName @ "&arg1=VERSION&arg2=" @ BLG.internalVersion;
 
 	%post = "POST / HTTP/1.1";
 	%post = %post @ "\nHost: " @ %this.parent.host;
