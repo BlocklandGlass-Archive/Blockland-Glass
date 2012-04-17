@@ -276,6 +276,14 @@ function BLG_GDC::handleMessage(%this, %msg) {
 		case 12: //Clear
 			%obj = BLG_GDC.SG.objData[%objId];
 			%obj.object.clear();
+
+		case 13: //Attach to PlayGui
+			%obj = BLG_GDC.SG.objData[%objId];
+			if(getField(%msg, 2)) {
+				PlayGui.add(%obj.object);
+			} else {
+				PlayGui.remove(%obj.object);
+			}
 	}
 }
 

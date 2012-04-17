@@ -169,24 +169,28 @@ function BLG_GuiObject::setValue(%this, %client, %value) {
 
 function BLG_GuiObject::addRow(%this, %client, %index, %text) {
 	%this.rows++;
-	%this.send(%client, "9" TAB %index TAB %text);
+	%this.send(%client, "9" TAB %this.id TAB %index TAB %text);
 }
 
 function BLG_GuiObject::removeRow(%this, %client, %index) {
 	%this.rows--;
-	%this.send(%client, "10" TAB %index);
+	%this.send(%client, "10" TAB %this.id TAB %index);
 }
 
 function BLG_GuiObject::PopUpAdd(%this, %client, %text, %index) {
-	%this.send(%client, "11" TAB %text TAB %index);
+	%this.send(%client, "11" TAB %this.id TAB %text TAB %index);
 }
 
 function BLG_GuiObject::clear(%this, %client) {
-	%this.send(%client, "12");
+	%this.send(%client, "12", %this.id);
 }
 
 function BLG_GuiObject::getValue(%this, %client) {
 	return %client.BLG_valueCache[%this.id];
+}
+
+function BLG_GuiObject::setAsHud(%this, %tog) {
+	%this.send(%client, "13" TAB %this.id TAB %tog);
 }
 
 function serverCmdBLG_GuiReturn(%client, %msg) {
