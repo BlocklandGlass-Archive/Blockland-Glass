@@ -1,6 +1,6 @@
 new ScriptGroup(BLG) {
-	internalVersion = "1.1";
-	externalVersion = "1.1";
+	internalVersion = "1.1.1";
+	externalVersion = "1.1 Patch 1";
 
 	debugLevel = 0;
 	//0 = Errors only

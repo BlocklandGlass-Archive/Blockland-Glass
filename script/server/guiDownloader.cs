@@ -189,7 +189,7 @@ function BLG_GuiObject::getValue(%this, %client) {
 	return %client.BLG_valueCache[%this.id];
 }
 
-function BLG_GuiObject::setAsHud(%this, %tog) {
+function BLG_GuiObject::setAsHud(%this, %client, %tog) {
 	%this.send(%client, "13" TAB %this.id TAB %tog);
 }
 
