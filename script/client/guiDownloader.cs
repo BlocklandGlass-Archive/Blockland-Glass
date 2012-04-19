@@ -7,7 +7,7 @@ if(!isObject(BLG_GDC)) {
 		SG = ""; //Clean-up group for disconnect
 	};
 	BLG_GDC.SG = new ScriptGroup();
-}
+} 
 
 //Protocol:
 //----------
