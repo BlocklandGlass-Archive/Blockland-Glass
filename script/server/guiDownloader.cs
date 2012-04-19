@@ -12,7 +12,7 @@ if(!isObject(BLG_GDS)) {
 	};
 
 	BLG_GDS.sg = BLG_Objects;
-}
+} 
 
 function BLG_GDS::registerObject(%this, %obj) {
 	if(isObject(%obj)) {
