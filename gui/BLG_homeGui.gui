@@ -1,0 +1,104 @@
+//--- OBJECT WRITE BEGIN ---
+new GuiControl(BLG_homeGui) {
+   profile = "GuiDefaultProfile";
+   horizSizing = "right";
+   vertSizing = "bottom";
+   position = "0 0";
+   extent = "800 600";
+   minExtent = "8 2";
+   visible = "1";
+
+   new GuiWindowCtrl() {
+      profile = "GuiWindowProfile";
+      horizSizing = "center";
+      vertSizing = "center";
+      position = "200 100";
+      extent = "300 195";
+      minExtent = "8 2";
+      visible = "1";
+      text = "Blockland Glass";
+      maxLength = "255";
+      resizeWidth = "0";
+      resizeHeight = "0";
+      canMove = "1";
+      canClose = "1";
+      canMinimize = "0";
+      canMaximize = "0";
+      minSize = "50 50";
+      closeCommand = "canvas.popDialog(BLG_homeGui);";
+
+      new GuiBitmapButtonCtrl() {
+         profile = "BLG_BlockButtonProfile";
+         horizSizing = "right";
+         vertSizing = "bottom";
+         position = "10 30";
+         extent = "125 35";
+         minExtent = "8 2";
+         visible = "1";
+         text = "Remote Control";
+         groupNum = "-1";
+         buttonType = "PushButton";
+         bitmap = "base/client/ui/button1";
+         lockAspectRatio = "0";
+         alignLeft = "0";
+         overflowImage = "0";
+         mKeepCached = "0";
+         mColor = "255 255 255 255";
+      };
+      new GuiBitmapButtonCtrl() {
+         profile = "BLG_BlockButtonProfile";
+         horizSizing = "right";
+         vertSizing = "bottom";
+         position = "10 70";
+         extent = "125 35";
+         minExtent = "8 2";
+         visible = "1";
+         text = "Keybinds";
+         groupNum = "-1";
+         buttonType = "PushButton";
+         bitmap = "base/client/ui/button1";
+         lockAspectRatio = "0";
+         alignLeft = "0";
+         overflowImage = "0";
+         mKeepCached = "0";
+         mColor = "255 255 255 255";
+      };
+      new GuiBitmapButtonCtrl() {
+         profile = "BLG_BlockButtonProfile";
+         horizSizing = "right";
+         vertSizing = "bottom";
+         position = "10 110";
+         extent = "125 35";
+         minExtent = "8 2";
+         visible = "1";
+         text = "Cloud";
+         groupNum = "-1";
+         buttonType = "PushButton";
+         bitmap = "base/client/ui/button1";
+         lockAspectRatio = "0";
+         alignLeft = "0";
+         overflowImage = "0";
+         mKeepCached = "0";
+         mColor = "255 255 255 255";
+      };
+      new GuiBitmapButtonCtrl() {
+         profile = "BLG_BlockButtonProfile";
+         horizSizing = "right";
+         vertSizing = "bottom";
+         position = "11 150";
+         extent = "125 35";
+         minExtent = "8 2";
+         visible = "1";
+         text = "Check for Update";
+         groupNum = "-1";
+         buttonType = "PushButton";
+         bitmap = "base/client/ui/button1";
+         lockAspectRatio = "0";
+         alignLeft = "0";
+         overflowImage = "0";
+         mKeepCached = "0";
+         mColor = "100 100 255 255";
+      };
+   };
+};
+//--- OBJECT WRITE END ---

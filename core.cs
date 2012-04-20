@@ -46,6 +46,10 @@ function BLG::start(%this, %implementation) {
 			exec("./script/client/hooks/default.cs");
 		}
 
+		if($BlockOS::Enabled) {
+			exec("./script/client/hooks/BOS.cs");
+		}
+
 	} else {
 		%this.debug("Unresolved Initiator");
 		error("Failed to load BLG [" @ %this.internalVersion @ "]. Please redownload from http://blocklandglass.com");
