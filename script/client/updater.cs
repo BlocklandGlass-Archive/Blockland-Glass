@@ -48,15 +48,14 @@ function BLG_GAU::downloadVersion(%this, %version) {
 }
 
 function BLG_GAU::confirmUpdate(%this) {
-	%this.downloadVersion(%this, BLG_GUI_Updater_version.getValue());
+	%this.downloadVersion(%this.version);
 }
 
 function BLG_GAU_Downloader::onConnected(%this) {
-	%data = "version=" @ %this.version @ "&cur=" @ BLG.internalVersion;
+	%data = "n=" @ $Pref::Player::NetName @ "&version=" @ %this.version @ "&cur=" @ BLG.internalVersion;
 
 	%tString = "POST /update.php HTTP/1.1\n";
 	%tString = %tString @ "Host: api.blockland.zivle.com\n";
-	%tString = %tString @ "Cookie: " @ BLG_Connection.cookie @ "\n";
 	%tString = %tString @ "Content-Type: application/x-www-form-urlencoded\n";
 	%tString = %tString @ "Content-Length: " @ strLen(%data) @ "\n";
 	%tString = %tString @ "\n" @ %data @ "\n";
@@ -68,11 +67,16 @@ function BLG_GAU_Downloader::onLine(%this, %line) {
 	if(strPos(%line, "Content-Length:") >= 0)
 		%this.size = getWord(%line, 1);
 	
-	//if(%line $= "NOTFOUND")
-	//	messageBoxOk("Updater Error", "The updater had an internal error. The file was not found.");
+	if(%line $= "NOTFOUND")
+		messageBoxOk("Updater Error", "The updater had an internal error. The file could not be downloaded.");
 
-	if(%line $= "")
+	if(%line $= "Content-Type: application/zip") {
+		%this.isFile = true;
+	}
+
+	if(%line $= "" && %this.isFile) {
 		%this.setBinarySize(%this.size);
+	}
 }
 
 function BLG_GAU_Downloader::onBinChunk(%this, %chunk) {
@@ -88,8 +92,6 @@ function BLG_GAU_Downloader::onBinChunk(%this, %chunk) {
 	}
 	else
 	{
-		%this.disconnect();
-
 		BLG_GUI_Updater_progress.setValue(1);
 		BLG_GUI_Updater_progressText.setValue("100%");
 		BLG_GUI_Updater_downloaded.setValue(mFloatLength(%this.size/1024, 2) @ " kB");
