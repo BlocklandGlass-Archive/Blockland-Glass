@@ -1,0 +1,324 @@
+function BLG_RemoteControl::openPane(%this, %pane) {
+   BLG_RemoteControl_Pane1.visible = false;
+   BLG_RemoteControl_Pane2.visible = false;
+   BLG_RemoteControl_Pane3.visible = false;
+   BLG_RemoteControl_Pane4.visible = false;
+
+   switch(%pane) {
+      case 1:
+         BLG_RemoteControl_Pane1.visible = true;
+      case 2:
+         BLG_RemoteControl_Pane2.visible = true;
+      case 3:
+         BLG_RemoteControl_Pane3.visible = true;
+      case 4:
+         BLG_RemoteControl_Pane4.visible = true;
+   }
+}
+
+function BLG_RemoteControl::newChat(%this, %sender, %message) {
+   BLG_RemoteControl_Chat.setText(trim(BLG_RemoteControl_Chat.getText() NL "<color:0000ff>" @ %sender @ "<color:000000>: " @ %msg));
+}
+
+function BLG_RemoteControl::newConsole(%this, %line) {
+   BLG_RemoteControl_Console.setText(trim(BLG_RemoteControl_Console.getText() NL "[" @ getWord(getDateTime(), 1) @ "] " @ %line));
+}
+
+//function BLG_RemoteControl
+
+//--- OBJECT WRITE BEGIN ---
+new GuiControl(BLG_RemoteControl) {
+   profile = "GuiDefaultProfile";
+   horizSizing = "right";
+   vertSizing = "bottom";
+   position = "0 0";
+   extent = "800 600";
+   minExtent = "8 2";
+   visible = "1";
+
+   new GuiWindowCtrl() {
+      profile = "GuiWindowProfile";
+      horizSizing = "center";
+      vertSizing = "center";
+      position = "175 75";
+      extent = "450 450";
+      minExtent = "8 2";
+      visible = "1";
+      text = "Blockland Glass Remote Control";
+      maxLength = "255";
+      resizeWidth = "0";
+      resizeHeight = "0";
+      canMove = "1";
+      canClose = "1";
+      canMinimize = "0";
+      canMaximize = "0";
+      minSize = "50 50";
+
+      new GuiBitmapButtonCtrl() {
+         profile = "BLG_BlockButtonProfile";
+         horizSizing = "right";
+         vertSizing = "bottom";
+         position = "9 30";
+         extent = "107 25";
+         minExtent = "8 2";
+         visible = "1";
+         command = "BLG_RemoteControl.openPane(1);";
+         text = "General";
+         groupNum = "-1";
+         buttonType = "PushButton";
+         bitmap = "base/client/ui/tab1";
+         lockAspectRatio = "0";
+         alignLeft = "0";
+         overflowImage = "0";
+         mKeepCached = "0";
+         mColor = "255 255 255 255";
+      };
+      new GuiBitmapButtonCtrl() {
+         profile = "BLG_BlockButtonProfile";
+         horizSizing = "right";
+         vertSizing = "bottom";
+         position = "117 30";
+         extent = "107 25";
+         minExtent = "8 2";
+         visible = "1";
+         command = "BLG_RemoteControl.openPane(2);";
+         text = "Chat";
+         groupNum = "-1";
+         buttonType = "PushButton";
+         bitmap = "base/client/ui/tab1";
+         lockAspectRatio = "0";
+         alignLeft = "0";
+         overflowImage = "0";
+         mKeepCached = "0";
+         mColor = "255 255 255 255";
+      };
+      new GuiBitmapButtonCtrl() {
+         profile = "BLG_BlockButtonProfile";
+         horizSizing = "right";
+         vertSizing = "bottom";
+         position = "226 30";
+         extent = "107 25";
+         minExtent = "8 2";
+         visible = "1";
+         command = "BLG_RemoteControl.openPane(3);";
+         text = "Console";
+         groupNum = "-1";
+         buttonType = "PushButton";
+         bitmap = "base/client/ui/tab1";
+         lockAspectRatio = "0";
+         alignLeft = "0";
+         overflowImage = "0";
+         mKeepCached = "0";
+         mColor = "255 255 255 255";
+      };
+      new GuiBitmapButtonCtrl() {
+         profile = "BLG_BlockButtonProfile";
+         horizSizing = "right";
+         vertSizing = "bottom";
+         position = "334 30";
+         extent = "107 25";
+         minExtent = "8 2";
+         visible = "0";
+         command = "BLG_RemoteControl.openPane(4);";
+         text = "Schedule";
+         groupNum = "-1";
+         buttonType = "PushButton";
+         bitmap = "base/client/ui/tab1";
+         lockAspectRatio = "0";
+         alignLeft = "0";
+         overflowImage = "0";
+         mKeepCached = "0";
+         mColor = "255 255 255 255";
+      };
+      new GuiSwatchCtrl() {
+         profile = "GuiDefaultProfile";
+         horizSizing = "right";
+         vertSizing = "bottom";
+         position = "10 55";
+         extent = "430 385";
+         minExtent = "8 2";
+         visible = "1";
+         color = "150 150 150 255";
+
+         new GuiSwatchCtrl(BLG_RemoteControl_Pane1) {
+            profile = "GuiDefaultProfile";
+            horizSizing = "right";
+            vertSizing = "bottom";
+            position = "2 2";
+            extent = "426 381";
+            minExtent = "8 2";
+            visible = "0";
+            color = "200 200 200 255";
+
+            new GuiTextCtrl() {
+               profile = "BLG_TextProfile";
+               horizSizing = "right";
+               vertSizing = "bottom";
+               position = "5 2";
+               extent = "207 18";
+               minExtent = "8 2";
+               visible = "1";
+               text = "Server Name: \c3Jincux\'s Cooperative Testing";
+               maxLength = "255";
+            };
+            new GuiScrollCtrl() {
+               profile = "BLG_ScrollProfile";
+               horizSizing = "right";
+               vertSizing = "bottom";
+               position = "2 39";
+               extent = "422 340";
+               minExtent = "8 2";
+               visible = "1";
+               willFirstRespond = "0";
+               hScrollBar = "alwaysOff";
+               vScrollBar = "dynamic";
+               constantThumbHeight = "0";
+               childMargin = "0 0";
+               rowHeight = "40";
+               columnWidth = "30";
+
+               new GuiTextListCtrl(BLG_RemoteControl_PlayerList) {
+                  profile = "GuiTextListProfile";
+                  horizSizing = "right";
+                  vertSizing = "bottom";
+                  position = "1 1";
+                  extent = "420 32";
+                  minExtent = "8 2";
+                  visible = "1";
+                  enumerate = "0";
+                  resizeCell = "1";
+                  columns = "0 10 210";
+                  fitParentWidth = "1";
+                  clipColumnText = "0";
+               };
+            };
+            new GuiTextCtrl() {
+               profile = "BLG_TextProfile";
+               horizSizing = "right";
+               vertSizing = "bottom";
+               position = "5 20";
+               extent = "88 18";
+               minExtent = "8 2";
+               visible = "1";
+               text = "Player Count: \c10/99";
+               maxLength = "255";
+            };
+         };
+         new GuiSwatchCtrl(BLG_RemoteControl_Pane2) {
+            profile = "GuiDefaultProfile";
+            horizSizing = "right";
+            vertSizing = "bottom";
+            position = "2 2";
+            extent = "426 381";
+            minExtent = "8 2";
+            visible = "1";
+            color = "200 200 200 255";
+
+            new GuiScrollCtrl() {
+               profile = "BLG_ScrollProfile";
+               horizSizing = "right";
+               vertSizing = "bottom";
+               position = "2 2";
+               extent = "422 357";
+               minExtent = "8 2";
+               visible = "1";
+               willFirstRespond = "0";
+               hScrollBar = "alwaysOff";
+               vScrollBar = "dynamic";
+               constantThumbHeight = "0";
+               childMargin = "5 0";
+               rowHeight = "40";
+               columnWidth = "30";
+
+               new GuiMLTextCtrl(BLG_RemoteControl_Chat) {
+                  profile = "GuiMLTextProfile";
+                  horizSizing = "right";
+                  vertSizing = "bottom";
+                  position = "6 1";
+                  extent = "415 14";
+                  minExtent = "8 2";
+                  visible = "1";
+                  lineSpacing = "2";
+                  allowColorChars = "0";
+                  maxChars = "-1";
+                  text = "";
+                  maxBitmapHeight = "-1";
+                  selectable = "1";
+               };
+            };
+            new GuiTextEditCtrl() {
+               profile = "BLG_TextEditProfile";
+               horizSizing = "right";
+               vertSizing = "bottom";
+               position = "2 361";
+               extent = "422 18";
+               minExtent = "8 2";
+               visible = "1";
+               maxLength = "255";
+               historySize = "0";
+               password = "0";
+               tabComplete = "0";
+               sinkAllKeyEvents = "0";
+            };
+         };
+         new GuiSwatchCtrl(BLG_RemoteControl_Pane3) {
+            profile = "GuiDefaultProfile";
+            horizSizing = "right";
+            vertSizing = "bottom";
+            position = "2 2";
+            extent = "426 381";
+            minExtent = "8 2";
+            visible = "1";
+            color = "200 200 200 255";
+
+            new GuiScrollCtrl() {
+               profile = "BLG_ScrollProfile";
+               horizSizing = "right";
+               vertSizing = "bottom";
+               position = "2 2";
+               extent = "422 357";
+               minExtent = "8 2";
+               visible = "1";
+               willFirstRespond = "0";
+               hScrollBar = "alwaysOff";
+               vScrollBar = "dynamic";
+               constantThumbHeight = "0";
+               childMargin = "5 0";
+               rowHeight = "40";
+               columnWidth = "30";
+
+               new GuiMLTextCtrl(BLG_RemoteControl_Console) {
+                  profile = "GuiMLTextProfile";
+                  horizSizing = "right";
+                  vertSizing = "bottom";
+                  position = "6 1";
+                  extent = "415 14";
+                  minExtent = "8 2";
+                  visible = "1";
+                  lineSpacing = "2";
+                  allowColorChars = "0";
+                  maxChars = "-1";
+                  text = "";
+                  maxBitmapHeight = "-1";
+                  selectable = "1";
+               };
+            };
+            new GuiTextEditCtrl() {
+               profile = "BLG_TextEditProfile";
+               horizSizing = "right";
+               vertSizing = "bottom";
+               position = "2 361";
+               extent = "422 18";
+               minExtent = "8 2";
+               visible = "1";
+               maxLength = "255";
+               historySize = "0";
+               password = "0";
+               tabComplete = "0";
+               sinkAllKeyEvents = "0";
+            };
+         };
+      };
+   };
+};
+//--- OBJECT WRITE END ---

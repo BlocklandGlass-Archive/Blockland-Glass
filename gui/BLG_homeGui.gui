@@ -44,6 +44,7 @@ new GuiControl(BLG_homeGui) {
          overflowImage = "0";
          mKeepCached = "0";
          mColor = "255 255 255 255";
+         command = "canvas.pushDialog(BLG_RemoteControl);";
       };
       new GuiBitmapButtonCtrl() {
          profile = "BLG_BlockButtonProfile";

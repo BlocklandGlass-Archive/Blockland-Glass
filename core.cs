@@ -34,6 +34,8 @@ function BLG::start(%this, %implementation) {
 		exec("./gui/BLG_remapGui.gui");
 		exec("./gui/BLG_keybindGui.gui");
 		exec("./gui/BLG_Updater.gui");
+		exec("./gui/BLG_homeGui.gui");
+		exec("./gui/BLG_RemoteControl.gui");
 
 		exec("./script/client/guiDownloader.cs");
 		exec("./script/client/hudManager.cs");
