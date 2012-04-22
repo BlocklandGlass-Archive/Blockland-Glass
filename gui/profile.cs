@@ -51,7 +51,7 @@ if(!isObject(BLG_TextProfile)) new GuiControlProfile(BLG_TextProfile : GuiTextPr
    fontColor = "70 70 70 255";
    fontColors[0] = "70 70 70";
    fontColors[1] = "255 70 70"; //R
-   fontColors[2] = "70 255 70"; //G
+   fontColors[2] = "20 255 20"; //G
    fontColors[3] = "70 70 255"; //B
 };
 

@@ -13,6 +13,7 @@ new ScriptGroup(BLG) {
 function BLG::start(%this, %implementation) {
 	%this.implementation = %implementation;
 
+	exec("./script/support/serverConnection.cs");
 	if(%implementation $= "server") {
 		echo("Loading BLG [" @ %this.internalVersion @ "] server implementation");
 

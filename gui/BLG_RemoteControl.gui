@@ -32,7 +32,7 @@ new GuiControl(BLG_RemoteControl) {
    horizSizing = "right";
    vertSizing = "bottom";
    position = "0 0";
-   extent = "800 600";
+   extent = "640 480";
    minExtent = "8 2";
    visible = "1";
 
@@ -40,7 +40,7 @@ new GuiControl(BLG_RemoteControl) {
       profile = "GuiWindowProfile";
       horizSizing = "center";
       vertSizing = "center";
-      position = "175 75";
+      position = "95 15";
       extent = "450 450";
       minExtent = "8 2";
       visible = "1";
@@ -147,7 +147,7 @@ new GuiControl(BLG_RemoteControl) {
             position = "2 2";
             extent = "426 381";
             minExtent = "8 2";
-            visible = "0";
+            visible = "1";
             color = "200 200 200 255";
 
             new GuiTextCtrl() {
@@ -155,10 +155,10 @@ new GuiControl(BLG_RemoteControl) {
                horizSizing = "right";
                vertSizing = "bottom";
                position = "5 2";
-               extent = "207 18";
+               extent = "66 18";
                minExtent = "8 2";
                visible = "1";
-               text = "Server Name: \c3Jincux\'s Cooperative Testing";
+               text = "Server Name:";
                maxLength = "255";
             };
             new GuiScrollCtrl() {
@@ -182,7 +182,7 @@ new GuiControl(BLG_RemoteControl) {
                   horizSizing = "right";
                   vertSizing = "bottom";
                   position = "1 1";
-                  extent = "420 32";
+                  extent = "420 2";
                   minExtent = "8 2";
                   visible = "1";
                   enumerate = "0";
@@ -197,10 +197,30 @@ new GuiControl(BLG_RemoteControl) {
                horizSizing = "right";
                vertSizing = "bottom";
                position = "5 20";
-               extent = "88 18";
+               extent = "64 18";
                minExtent = "8 2";
                visible = "1";
-               text = "Player Count: \c10/99";
+               text = "Player Count:";
+               maxLength = "255";
+            };
+            new GuiTextCtrl(BLG_RemoteConsole_ServerName) {
+               profile = "GuiTextProfile";
+               horizSizing = "right";
+               vertSizing = "bottom";
+               position = "80 2";
+               extent = "8 18";
+               minExtent = "8 2";
+               visible = "1";
+               maxLength = "255";
+            };
+            new GuiTextCtrl(BLG_RemoteConsole_PlayerCount) {
+               profile = "GuiTextProfile";
+               horizSizing = "right";
+               vertSizing = "bottom";
+               position = "80 20";
+               extent = "8 18";
+               minExtent = "8 2";
+               visible = "1";
                maxLength = "255";
             };
          };
@@ -211,7 +231,7 @@ new GuiControl(BLG_RemoteControl) {
             position = "2 2";
             extent = "426 381";
             minExtent = "8 2";
-            visible = "1";
+            visible = "0";
             color = "200 200 200 255";
 
             new GuiScrollCtrl() {
@@ -241,7 +261,6 @@ new GuiControl(BLG_RemoteControl) {
                   lineSpacing = "2";
                   allowColorChars = "0";
                   maxChars = "-1";
-                  text = "";
                   maxBitmapHeight = "-1";
                   selectable = "1";
                };
@@ -268,7 +287,7 @@ new GuiControl(BLG_RemoteControl) {
             position = "2 2";
             extent = "426 381";
             minExtent = "8 2";
-            visible = "1";
+            visible = "0";
             color = "200 200 200 255";
 
             new GuiScrollCtrl() {
@@ -298,7 +317,6 @@ new GuiControl(BLG_RemoteControl) {
                   lineSpacing = "2";
                   allowColorChars = "0";
                   maxChars = "-1";
-                  text = "";
                   maxBitmapHeight = "-1";
                   selectable = "1";
                };
