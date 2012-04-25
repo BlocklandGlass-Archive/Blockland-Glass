@@ -2,7 +2,7 @@ new ScriptGroup(BLG) {
 	internalVersion = "2.0.PA1";
 	externalVersion = "2.0 Pre-alpha 1";
 
-	debugLevel = 0;
+	debugLevel = 3;
 	//0 = Errors only
 	//1 = Standard
 	//2 = In-depth
@@ -35,12 +35,14 @@ function BLG::start(%this, %implementation) {
 		exec("./gui/BLG_remapGui.gui");
 		exec("./gui/BLG_keybindGui.gui");
 		exec("./gui/BLG_Updater.gui");
-		exec("./gui/BLG_homeGui.gui");
+		exec("./gui/BLG_Home.gui");
 		exec("./gui/BLG_RemoteControl.gui");
+		exec("./gui/BLG_Overlay.gui");
 
+		exec("./script/client/bindManager.cs");
 		exec("./script/client/guiDownloader.cs");
 		exec("./script/client/hudManager.cs");
-		exec("./script/client/bindManager.cs");
+		exec("./script/client/openOverlay.cs");
 		exec("./script/client/updater.cs");
 
 		if(isFile("Add-Ons/System_ReturnToBlockland/server.cs")) {

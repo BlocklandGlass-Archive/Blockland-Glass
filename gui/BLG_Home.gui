@@ -1,5 +1,5 @@
 //--- OBJECT WRITE BEGIN ---
-new GuiControl(BLG_homeGui) {
+new GuiControl(BLG_Home) {
    profile = "GuiDefaultProfile";
    horizSizing = "right";
    vertSizing = "bottom";
@@ -25,7 +25,7 @@ new GuiControl(BLG_homeGui) {
       canMinimize = "0";
       canMaximize = "0";
       minSize = "50 50";
-      closeCommand = "canvas.popDialog(BLG_homeGui);";
+      closeCommand = "BLG_GOO.closeGui(BLG_Home);";
 
       new GuiBitmapButtonCtrl() {
          profile = "BLG_BlockButtonProfile";
@@ -44,7 +44,7 @@ new GuiControl(BLG_homeGui) {
          overflowImage = "0";
          mKeepCached = "0";
          mColor = "255 255 255 255";
-         command = "canvas.pushDialog(BLG_RemoteControl);";
+         command = "BLG_GOO.openGui(BLG_RemoteControl);";
       };
       new GuiBitmapButtonCtrl() {
          profile = "BLG_BlockButtonProfile";

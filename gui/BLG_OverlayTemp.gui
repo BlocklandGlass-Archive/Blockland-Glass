@@ -1,0 +1,24 @@
+//--- OBJECT WRITE BEGIN ---
+new GuiControl(BLG_Overlay) {
+   profile = "GuiDefaultProfile";
+   horizSizing = "right";
+   vertSizing = "bottom";
+   position = "0 0";
+   extent = "640 480";
+   minExtent = "8 2";
+   visible = "1";
+
+   new GuiSwatchCtrl(BLG_Overlay_Swatch) {
+      profile = "GuiDefaultProfile";
+      horizSizing = "relative";
+      vertSizing = "relative";
+      position = "0 0";
+      extent = "640 480";
+      minExtent = "8 2";
+      visible = "1";
+      color = "0 0 0 150";
+
+      
+   };
+};
+//--- OBJECT WRITE END ---

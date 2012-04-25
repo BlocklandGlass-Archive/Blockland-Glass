@@ -4,7 +4,7 @@
 
 if(!isObject(BLG_GSC)) {
 	new ScriptObject(BLG_GSC) {
-		host = "blockland.zivle.com";
+		host = "localhost";
 		port = 9898;
 	};
 
@@ -29,10 +29,12 @@ function BLG_GSC::init(%this) {
 //================================================
 
 function BLG_GSC_TCP::onConnected(%this) {
-	%this.send("handshake" TAB "init" TAB $Pref::Player::NetName TAB BLG.internalVersion @ "\n");
+	BLG.debug("Connected to Glass Server, sending handshake");
+	%this.send("handshake" TAB "init" TAB $Pref::Player::NetName TAB BLG.internalVersion @ "\r\n");
 }
 
 function BLG_GSC_TCP::onLine(%this, %line) {
+	BLG.debug("Got line > " @ %line);
 	%proto = getField(%line, 0);
 
 	if(%this.authed) {
@@ -45,7 +47,7 @@ function BLG_GSC_TCP::onLine(%this, %line) {
 		switch$(getField(%line, 1)) {
 			case "challenge":
 				%this.challenge = getField(%line, 2);
-				%this.send("handshake\tresponse\t" @ %this.challenge @ "\n");
+				%this.send("handshake\tresponse\t" @ %this.challenge @ "\r\n");
 
 			case "result":
 				%result = getField(%line, 2);
@@ -58,6 +60,10 @@ function BLG_GSC_TCP::onLine(%this, %line) {
 				}
 		}
 	}
+}
+
+function BLG_GSC_TCP::onDisconnect(%this) {
+	BLG.debug("Disconnected from Glass Server");
 }
 
 package BLG_GSC_Package {
