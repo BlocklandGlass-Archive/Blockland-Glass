@@ -1,30 +1,30 @@
-function BLG_RemoteControl::openPane(%this, %pane) {
-   BLG_RemoteControl_Pane1.visible = false;
-   BLG_RemoteControl_Pane2.visible = false;
-   BLG_RemoteControl_Pane3.visible = false;
-   BLG_RemoteControl_Pane4.visible = false;
+function BLG_RemoteControlWindow::openPane(%this, %pane) {
+   %this.part["pane1"].visible = false;
+   %this.part["pane2"].visible = false;
+   %this.part["pane3"].visible = false;
+   %this.part["pane4"].visible = false;
 
    switch(%pane) {
       case 1:
-         BLG_RemoteControl_Pane1.visible = true;
+         %this.part["pane1"].visible = true;
       case 2:
-         BLG_RemoteControl_Pane2.visible = true;
+         %this.part["pane2"].visible = true;
       case 3:
-         BLG_RemoteControl_Pane3.visible = true;
+         %this.part["pane3"].visible = true;
       case 4:
-         BLG_RemoteControl_Pane4.visible = true;
+         %this.part["pane4"].visible = true;
    }
 }
 
-function BLG_RemoteControl::newChat(%this, %sender, %message) {
-   BLG_RemoteControl_Chat.setText(trim(BLG_RemoteControl_Chat.getText() NL "<color:0000ff>" @ %sender @ "<color:000000>: " @ %msg));
+function BLG_RemoteControlWindow::newChat(%this, %sender, %message) {
+   %this.part["chat"].setText(trim(%this.part["chat"].getText() NL "<color:0000ff>" @ %sender @ "<color:000000>: " @ %msg));
 }
 
-function BLG_RemoteControl::newConsole(%this, %line) {
-   BLG_RemoteControl_Console.setText(trim(BLG_RemoteControl_Console.getText() NL "[" @ getWord(getDateTime(), 1) @ "] " @ %line));
+function BLG_RemoteControlWindow::newConsole(%this, %line) {
+   %this.part["console"].setText(trim(%this.part["console"].getText() NL "[" @ getWord(getDateTime(), 1) @ "] " @ %line));
 }
 
-//function BLG_RemoteControl
+//function BLG_RemoteControlWindow
 
 //--- OBJECT WRITE BEGIN ---
 new GuiControl(BLG_RemoteControl) {
@@ -36,7 +36,7 @@ new GuiControl(BLG_RemoteControl) {
    minExtent = "8 2";
    visible = "1";
 
-   new GuiWindowCtrl() {
+   new GuiWindowCtrl(BLG_RemoteControlWindow) {
       profile = "GuiWindowProfile";
       horizSizing = "center";
       vertSizing = "center";
@@ -53,7 +53,7 @@ new GuiControl(BLG_RemoteControl) {
       canMinimize = "0";
       canMaximize = "0";
       minSize = "50 50";
-      closeCommand = "BLG_GOO.closeGui(BLG_RemoteControl);";
+      closeCommand = "BLG_GOO.closeInstance(BLG_RemoteControlWindow);";
 
       new GuiBitmapButtonCtrl() {
          profile = "BLG_BlockButtonProfile";
@@ -63,7 +63,7 @@ new GuiControl(BLG_RemoteControl) {
          extent = "107 25";
          minExtent = "8 2";
          visible = "1";
-         command = "BLG_RemoteControl.openPane(1);";
+         command = "BLG_RemoteControlWindow.openPane(1);";
          text = "General";
          groupNum = "-1";
          buttonType = "PushButton";
@@ -82,7 +82,7 @@ new GuiControl(BLG_RemoteControl) {
          extent = "107 25";
          minExtent = "8 2";
          visible = "1";
-         command = "BLG_RemoteControl.openPane(2);";
+         command = "BLG_RemoteControlWindow.openPane(2);";
          text = "Chat";
          groupNum = "-1";
          buttonType = "PushButton";
@@ -101,7 +101,7 @@ new GuiControl(BLG_RemoteControl) {
          extent = "107 25";
          minExtent = "8 2";
          visible = "1";
-         command = "BLG_RemoteControl.openPane(3);";
+         command = "BLG_RemoteControlWindow.openPane(3);";
          text = "Console";
          groupNum = "-1";
          buttonType = "PushButton";
@@ -120,7 +120,7 @@ new GuiControl(BLG_RemoteControl) {
          extent = "107 25";
          minExtent = "8 2";
          visible = "0";
-         command = "BLG_RemoteControl.openPane(4);";
+         command = "BLG_RemoteControlWindow.openPane(4);";
          text = "Schedule";
          groupNum = "-1";
          buttonType = "PushButton";
@@ -141,7 +141,7 @@ new GuiControl(BLG_RemoteControl) {
          visible = "1";
          color = "150 150 150 255";
 
-         new GuiSwatchCtrl(BLG_RemoteControl_Pane1) {
+         new GuiSwatchCtrl(BLG_RemoteControlWindow_Pane1) {
             profile = "GuiDefaultProfile";
             horizSizing = "right";
             vertSizing = "bottom";
@@ -150,6 +150,7 @@ new GuiControl(BLG_RemoteControl) {
             minExtent = "8 2";
             visible = "1";
             color = "200 200 200 255";
+            BLG_InstanceTag = "pane1";
 
             new GuiTextCtrl() {
                profile = "BLG_TextProfile";
@@ -178,7 +179,7 @@ new GuiControl(BLG_RemoteControl) {
                rowHeight = "40";
                columnWidth = "30";
 
-               new GuiTextListCtrl(BLG_RemoteControl_PlayerList) {
+               new GuiTextListCtrl(BLG_RemoteControlWindow_PlayerList) {
                   profile = "GuiTextListProfile";
                   horizSizing = "right";
                   vertSizing = "bottom";
@@ -191,6 +192,7 @@ new GuiControl(BLG_RemoteControl) {
                   columns = "0 10 210";
                   fitParentWidth = "1";
                   clipColumnText = "0";
+                  BLG_InstanceTag = "playerlist";
                };
             };
             new GuiTextCtrl() {
@@ -213,6 +215,7 @@ new GuiControl(BLG_RemoteControl) {
                minExtent = "8 2";
                visible = "1";
                maxLength = "255";
+               BLG_InstanceTag = "servername";
             };
             new GuiTextCtrl(BLG_RemoteConsole_PlayerCount) {
                profile = "GuiTextProfile";
@@ -223,9 +226,10 @@ new GuiControl(BLG_RemoteControl) {
                minExtent = "8 2";
                visible = "1";
                maxLength = "255";
+               BLG_InstanceTag = "playerCount";
             };
          };
-         new GuiSwatchCtrl(BLG_RemoteControl_Pane2) {
+         new GuiSwatchCtrl(BLG_RemoteControlWindow_Pane2) {
             profile = "GuiDefaultProfile";
             horizSizing = "right";
             vertSizing = "bottom";
@@ -234,6 +238,7 @@ new GuiControl(BLG_RemoteControl) {
             minExtent = "8 2";
             visible = "0";
             color = "200 200 200 255";
+            BLG_InstanceTag = "pane2";
 
             new GuiScrollCtrl() {
                profile = "BLG_ScrollProfile";
@@ -251,7 +256,7 @@ new GuiControl(BLG_RemoteControl) {
                rowHeight = "40";
                columnWidth = "30";
 
-               new GuiMLTextCtrl(BLG_RemoteControl_Chat) {
+               new GuiMLTextCtrl(BLG_RemoteControlWindow_Chat) {
                   profile = "GuiMLTextProfile";
                   horizSizing = "right";
                   vertSizing = "bottom";
@@ -264,6 +269,7 @@ new GuiControl(BLG_RemoteControl) {
                   maxChars = "-1";
                   maxBitmapHeight = "-1";
                   selectable = "1";
+                  BLG_InstanceTag = "chat";
                };
             };
             new GuiTextEditCtrl() {
@@ -281,7 +287,7 @@ new GuiControl(BLG_RemoteControl) {
                sinkAllKeyEvents = "0";
             };
          };
-         new GuiSwatchCtrl(BLG_RemoteControl_Pane3) {
+         new GuiSwatchCtrl(BLG_RemoteControlWindow_Pane3) {
             profile = "GuiDefaultProfile";
             horizSizing = "right";
             vertSizing = "bottom";
@@ -290,6 +296,7 @@ new GuiControl(BLG_RemoteControl) {
             minExtent = "8 2";
             visible = "0";
             color = "200 200 200 255";
+            BLG_InstanceTag = "pane3";
 
             new GuiScrollCtrl() {
                profile = "BLG_ScrollProfile";
@@ -307,7 +314,7 @@ new GuiControl(BLG_RemoteControl) {
                rowHeight = "40";
                columnWidth = "30";
 
-               new GuiMLTextCtrl(BLG_RemoteControl_Console) {
+               new GuiMLTextCtrl(BLG_RemoteControlWindow_Console) {
                   profile = "GuiMLTextProfile";
                   horizSizing = "right";
                   vertSizing = "bottom";
@@ -320,6 +327,7 @@ new GuiControl(BLG_RemoteControl) {
                   maxChars = "-1";
                   maxBitmapHeight = "-1";
                   selectable = "1";
+                  BLG_InstanceTag = "console";
                };
             };
             new GuiTextEditCtrl() {

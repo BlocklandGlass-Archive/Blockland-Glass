@@ -26,7 +26,21 @@ new GuiControl(BLG_Home) {
       canMaximize = "0";
       minSize = "50 50";
       closeCommand = "BLG_GOO.closeGui(BLG_Home);";
-
+      new GuiBitmapCtrl() {
+         profile = "GuiDefaultProfile";
+         horizSizing = "right";
+         vertSizing = "bottom";
+         position = "145 35";
+         extent = "145 145";
+         minExtent = "8 2";
+         visible = "1";
+         wrap = "0";
+         lockAspectRatio = "0";
+         alignLeft = "0";
+         overflowImage = "0";
+         keepCached = "0";
+         bitmap = "Add-Ons/System_BlocklandGlass/image/logo.jpg";
+      };
       new GuiBitmapButtonCtrl() {
          profile = "BLG_BlockButtonProfile";
          horizSizing = "right";
@@ -44,7 +58,7 @@ new GuiControl(BLG_Home) {
          overflowImage = "0";
          mKeepCached = "0";
          mColor = "255 255 255 255";
-         command = "BLG_GOO.openGui(BLG_RemoteControl);";
+         command = "BLG_GOO.newInstance(BLG_RemoteControl);";
       };
       new GuiBitmapButtonCtrl() {
          profile = "BLG_BlockButtonProfile";
@@ -99,6 +113,7 @@ new GuiControl(BLG_Home) {
          overflowImage = "0";
          mKeepCached = "0";
          mColor = "100 100 255 255";
+         command = "BLG_GAU_TCP.getVersion();";
       };
    };
 };

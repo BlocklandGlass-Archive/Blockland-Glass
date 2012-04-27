@@ -37,8 +37,10 @@ function BLG_GOO::registerGui(%this, %gui, %replicable) {
 			if(%obj.getClassName() $= "GuiWindowCtrl") {
 				%obj.save(%file);
 				%this.replicate[%gui] = %file;
+				%this.windowName[%gui] = %obj.getName();
 			}
 		}
+		%this.type[%gui] = "instance";
 	} else {
 		for(%i = 0; %i < %gui.getCount(); %i++) {
 			%obj = %gui.getObject(%i);
@@ -46,10 +48,12 @@ function BLG_GOO::registerGui(%this, %gui, %replicable) {
 				%this.window[%gui] = %obj;
 			}
 		}
+		%this.type[%gui] = "window";
 	}
 }
 
 function BLG_GOO::newInstance(%this, %gui) {
+	%this.instanceId++;
 	%fo = new FileObject();
 	%fo.openForRead(%this.replicate[%gui]);
 	while(!%fo.isEOF()) {
@@ -59,12 +63,30 @@ function BLG_GOO::newInstance(%this, %gui) {
 			%started = true;
 			%script = "return " @ %line;
 		} else if(%started) {
-			%script = %script @ %line;
+			%script = %script @ strReplace(%line, %this.windowName[%gui], "BLG_GOO.instanceObj" @ %this.instanceId);
 		}
 	}
 	%fo.close();
 	%fo.delete();
-	return eval(%script);
+
+	%this.instanceObj[%this.instanceId] = %ins = eval(%script);
+	%this.mapObject(%ins, %ins);
+
+	BLG_Overlay.add(%ins);
+
+	return %ins;
+}
+
+function BLG_GOO::mapObject(%this, %base, %obj) {
+	BLG.debug("Mapping Object " @ %obj @ " (Base: " @ %base @ ")");
+	for(%i = 0; %i < %obj.getCount()+0; %i++) {
+		%o = %obj.getObject(%i);
+		if(%o.BLG_InstanceTag !$= "") {
+			%base.part[%o.BLG_InstanceTag] = %o;
+			BLG.debug("Has tag [" @ %o.BLG_InstanceTag @ "]");
+		}
+		%this.mapObject(%base, %o);
+	}
 }
 
 function BLG_GOO::removeInstance(%this, %instance) {
@@ -109,7 +131,7 @@ function BLG_GOO::newIcon(%this, %name, %gui, %icon) {
 			maxLength = "255";
 		};
 
-		new GuiBitmapCtrl() {
+		new GuiBitmapButtonCtrl() {
 			profile = "GuiDefaultProfile";
 			horizSizing = "center";
 			vertSizing = "bottom";
@@ -122,7 +144,9 @@ function BLG_GOO::newIcon(%this, %name, %gui, %icon) {
 			alignLeft = "0";
 			overflowImage = "0";
 			keepCached = "0";
+			text = "";
 			bitmap = %icon;
+			command = %this.type[%gui] $= "instance" ? "BLG_GOO.newInstance(" @ %gui @ ");" : "BLG_GOO.openGui(" @ %gui @ ");";
 		};
 	};
 
@@ -136,6 +160,7 @@ function BLG_GOO::newIcon(%this, %name, %gui, %icon) {
 	}
 }
 
+BLG_GOO.newIcon("Home", BLG_Home, "Add-Ons/System_BlocklandGlass/image/logo");
 BLG_GOO.registerGui(BLG_Home, false);
-BLG_GOO.registerGui(BLG_RemoteControl, false);
+BLG_GOO.registerGui(BLG_RemoteControl, true);
 BLG_GOO.openGui(BLG_Home);
