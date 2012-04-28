@@ -6,7 +6,10 @@ if(!isObject(BLG_GAU)) {
 	BLG_GAU_TCP.parent = BLG_GAU;
 }
 
-function BLG_GAU_TCP::getVersion(%this) {
+function BLG_GAU_TCP::getVersion(%this, %manual) {
+	%manual += 0;
+	%this.manual = %manual;
+	%this.update = false;
 	%this.connect(%this.parent.host @ ":80");
 }
 
@@ -26,6 +29,7 @@ function BLG_GAU_TCP::onConnected(%this) {
 function BLG_GAU_TCP::onLine(%this, %line) {
 	if(getField(%line, 0) $= "UPDATE")
 	{
+		%this.update = true;
 		%ver = getField(%line, 1);
 		%size = getField(%line, 2); //In kB
 		%released = getField(%line, 3);
@@ -34,6 +38,21 @@ function BLG_GAU_TCP::onLine(%this, %line) {
 		BLG_GUI_Updater_size.setValue(%size @ " kB");
 		BLG_GUI_Updater_released.setValue(%released);
 		BLG_GAU.version = %ver;
+	} else if(getField(%line, 0) $= "END") {
+		%this.disconnect();
+		if(!%this.update) {
+			if(%this.manual) {
+				messageBoxOk("No update", "There are currently no updates available.");
+			}
+		}
+	}
+}
+
+function BLG_GAU_TCP::onDisconnect(%this) {
+	if(!%this.update) {
+		if(%this.manual) {
+			messageBoxOk("No update", "There are currently no updates available.");
+		}
 	}
 }
 

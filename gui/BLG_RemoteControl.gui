@@ -53,7 +53,7 @@ new GuiControl(BLG_RemoteControl) {
       canMinimize = "0";
       canMaximize = "0";
       minSize = "50 50";
-      closeCommand = "BLG_GOO.closeInstance(BLG_RemoteControlWindow);";
+      closeCommand = "BLG_GOO.removeInstance(BLG_RemoteControlWindow);";
 
       new GuiBitmapButtonCtrl() {
          profile = "BLG_BlockButtonProfile";

@@ -6,7 +6,7 @@ package BLG_BOS {
 	function BlockOS_registerShortcut(%gui, %name, %img, %path) {
 		if(%name $= "App Store") {
 			if(!BLG.registeredBOS) {
-				parent::BlockOS_registerShortcut(BLG_homeGui, "BLG", "logo", "Add-Ons/System_BlocklandGlass/image");
+				parent::BlockOS_registerShortcut(BLG_Overlay, "BLG", "logo", "Add-Ons/System_BlocklandGlass/image");
 				BLG.registeredBOS = true;
 			}
 		}

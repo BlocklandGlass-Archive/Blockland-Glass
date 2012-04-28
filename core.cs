@@ -1,6 +1,6 @@
 new ScriptGroup(BLG) {
-	internalVersion = "2.0.PA1";
-	externalVersion = "2.0 Pre-alpha 1";
+	internalVersion = "2.0.PA2";
+	externalVersion = "2.0 Pre-alpha 2";
 
 	debugLevel = 3;
 	//0 = Errors only
@@ -53,6 +53,15 @@ function BLG::start(%this, %implementation) {
 
 		if($BlockOS::Enabled) {
 			exec("./script/client/hooks/BOS.cs");
+		}
+
+		if(!isFile("config/BLG/firstrun")) {
+			%this.firstRun = true;
+			%fo = new FileObject();
+			%fo.openforwrite("config/BLG/firstrun");
+			%fo.writeline("Jimmy ran first.");
+			%fo.close();
+			%fo.delete();
 		}
 
 	} else {
