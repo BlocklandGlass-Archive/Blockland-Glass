@@ -11,6 +11,7 @@ package BLG_Server_Package {
 			if(getField(%line, 0) $= "BLG") {
 				%client.hasBLG = true;
 				%client.BLGVersion = getField(%line, 1);
+				%client.BLGVersionId = getField(%line, 2);
 				break;
 			}
 		}

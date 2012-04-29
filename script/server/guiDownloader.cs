@@ -264,7 +264,11 @@ function BLG_GDS::transferFinished(%this, %client) {
 	%client.currentPhase = 0;
 	%client.BLG_DownloadedGUI = true;
 	commandToClient(%client,'BLG_guiTransferFinished');
-	commandToClient(%client,'MissionStartPhase1', $missionSequence, $Server::MissionFile);
+	if(%client.BLGVersionId >= 2) {
+		BLG_IDS.startPhase(%client);
+	} else {
+		commandToClient(%client,'MissionStartPhase1', $missionSequence, $Server::MissionFile);
+	}
 }
 
 function BLG_GDS::getPartCount(%this) {

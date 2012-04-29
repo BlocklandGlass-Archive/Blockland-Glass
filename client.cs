@@ -5,6 +5,6 @@ BLG.start("client");
 
 
 //Thank-you, dearest Iban
-$cArg[8, mFloor($cArgs[8])] = "BLG" TAB BLG.internalVersion;
+$cArg[8, mFloor($cArgs[8])] = "BLG" TAB BLG.internalVersion TAB BLG.versionId;
 $cArgs[8]++;
 exec("./Support_ModVersion.cs");
