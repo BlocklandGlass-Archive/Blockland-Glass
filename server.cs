@@ -3,6 +3,15 @@ exec("./core.cs");
 
 BLG.start("server");
 
+function serverCmdBLGHandshakeResponse(%client, %extent) {
+	BLG.debug("Handshake response from " @ %client @ ", extent [" @ %extent @ "]");
+	%client.BLG_extent = %extent;
+}
+
+function GameConnection::getExtent(%client) {
+	return %client.BLG_extent;
+}
+
 package BLG_Server_Package {
 	function GameConnection::onConnectRequest(%client, %ip, %lan, %net, %prefix, %suffix, %arg5, %rtb, %arg7, %arg8, %arg9, %arg10, %arg11, %arg12, %arg13, %arg14, %arg15) {
 		%client.hasBLG = false;
@@ -12,6 +21,10 @@ package BLG_Server_Package {
 				%client.hasBLG = true;
 				%client.BLGVersion = getField(%line, 1);
 				%client.BLGVersionId = getField(%line, 2);
+				if(%client.BLGVersionId < 2 && BLG.required) {
+					%client.delete("You must be running Blockland Glass 1.2 or later to join this server.");
+					break;
+				}
 				break;
 			}
 		}
@@ -21,6 +34,11 @@ package BLG_Server_Package {
 		}
 
 		return parent::onConnectRequest(%client, %ip, %lan, %net, %prefix, %suffix, %arg5, %rtb, %arg7, %arg8, %arg9, %arg10, %arg11, %arg12, %arg13, %arg14, %arg15);
+	}
+
+	function GameConnection::autoAdminCheck(%client) {
+		parent::autoAdminCheck(%client);
+		commandToClient(%client, 'BLG_Handshake', BLG.versionId, BLG.internalVersion);
 	}
 };
 activatePackage(BLG_Server_Package);

@@ -37,23 +37,26 @@ function BLG_IDC::downloadLoadingPhaseFile(%this, %host, %path, %file) {
 //================================================
 
 function BLG_IDC_Downloader::onConnected(%this) {
-	%msg = "GET " @ %file @ " HTTP/1.1";
+	BLG.debug("Downloader connected");
+	%msg = "GET " @ %this.path @ " HTTP/1.1";
 	%msg = %msg NL "Host: " @ %this.host;
 	%msg = %msg NL "User-agent: BLG/" @ BLG.internalVersion;
 	%msg = %msg NL "\n";
 	%this.send(%msg);
 }
 
-function BLG_IDC_Downloader::onLine(%this) {
+function BLG_IDC_Downloader::onLine(%this, %line) {
+	BLG.debug("Line:" SPC %line);
 	if(strPos(%line, "Content-Length:") >= 0)
 		%this.size = getWord(%line, 1);
 
-	if(%line $= "" && %this.isFile) {
+	if(%line $= "") {
 		%this.setBinarySize(%this.size);
 	}
 }
 
 function BLG_IDC_Downloader::onBinChunk(%this, %chunk) {
+	BLG.debug("Chunk " @ %chunk);
 	if(%chunk < %this.size) {
 		//Not done
 	} else {
@@ -67,6 +70,10 @@ function BLG_IDC_Downloader::onBinChunk(%this, %chunk) {
 	}
 }
 
+function BLG_IDC_Downloader::onDisconnect(%this) {
+	BLG.debug("Downloader disconnected");
+}
+
 //================================================
 // MissionPreparePhaseBLG2
 //================================================
@@ -78,22 +85,34 @@ function clientCmdMissionPreparePhaseBLG2(%files) {
 	LoadingProgressTxt.setValue("Downloading BLG Images");
 	LoadingProgress.setValue(0);
 	commandtoserver('MissionPreparePhaseBLG2Ack');
-	echo("*** Starting BLG Image/Font Download Phase - (" @ %parts @ " parts)");
+	echo("*** Starting BLG Image/Font Download Phase - (" @ %files @ " files)");
+}
+
+function clientCmdBLG_IDC_fileData(%webData, %type, %name) {
+	BLG_IDC.addFile(%webData, %type, %name);
+}
+
+function clientCmdBLG_IDC_finishedFileData() {
+	BLG_IDC.filesDownloaded = -1;
+	BLG_IDC.nextPhaseFile();
 }
 
 function BLG_IDC::nextPhaseFile(%this) {
 	%this.filesDownloaded++;
 	LoadingProgress.setValue(%this.filesDownloaded/%this.files);
+	BLG.debug("nextPhaseFile " @ %this.filesDownloaded);
 
 	if((%fileData = %this.fileData[%this.filesDownloaded]) !$= "") {
-		%this.downloadLoadingPhaseFile(getField(%fileData, 0), getField(%fileData, 1), getField(%fileData, 2) $= "image" ? "config/BLG/" @ getField(%fileData, 3) : "base/client/ui/cache/" @ getField(%fileData, 3));
+		BLG.debug("Downloading file:" SPC %filedata);
+		%this.downloadLoadingPhaseFile(getField(%fileData, 0), getField(%fileData, 1), getField(%fileData, 2) $= "image" ? "config/BLG/images/" @ getField(%fileData, 3) : "base/client/ui/cache/" @ getField(%fileData, 3));
 	} else {
 		//We've finished the queue
 		commandToServer('MissionPreparePhaseBLG2Complete');
 	}
 }
 
-function BLG_IDC::addFile(%this, %host, %path, %type, %name) {
-	%this.fileData[%this.fileDatas += 0] = %host TAB %path TAB %type TAB %name;
+function BLG_IDC::addFile(%this, %webData, %type, %name) {
+	%this.fileData[%this.fileDatas += 0] = %webData TAB %type TAB %name;
+	BLG.debug("File data " @ %this.fileData[%this.fileDatas]);
 	%this.fileDatas++;
 }

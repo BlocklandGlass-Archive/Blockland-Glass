@@ -3,7 +3,7 @@ new ScriptGroup(BLG) {
 	externalVersion = "1.2";
 	versionId = 2; //1 is anything before 1.2
 
-	debugLevel = 0;
+	debugLevel = 3;
 	//0 = Errors only
 	//1 = Standard
 	//2 = In-depth
@@ -17,9 +17,10 @@ function BLG::start(%this, %implementation) {
 	if(%implementation $= "server") {
 		echo("Loading BLG [" @ %this.internalVersion @ "] server implementation");
 
+		exec("./script/server/bindManager.cs");
 		exec("./script/server/guiDownloader.cs");
 		exec("./script/server/hudManager.cs");
-		exec("./script/server/bindManager.cs");
+		exec("./script/server/imageDownloader.cs");
 
 		if(isFile("Add-Ons/System_ReturnToBlockland/server.cs")) {
 			exec("./script/server/hooks/RTB.cs");
@@ -36,9 +37,10 @@ function BLG::start(%this, %implementation) {
 		exec("./gui/BLG_keybindGui.gui");
 		exec("./gui/BLG_Updater.gui");
 
+		exec("./script/client/bindManager.cs");
 		exec("./script/client/guiDownloader.cs");
 		exec("./script/client/hudManager.cs");
-		exec("./script/client/bindManager.cs");
+		exec("./script/client/imageDownloader.cs");
 		exec("./script/client/updater.cs");
 
 		if(isFile("Add-Ons/System_ReturnToBlockland/server.cs")) {

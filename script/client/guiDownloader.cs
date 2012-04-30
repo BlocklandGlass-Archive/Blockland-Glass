@@ -6,6 +6,27 @@ if(!isObject(BLG_GDC)) {
 	new ScriptObject(BLG_GDC){ //Main Object
 		SG = ""; //Clean-up group for disconnect
 	};
+	%i = -1;
+	BLG_GDC.defaultHud[%i++] = "LagIcon";
+	BLG_GDC.defaultHud[%i++] = "HUD_PlantError";
+	BLG_GDC.defaultHud[%i++] = "GuiHealthBarHud";
+	BLG_GDC.defaultHud[%i++] = "Crosshair";
+	BLG_GDC.defaultHud[%i++] = "HUD_PlantErrorSmall";
+	BLG_GDC.defaultHud[%i++] = "HudInvBox";
+	BLG_GDC.defaultHud[%i++] = "HUD_EnergyBar";
+	BLG_GDC.defaultHud[%i++] = "MouseToolTip";
+	BLG_GDC.defaultHud[%i++] = "HUD_SuperShift";
+	BLG_GDC.defaultHud[%i++] = "HUD_EnergyBar";
+	BLG_GDC.defaultHud[%i++] = "centerPrintDlg";
+	BLG_GDC.defaultHud[%i++] = "bottomPrintDlg";
+	BLG_GDC.defaultHud[%i++] = "HUD_Ghosting";
+	BLG_GDC.defaultHud[%i++] = "HUD_BrickBox";
+	BLG_GDC.defaultHud[%i++] = "HUD_BrickNameBG";
+	BLG_GDC.defaultHud[%i++] = "HUD_PaintBox";
+	BLG_GDC.defaultHud[%i++] = "HUD_PaintNameBG";
+	BLG_GDC.defaultHud[%i++] = "HUD_ToolBox";
+	BLG_GDC.defaultHud[%i++] = "HUD_ToolNameBG";
+	BLG_GDC.defaultHuds = %i;
 	BLG_GDC.SG = new ScriptGroup();
 }
 
@@ -284,6 +305,24 @@ function BLG_GDC::handleMessage(%this, %msg) {
 			} else {
 				PlayGui.remove(%obj.object);
 			}
+
+		case 14: //Set to overwrite a default HUD
+			%obj = BLG_GDC.SG.objData[%objId];
+			%hud = getField(%msg, 2);
+			for(%i = 0; %i < %this.defaultHuds; %i++) {
+				if(%hud $= %this.defaultHud[%i]) {
+					%legit = true;
+					break;
+				}
+			} 
+
+			if(%legit) {
+				%hud.save("config/BLG/client/cache/defaultHuds/" @ %hud @ ".gui");
+				%hud.delete();
+				%obj.object.setName(%hud);
+
+				%this.overwroteDefaultHud[%hud] = true;
+			}
 	}
 }
 
@@ -331,6 +370,14 @@ package BLG_GDC_Package {
 		}
 		BLG_GDC.SG.deleteAll();
 		BLG_GDC.SG.delete();
+		for(%i = 0; %i < BLG_GDC.defaultHuds; %i++) {
+			%hud = BLG_GDC.defaultHud[%i];
+			if(BLG_GDC.overwroteDefaultHud[%hud]) {
+				BLG_GDC.overwroteDefaultHud[%hud] = false;
+				%hud.delete();
+				exec("config/BLG/client/cache/defaultHuds/" @ %hud @ ".gui");
+			}
+		}
 		BLG_GDC.SG = new ScriptGroup();
 	}
 };
