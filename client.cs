@@ -9,6 +9,19 @@ function clientCmdBLG_Handshake(%version, %internalVersion) {
 	commandToServer('BLG_HandshakeResponse', canvas.getExtent());
 }
 
+package BLG_Client {
+	function onExit() {
+		%r = "config/BLG/client/cache/*";
+		%file = findFirstFile(%r);
+		while(%file !$= "") {
+			fileDelete(%file);
+			%file = findNextFile(%r);
+		}
+		parent::onExit();
+	}
+};
+activatePackage(BLG_Client);
+
 //Thank-you, dearest Iban
 $cArg[8, mFloor($cArgs[8])] = "BLG" TAB BLG.internalVersion TAB BLG.versionId;
 $cArgs[8]++;
