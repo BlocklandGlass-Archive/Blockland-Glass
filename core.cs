@@ -1,6 +1,7 @@
 new ScriptGroup(BLG) {
 	internalVersion = "2.0.PA2";
 	externalVersion = "2.0 Pre-alpha 2";
+	versionId = 1337; //1 is anything before 1.2
 
 	debugLevel = 3;
 	//0 = Errors only
@@ -17,9 +18,10 @@ function BLG::start(%this, %implementation) {
 	if(%implementation $= "server") {
 		echo("Loading BLG [" @ %this.internalVersion @ "] server implementation");
 
+		exec("./script/server/bindManager.cs");
 		exec("./script/server/guiDownloader.cs");
 		exec("./script/server/hudManager.cs");
-		exec("./script/server/bindManager.cs");
+		exec("./script/server/imageDownloader.cs");
 
 		if(isFile("Add-Ons/System_ReturnToBlockland/server.cs")) {
 			exec("./script/server/hooks/RTB.cs");
@@ -43,6 +45,7 @@ function BLG::start(%this, %implementation) {
 		exec("./script/client/guiDownloader.cs");
 		exec("./script/client/hudManager.cs");
 		exec("./script/client/openOverlay.cs");
+		exec("./script/client/imageDownloader.cs");
 		exec("./script/client/updater.cs");
 
 		if(isFile("Add-Ons/System_ReturnToBlockland/server.cs")) {

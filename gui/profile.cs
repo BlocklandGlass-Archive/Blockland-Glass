@@ -76,3 +76,8 @@ if(!isObject(BLG_BlockButtonProfile)) new GuiControlProfile(BLG_BlockButtonProfi
    fontColors[3] = "40 40 255";
    
 };
+
+if(!isObject(BLG_VersionTextProfile)) new GuiControlProfile(BLG_VersionTextProfile : MM_LeftProfile) {
+   fontOutlineColor = "24 175 24 255";
+   justify = "center";
+};

@@ -6,6 +6,26 @@ if(!isObject(BLG_GDS)) {
 	new ScriptObject(BLG_GDS) {
 		sg = "";
 	};
+	BLG_GDS.defaultHud[%i++] = "LagIcon";
+	BLG_GDS.defaultHud[%i++] = "HUD_PlantError";
+	BLG_GDS.defaultHud[%i++] = "GuiHealthBarHud";
+	BLG_GDS.defaultHud[%i++] = "Crosshair";
+	BLG_GDS.defaultHud[%i++] = "HUD_PlantErrorSmall";
+	BLG_GDS.defaultHud[%i++] = "HudInvBox";
+	BLG_GDS.defaultHud[%i++] = "HUD_EnergyBar";
+	BLG_GDS.defaultHud[%i++] = "MouseToolTip";
+	BLG_GDS.defaultHud[%i++] = "HUD_SuperShift";
+	BLG_GDS.defaultHud[%i++] = "HUD_EnergyBar";
+	BLG_GDS.defaultHud[%i++] = "centerPrintDlg";
+	BLG_GDS.defaultHud[%i++] = "bottomPrintDlg";
+	BLG_GDS.defaultHud[%i++] = "HUD_Ghosting";
+	BLG_GDS.defaultHud[%i++] = "HUD_BrickBox";
+	BLG_GDS.defaultHud[%i++] = "HUD_BrickNameBG";
+	BLG_GDS.defaultHud[%i++] = "HUD_PaintBox";
+	BLG_GDS.defaultHud[%i++] = "HUD_PaintNameBG";
+	BLG_GDS.defaultHud[%i++] = "HUD_ToolBox";
+	BLG_GDS.defaultHud[%i++] = "HUD_ToolNameBG";
+	BLG_GDS.defaultHuds = %i;
 
 	new ScriptGroup(BLG_Objects) {
 		objs = 0;
@@ -193,6 +213,20 @@ function BLG_GuiObject::setAsHud(%this, %client, %tog) {
 	%this.send(%client, "13" TAB %this.id TAB %tog);
 }
 
+function BLG_GuiObject::setDefaultHudOverride(%this, %client, %hud) {
+	for(%i = 0; %i < BLG_GDS.defaultHuds; %i++) {
+		if(BLG_GDS.defaultHud[%i] $= %hud) {
+			%legit = true;
+			break;
+		}
+	}
+	if(%legit) {
+		%this.send(%client, "14" TAB %this.id TAB %hud);
+	} else {
+		BLG.debug("Tried to register bad hud override", 0);
+	}
+}
+
 function serverCmdBLG_GuiReturn(%client, %msg) {
 	BLG.debug("GuiReturn: [" @ %msg @ "]");
 	%funcId = getField(%msg, 0);
@@ -264,7 +298,11 @@ function BLG_GDS::transferFinished(%this, %client) {
 	%client.currentPhase = 0;
 	%client.BLG_DownloadedGUI = true;
 	commandToClient(%client,'BLG_guiTransferFinished');
-	commandToClient(%client,'MissionStartPhase1', $missionSequence, $Server::MissionFile);
+	if(%client.BLGVersionId >= 2) {
+		BLG_IDS.startPhase(%client);
+	} else {
+		commandToClient(%client,'MissionStartPhase1', $missionSequence, $Server::MissionFile);
+	}
 }
 
 function BLG_GDS::getPartCount(%this) {
