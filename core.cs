@@ -3,7 +3,7 @@ new ScriptGroup(BLG) {
 	externalVersion = "1.2";
 	versionId = 2; //1 is anything before 1.2
 
-	debugLevel = 3;
+	debugLevel = 0;
 	//0 = Errors only
 	//1 = Standard
 	//2 = In-depth

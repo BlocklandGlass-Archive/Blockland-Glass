@@ -1,8 +1,19 @@
-//Blockland Glass Version 1.0 Client Implementation
+//Blockland Glass Client Implementation
 exec("./core.cs");
-
 BLG.start("client");
 
+%mm = new GuiTextCtrl(BLG_Version) {
+	profile = "BLG_VersionTextProfile";
+	horizSizing = "center";
+	vertSizing = "bottom";
+	position = "237 0";
+	extent = "165 16";
+	minExtent = "8 2";
+	visible = "1";
+	text = "BLG Version: " @ BLG.internalVersion;
+	maxLength = "255";
+};
+MainMenuGui.add(%mm);
 
 function clientCmdBLG_Handshake(%version, %internalVersion) {
 	BLG.debug("Server version id: " @ %version);

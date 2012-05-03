@@ -86,7 +86,7 @@ function BLG_GDC::verifyAlphanumeric(%this, %string) {
 
 function BLG_GDC::finalizeObject(%this, %objId) {
 	%obj = %this.SG.objData[%objId];
-	if(isObject(%obj)) {
+	if(isObject(%obj) && !isObject(%obj.name)) {
 		%newobj = eval("return new " @ %obj.objClass @ "();");
 		%newobj.setName(%obj.name);
 
