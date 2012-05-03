@@ -10,7 +10,7 @@ BLG.start("client");
 	extent = "165 16";
 	minExtent = "8 2";
 	visible = "1";
-	text = "BLG Version: " @ BLG.internalVersion;
+	text = "BLG Version: " @ BLG.externalVersion;
 	maxLength = "255";
 };
 MainMenuGui.add(%mm);
@@ -30,7 +30,7 @@ package BLG_Client {
 		}
 		parent::onExit();
 	}
-	
+
 	function MM_AuthBar::blinkSuccess(%this) {
 		if(BLG.firstRun) {
 			messageBoxOk("BLG First-run Placeholder", "This is a place holder for the welcome GUI of BLG2. If you're seeing this, you're in the Alpha. Welcome.<br><br>Btw, try CTRL + SPACE");
