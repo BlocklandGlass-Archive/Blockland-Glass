@@ -27,6 +27,7 @@ function BLG_GAU_TCP::onConnected(%this) {
 }
 
 function BLG_GAU_TCP::onLine(%this, %line) {
+	BLG.debug(%line, 3);
 	if(getField(%line, 0) $= "UPDATE")
 	{
 		%this.update = true;
