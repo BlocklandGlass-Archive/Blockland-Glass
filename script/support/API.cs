@@ -38,6 +38,6 @@ function GAPI::newFont(%this, %url, %fontName) {
 
 function GAPI::newImage(%this, %url, %imageName) {
 	if(BLG.implementation $= "server") {
-		BLG_IDS.newImage(%url, %imageName)
+		BLG_IDS.newImage(%url, %imageName);
 	}
 }

@@ -1,6 +1,6 @@
 new ScriptGroup(BLG) {
-	internalVersion = "2.0.PA3";
-	externalVersion = "2.0 Pre-Alpha 3";
+	internalVersion = "2.0.PA4";
+	externalVersion = "2.0 Pre-Alpha 4";
 	versionId = 1337; //1 is anything before 1.2
 
 	debugLevel = 3;
@@ -33,6 +33,7 @@ function BLG::start(%this, %implementation) {
 		echo("Loading BLG [" @ %this.internalVersion @ "] client implementation");
 
 		exec("./gui/profile.cs");
+		exec("./gui/BLG_Desktop.gui");
 		exec("./gui/BLG_HUD.gui");
 		exec("./gui/BLG_remapGui.gui");
 		exec("./gui/BLG_keybindGui.gui");
@@ -42,6 +43,7 @@ function BLG::start(%this, %implementation) {
 		exec("./gui/BLG_Overlay.gui");
 
 		exec("./script/client/bindManager.cs");
+		exec("./script/client/desktop.cs");
 		exec("./script/client/guiDownloader.cs");
 		exec("./script/client/hudManager.cs");
 		exec("./script/client/openOverlay.cs");

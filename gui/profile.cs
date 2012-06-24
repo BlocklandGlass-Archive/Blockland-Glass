@@ -22,6 +22,14 @@ if(!isObject(BLG_HudTextCenter)) new GuiControlProfile(BLG_HudTextCenter)
    justify = "Center";
 };
 
+
+if(!isObject(BLG_TimeText)) new GuiControlProfile(BLG_TimeText)
+{
+   fontColor = "255 255 255 255";
+   fontSize = 20;
+   fontType = "Arial";
+   justify = "Center";
+};
 if(!isObject(BLG_ScrollProfile)) new GuiControlProfile(BLG_ScrollProfile)
 {
    fillColor = "230 230 230 255";

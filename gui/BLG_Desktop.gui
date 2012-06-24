@@ -1,0 +1,97 @@
+//--- OBJECT WRITE BEGIN ---
+new GuiControl(BLG_Desktop) {
+   profile = "GuiDefaultProfile";
+   horizSizing = "width";
+   vertSizing = "height";
+   position = "0 0";
+   extent = "640 480";
+   minExtent = "8 2";
+   visible = "1";
+
+   new GuiSwatchCtrl(BLG_Desktop_Swatch) {
+      profile = "GuiDefaultProfile";
+      horizSizing = "width";
+      vertSizing = "height";
+      position = "0 0";
+      extent = "640 480";
+      minExtent = "8 2";
+      visible = "1";
+      color = "0 0 0 255";
+
+      new GuiBitmapCtrl(BLG_Desktop_Background) {
+         profile = "GuiDefaultProfile";
+         horizSizing = "width";
+         vertSizing = "height";
+         position = "0 0";
+         extent = "640 480";
+         minExtent = "8 2";
+         visible = "1";
+         bitmap = "Add-Ons/System_BlocklandGlass/image/desktop.jpg";
+      };
+
+      new GuiSwatchCtrl(BLG_Desktop_Menu) {
+         profile = "GuiDefaultProfile";
+         horizSizing = "right";
+         vertSizing = "top";
+         position = "10 406";
+         extent = "64 64";
+         minExtent = "8 2";
+         visible = "1";
+         color = "0 0 0 127";
+         open = false;
+
+         new GuiBitmapButtonCtrl() {
+            profile = "GuiDefaultProfile";
+            horizSizing = "left";
+            vertSizing = "bottom";
+            position = "0 0";
+            extent = "64 64";
+            minExtent = "8 2";
+            visible = "1";
+            bitmap = "Add-Ons/System_BlocklandGlass/image/start";
+            wrap = "0";
+            lockAspectRatio = "0";
+            alignLeft = "0";
+            overflowImage = "0";
+            keepCached = "0";
+            text = "";
+            command = "BLG_Desktop_Menu.open();";
+         };
+      };
+
+      new GuiSwatchCtrl() {
+         profile = "GuiDefaultProfile";
+         horizSizing = "left";
+         vertSizing = "bottom";
+         position = "530 10";
+         extent = "100 24";
+         minExtent = "100 20";
+         visible = "1";
+         color = "0 0 0 150";
+
+         new GuiTextCtrl(BLG_Desktop_Clock) {
+            profile = "BLG_TimeText";
+            horizSizing = "center";
+            vertSizing = "center";
+            position = "0 2";
+            extent = "100 20";
+            minExtent = "100 20";
+            visible = "1";
+            text = "3:34 PM";
+            maxLength = "255";
+         };
+      };
+   };
+
+   //new GuiMouseEventCtrl(BLG_Desktop_MouseCapture) {
+   //   profile = "GuiDefaultProfile";
+   //   horizSizing = "width";
+   //   vertSizing = "height";
+   //   position = "0 0";
+   //   extent = "640 480";
+   //   minExtent = "8 2";
+   //   visible = "1";
+   //   lockMouse = "0";
+   //};
+};
+//--- OBJECT WRITE END ---
