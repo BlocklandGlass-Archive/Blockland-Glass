@@ -89,3 +89,10 @@ if(!isObject(BLG_VersionTextProfile)) new GuiControlProfile(BLG_VersionTextProfi
    fontOutlineColor = "24 175 24 255";
    justify = "center";
 };
+
+if(!isObject(BLG_DesktopWindowProfile)) new GuiControlProfile(BLG_DesktopWindowProfile : GuiWindowProfile) {
+   fillColor = "255 255 255 255";
+   bitmap = "Add-Ons/System_BlocklandGlass/image/desktop/window";
+   fontColor = "0 0 0 255";
+   fontType = "Arial";
+};
