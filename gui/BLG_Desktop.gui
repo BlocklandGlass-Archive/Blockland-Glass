@@ -1,3 +1,4 @@
+MM_AuthText.delete();
 //--- OBJECT WRITE BEGIN ---
 new GuiControl(BLG_Desktop) {
    profile = "GuiDefaultProfile";
@@ -42,26 +43,60 @@ new GuiControl(BLG_Desktop) {
       color = "0 0 0 0";
    };
 
-   new GuiSwatchCtrl() {
+   new GuiSwatchCtrl(BLG_Desktop_BottomBar) {
       profile = "GuiDefaultProfile";
-      horizSizing = "left";
+      horizSizing = "width";
       vertSizing = "top";
-      position = "535 451";
-      extent = "100 24";
-      minExtent = "100 20";
+      position = "0 416";
+      extent = "640 64";
+      minExtent = "8 2";
       visible = "1";
-      color = "0 0 0 150";
+      color = "255 255 255 64";
 
-      new GuiTextCtrl(BLG_Desktop_Clock) {
-         profile = "BLG_TimeText";
-         horizSizing = "center";
-         vertSizing = "center";
-         position = "0 2";
-         extent = "100 20";
+      new GuiSwatchCtrl() {
+         profile = "GuiDefaultProfile";
+         horizSizing = "left";
+         vertSizing = "top";
+         position = "535 6";
+         extent = "100 24";
          minExtent = "100 20";
          visible = "1";
-         text = "3:34 PM";
-         maxLength = "255";
+         color = "0 0 0 64";
+
+         new GuiTextCtrl(BLG_Desktop_Clock) {
+            profile = "BLG_TimeText";
+            horizSizing = "center";
+            vertSizing = "center";
+            position = "0 2";
+            extent = "100 20";
+            minExtent = "100 20";
+            visible = "1";
+            text = "3:34 PM";
+            maxLength = "255";
+         };
+      };
+
+      new GuiSwatchCtrl() {
+         profile = "GuiDefaultProfile";
+         horizSizing = "left";
+         vertSizing = "top";
+         position = "435 35";
+         extent = "200 24";
+         minExtent = "100 20";
+         visible = "1";
+         color = "0 0 0 64";
+
+         new GuiTextCtrl(MM_AuthText) {
+            profile = "BLG_TimeText";
+            horizSizing = "center";
+            vertSizing = "center";
+            position = "0 2";
+            extent = "200 20";
+            minExtent = "200 20";
+            visible = "1";
+            text = "Offline Mode";
+            maxLength = "255";
+         };
       };
    };
 
@@ -84,7 +119,7 @@ new GuiControl(BLG_Desktop) {
       extent = "54 54";
       minExtent = "8 2";
       visible = "1";
-      color = "0 0 0 127";
+      color = "0 0 0 64";
       open = false;
 
       new GuiBitmapButtonCtrl() {
@@ -107,3 +142,58 @@ new GuiControl(BLG_Desktop) {
    };
 };
 //--- OBJECT WRITE END ---
+return;
+new GuiSwatchCtrl(BLG_Desktop_BottomBar) {
+      profile = "GuiDefaultProfile";
+      horizSizing = "width";
+      vertSizing = "top";
+      position = "160 416";
+      extent = "320 64";
+      minExtent = "8 2";
+      visible = "1";
+      color = "0 0 0 127";
+
+      new GuiSwatchCtrl(BLG_Desktop_Join) {
+         profile = "GuiDefaultProfile";
+         horizSizing = "relative";
+         vertSizing = "top";
+         position = "5 5";
+         extent = "70 59";
+         minExtent = "8 2";
+         visible = "1";
+         color = "0 255 0 255";
+      };
+
+      new GuiSwatchCtrl(BLG_Desktop_Host) {
+         profile = "GuiDefaultProfile";
+         horizSizing = "relative";
+         vertSizing = "top";
+         position = "85 5";
+         extent = "70 59";
+         minExtent = "8 2";
+         visible = "1";
+         color = "0 0 255 255";
+      };
+
+      new GuiSwatchCtrl(BLG_Desktop_Settings) {
+         profile = "GuiDefaultProfile";
+         horizSizing = "relative";
+         vertSizing = "top";
+         position = "170 5";
+         extent = "70 59";
+         minExtent = "8 2";
+         visible = "1";
+         color = "127 127 127 255";
+      };
+
+      new GuiSwatchCtrl(BLG_Desktop_Quit) {
+         profile = "GuiDefaultProfile";
+         horizSizing = "relative";
+         vertSizing = "top";
+         position = "255 5";
+         extent = "70 59";
+         minExtent = "8 2";
+         visible = "1";
+         color = "255 0 0 255";
+      };
+   };

@@ -9,14 +9,14 @@ if(!isObject(BLG_DT)) {
 		apps = 0;
 
 		animations = 0;
-		timeMode = 3;
+		timeMode = 2;
 
 		icons = 0;
 
 		iconsX = mFloor(getWord(BLG_Desktop_Swatch.getExtent(), 0)/64);
 		iconsY = mFloor(getWord(BLG_Desktop_Swatch.getExtent(), 1)/64);
 
-		loadAppMode = 1;
+		loadAppMode = 4;
 	};
 	BLG_DT.iconGroup = new ScriptGroup(BLG_DT_IconGroup);
 }
@@ -28,6 +28,18 @@ function BLG_DT::refresh(%this) {
 		%this.loadAppsToScreen();
 		%this.loadedApps = true;
 	}
+
+	%w = (getWord(BLG_Desktop_BottomBar.getExtent(), 0) - 25)/4;
+	BLG_Desktop_Join.position = "5 5";
+	BLG_Desktop_Host.position = 10 + %w SPC 5;
+	BLG_Desktop_Settings.position = 15 + %w*2 SPC 5;
+	BLG_Desktop_Quit.position = 20 + %w*3 SPC 5;
+
+	BLG_Desktop_Join.extent = %w SPC 59;
+	BLG_Desktop_Host.extent = %w SPC 59;
+	BLG_Desktop_Settings.extent = %w SPC 59;
+	BLG_Desktop_Quit.extent = %w SPC 59;
+
 	BLG_Desktop_MouseCapture.extent = BLG_Desktop_Swatch.extent = getWord(Canvas.getExtent(), 0) SPC getWord(Canvas.getExtent(), 1)-64;
 	%this.iconsX = mFloor(getWord(BLG_Desktop_Swatch.getExtent(), 0)/64);
 	%this.iconsY = mFloor(getWord(BLG_Desktop_Swatch.getExtent(), 1)/64);
@@ -51,6 +63,13 @@ function strCount(%haystack, %needle) {
 	return %ret+0;
 }
 
+function circToPoint(%r, %a) {
+	%a = (%a/180)*$pi;
+	%x = %r * mCos(%a);
+	%y = %r * mSin(%a);
+	echo(mRound(%x) SPC mRound(%y));
+}
+
 //================================================
 // Menu
 //================================================
@@ -60,7 +79,7 @@ function BLG_DT::toggleMenu(%this) {
 	if(!%menu.isAnimating) {
 		if(%menu.open) {
 			%menu.isAnimating = true;
-			%this.animation[%this.animations] = %menu TAB 10 TAB 5 SPC getWord(Canvas.getExtent(), 1)-61 TAB "54 54" TAB "0 0 0 127";
+			%this.animation[%this.animations] = %menu TAB 10 TAB 5 SPC getWord(Canvas.getExtent(), 1)-59 TAB "54 54" TAB "0 0 0 127";
 			%this.animations++;
 		} else {
 			%menu.isAnimating = true;
@@ -94,6 +113,15 @@ function BLG_DT::registerBasicIcon(%this, %name, %command, %color) {
 	%this.iconCmd[%this.icons] = %command;
 	%this.iconType[%this.icons] = "basic";
 	%this.iconDat[%this.icons] = %color;
+	%this.icons++;
+}
+
+function BLG_DT::registerImageIcon(%this, %name, %command, %image) {
+	%this.icon[%this.icons] = %name;
+	%this.iconId[%name] = %this.icons;
+	%this.iconCmd[%this.icons] = %command;
+	%this.iconType[%this.icons] = "image";
+	%this.iconDat[%this.icons] = %image;
 	%this.icons++;
 }
 
@@ -157,6 +185,35 @@ function BLG_DT::loadAppsToScreen(%this) {
 				for(%x = 0; %x < %this.iconsX; %x++) {
 					if(%grid[%x, %y] !$= "") {
 						%this.schedule(50 * %i, newAppIcon, getField(%grid[%x, %y], 0), getField(%grid[%x, %y], 1), %x, %y, 2);
+						%i++;
+					}
+				}
+			}
+
+		case 2:
+			for(%y = 0; %y < %this.iconsY; %y++) {
+				for(%x = 0; %x < %this.iconsX; %x++) {
+					if(%grid[%x, %y] !$= "") {
+						%this.newAppIcon(getField(%grid[%x, %y], 0), getField(%grid[%x, %y], 1), %x, %y, 1);
+					}
+				}
+			}
+
+		case 3:
+			for(%y = 0; %y < %this.iconsY; %y++) {
+				for(%x = 0; %x < %this.iconsX; %x++) {
+					if(%grid[%x, %y] !$= "") {
+						%this.schedule(getRandom(0, 2000), newAppIcon, getField(%grid[%x, %y], 0), getField(%grid[%x, %y], 1), %x, %y, 1);
+						%i++;
+					}
+				}
+			}
+
+		case 4:
+			for(%y = 0; %y < %this.iconsY; %y++) {
+				for(%x = 0; %x < %this.iconsX; %x++) {
+					if(%grid[%x, %y] !$= "") {
+						%this.schedule(getRandom(0, 2000), newAppIcon, getField(%grid[%x, %y], 0), getField(%grid[%x, %y], 1), %x, %y, 2);
 						%i++;
 					}
 				}
@@ -235,22 +292,6 @@ function BLG_DT::newAppIcon(%this, %name, %eval, %x, %y, %mode) {
 		%start = "61" SPC getWord(Canvas.getExtent(), 1)-61;
 	}
 
-	%gui = new GuiSwatchCtrl() {
-		name = %name;
-		gridPos = %x SPC %y;
-		command = %eval;
-
-        profile = "GuiDefaultProfile";
-        horizSizing = "right";
-        vertSizing = "top";
-        //position = "61" SPC getWord(Canvas.getExtent(), 1)-61;
-        position = %start;
-        extent = "0 0";
-        minExtent = "0 0";
-        visible = "1";
-        color = "0 0 0 0";
-    };
-
     %icon = new ScriptObject() {
     	name = %name;
     	gridPos = %x SPC %y;
@@ -259,14 +300,53 @@ function BLG_DT::newAppIcon(%this, %name, %eval, %x, %y, %mode) {
 		id = %this.iconId[%name];
 		type = %this.iconType[%this.iconId[%name]];
 		dat = %this.iconDat[%this.iconId[%name]];
-
-    	gui = %gui;
     };
+
+    if(%icon.type $= "image") {
+    	%gui = new GuiBitmapCtrl() {
+    		name = %name;
+			gridPos = %x SPC %y;
+			command = %eval;
+
+        	profile = "GuiDefaultProfile";
+        	horizSizing = "height";
+        	vertSizing = "width";
+        	position = %start;
+        	extent = "54 54";
+       		minExtent = "8 2";
+        	visible = "1";
+        	bitmap = %icon.dat;
+        	wrap = "0";
+        	lockAspectRatio = "0";
+        	alignLeft = "0";
+        	overflowImage = "0";
+        	keepCached = "0";
+		};
+    } else if(%icon.type $= "basic") {
+    	%gui = new GuiSwatchCtrl() {
+			name = %name;
+			gridPos = %x SPC %y;
+			command = %eval;
+
+	        profile = "GuiDefaultProfile";
+	        horizSizing = "right";
+	        vertSizing = "top";
+	        //position = "61" SPC getWord(Canvas.getExtent(), 1)-61;
+	        position = %start;
+	        extent = "0 0";
+	        minExtent = "0 0";
+	        visible = "1";
+	        color = "0 0 0 0";
+	    };
+    }
+
+    %icon.gui = %gui;
+    %gui.icon = %icon;
 
     BLG_DT_IconGroup.add(%icon);
     BLG_Desktop_Swatch.add(%gui);
 
-    %color = "0 0 0 127";
+    %color = "0 0 0 0";
     if(%icon.type $= "basic" && %icon.dat !$= "") {
     	%color = %icon.dat;
     }
@@ -429,6 +509,7 @@ package BLG_DT_Package {
 		if(%this.getName() $= "BLG_Desktop_MouseCapture") {
 			if(isObject(%obj = BLG_DT.getIconFromPos(%pos))) {
 				//%obj.gui.color = "0 0 0 255";
+				BLG_Desktop_Swatch.pushToBack(%obj.gui);
 				BLG_Desktop_MouseCapture.selectedObj = %obj;
 				BLG_Desktop_MouseCapture.selectedObj.originalPos = %obj.gui.position;
 				BLG_Desktop_MouseCapture.selectedObj.relativePos = getWord(%pos, 0) - getWord(%obj.gui.position, 0) SPC getWord(%pos, 1) - getWord(%obj.gui.position, 1);
@@ -443,6 +524,22 @@ package BLG_DT_Package {
             
             %x = getWord(%pos, 0) - getWord(%obj.relativePos, 0);
             %y = getWord(%pos, 1) - getWord(%obj.relativePos, 1);
+
+            if(%x > getWord(BLG_Desktop_Swatch.extent, 0) - getWord(%obj.gui.extent, 0)) {
+				%x = getWord(BLG_Desktop_Swatch.extent, 0) - getWord(%obj.gui.extent, 0);
+			}
+
+			if(%y > getWord(BLG_Desktop_Swatch.extent, 1) - getWord(%obj.gui.extent, 1)) {
+				%y = getWord(BLG_Desktop_Swatch.extent, 1) - getWord(%obj.gui.extent, 1);
+			}
+
+			if(%x < 0) {
+				%x = 0;
+			}
+
+			if(%y < 0) {
+				%y = 0;
+			}
 
             %obj.gui.position = %x SPC %y;
         }
@@ -460,7 +557,15 @@ package BLG_DT_Package {
 	                %y = getWord(%pos, 1);
 	                %gridX = mRound((%x-32) / 64);
 	                %gridY = mRound((%y-32) / 64);
-	                echo(%gridX SPC %gridY);
+
+	                if(%gridX > BLG_DT.iconsX) {
+	                	%gridX = BLG_DT.iconsX;
+	                }
+
+	                if(%gridY > BLG_DT.iconsY) {
+	                	%gridY = BLG_DT.iconsY;
+	                }
+
 
 	                if(BLG_DT.appGrid[%gridX, %gridY] $= "") {
 	                	BLG_DT.appGrid[getWord(%obj.gridPos, 0), getWord(%obj.gridPos, 1)] = "";
@@ -492,9 +597,10 @@ activatePackage(BLG_DT_Package);
 
 BLG_DT.loadAppData();
 BLG_DT.registerBasicIcon("Join Server", "Canvas.pushDialog(JoinServerGui);", "0 0 255 255");
-BLG_DT.registerBasicIcon("Host Server", "Canvas.pushDialog(newMissionGui);", "0 255 0 255");
-BLG_DT.registerBasicIcon("Settings", "Canvas.pushDialog(OptionsDlg);", "127 127 127 127");
+BLG_DT.registerBasicIcon("Host Server", "Canvas.pushDialog(startMissionGui);", "0 255 0 255");
+BLG_DT.registerBasicIcon("Settings", "Canvas.pushDialog(OptionsDlg);", "127 127 127 255");
 BLG_DT.registerBasicIcon("Quit", "quit();", "255 0 0 255");
+BLG_DT.registerImageIcon("BLG", "BLG_ToggleOverlay(0);", "Add-Ons/System_BlocklandGlass/image/logo.jpg");
 
 BLG_DT.animate();
 BLG_DT.refresh();
