@@ -212,7 +212,7 @@ new GuiControl(BLG_Desktop) {
             extent = "140 30";
             minExtent = "8 2";
             visible = "1";
-            text = "Filler";
+            text = "Blockland";
             groupNum = "-1";
             buttonType = "PushButton";
             bitmap = "Add-Ons/System_BlocklandGlass/image/desktop/tab";
@@ -221,6 +221,7 @@ new GuiControl(BLG_Desktop) {
             overflowImage = "0";
             mKeepCached = "0";
             mColor = "255 255 255 255";
+            command = "Canvas.pushDialog(OptionsDlg);";
          };
          new GuiBitmapButtonCtrl() {
             profile = "GuiDefaultProfile";

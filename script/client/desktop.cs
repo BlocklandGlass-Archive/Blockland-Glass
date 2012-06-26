@@ -771,8 +771,21 @@ package BLG_DT_Package {
 	function authTCPobj_Client::onDisconnect(%this) {
 		parent::onDisconnect(%this);
 		if(BLG_DT.legacyUpdate) {
-			messageBoxOk("The new BlockOS", "It appears you're running BlockOS, along with Blockland Glass. Blockland Glass has taken over BlockOS, so we went ahead and removed BlockOS for you. We recommend you restart Blockland now.");
+			messageBoxOk("The new BlockOS", "It appears you're running BlockOS, along with Blockland Glass. Blockland Glass has taken over BlockOS, so we went ahead and removed the old BlockOS for you. We recommend you restart Blockland now.");
 		}
+	}
+
+	function BLG_Desktop_Swatch::onWake(%this) {
+		BLG.debug("Desktop awoken");
+		BLG_DT.lastMove = getSimTime();
+		BLG_DT.animate();
+		parent::onWake(%this);
+	}
+
+	function BLG_Desktop_Swatch::onSleep(%this) {
+		BLG.debug("Desktop sleeping");
+		cancel(BLG_DT.animateLoop);
+		parent::onWake(%this);
 	}
 
 	function onExit() {
@@ -786,7 +799,6 @@ activatePackage(BLG_DT_Package);
 BLG_DT.loadAppData();
 BLG_DT.registerImageIcon("Join Server", "Canvas.pushDialog(JoinServerGui);", "Add-Ons/System_BlocklandGlass/image/desktop/icons/games alt.png");
 BLG_DT.registerImageIcon("Host Server", "Canvas.pushDialog(startMissionGui);", "Add-Ons/System_BlocklandGlass/image/desktop/icons/globe.png");
-BLG_DT.registerImageIcon("Settings", "Canvas.pushDialog(OptionsDlg);", "Add-Ons/System_BlocklandGlass/image/desktop/icons/services.png");
 BLG_DT.registerImageIcon("Quit", "quit();", "Add-Ons/System_BlocklandGlass/image/desktop/icons/power - shut down.png");
 BLG_DT.registerBasicIcon("Remote Control", "echo(\"Insert the Remote Control GUI\");", "255 128 128 255");
 BLG_DT.registerBasicIcon("Apps", "echo(\"Insert Apps GUI\");", "255 255 255 255");
