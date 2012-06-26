@@ -456,7 +456,7 @@ function BLG_DT::startScreenSaver(%this) {
 		%this.animations++;
 	}
 	%this.screenSaverRad = 100;
-	%this.schedule(1250, screenSaverLoop);
+	%this.screensaverStartCountdown = 75;
 }
 
 function BLG_DT::stopScreensaver(%this) {
@@ -514,6 +514,13 @@ function BLG_DT::animate(%this) {
 		%this.extent = Canvas.getExtent();
 		%this.refresh();
 	}
+
+	if(%this.screensaverStartCountdown > 0) {
+		%this.screensaverStartCountdown--;
+		if(%this.screensaverStartCountdown == 0) {
+			BLG_DT.screenSaverLoop();
+		}
+	} 
 
 	BLG_Desktop_Clock.setValue(%this.getTime());
 	for(%i = 0; %i < %this.animations; %i++) {
@@ -597,6 +604,9 @@ function BLG_DT::getTime(%this) {
 		} else {
 			%apm = "PM";
 			%hour = %hour-12;
+			if(%hour == 0) {
+				%hour = 12;
+			}
 		}
 		return %hour @ ":" @ getField(%explode, 1) SPC %apm;
 	} else if(%this.timeMode == 3) {
@@ -608,6 +618,9 @@ function BLG_DT::getTime(%this) {
 		} else {
 			%apm = "PM";
 			%hour = %hour-12;
+			if(%hour == 0) {
+				%hour = 12;
+			}
 		}
 		return %hour @ ":" @ getField(%explode, 1) @ ":" @ getField(%explode, 2) SPC %apm;
 
