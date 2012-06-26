@@ -143,7 +143,7 @@ function BLG_DT::loadAppData(%this) {
 	%fo.close();
 	%fo.delete();
 
-	%file = findFileByName("config/BLG/Apps/*/main.cs");
+	%file = findFirstFile("config/BLG/Apps/*/main.cs");
 	while(%file !$= "") {
 		if(strCount(%file, "/") == 4) {
 			exec(%file);
@@ -169,7 +169,8 @@ function BLG_DT::saveAppData(%this) {
 GuiTextProfile.fontColors[9] = "255 255 255 255";
 
 function BLG_DT::showName(%this, %obj) {
-    BLG_Desktop_Swatch.nameBox.delete();
+	if(isObject(BLG_Desktop_Swatch.nameBox))
+		BLG_Desktop_Swatch.nameBox.delete();
 	%pos = Canvas.getCursorPos();
 
 	%namebox = new GuiSwatchCtrl() {
@@ -307,7 +308,6 @@ function BLG_DT::newAppIcon(%this, %name, %eval, %x, %y, %mode) {
 		if(%this.appGrid[%x, %y] $= "") {
 			%this.appGrid[%x, %y] = %name;
 			%success = true;
-			break;
 		}
 	}
 	if(!%success) {
@@ -683,6 +683,12 @@ package BLG_DT_Package {
 	                %y = getWord(%pos, 1);
 	                %gridX = mRound((%x-32) / 64);
 	                %gridY = mRound((%y-32) / 64);
+
+					if(%gridX < 0)
+						%gridX = 0;
+
+					if(%gridY < 0)
+						%gridY = 0;
 
 	                if(%gridX > BLG_DT.iconsX) {
 	                	%gridX = BLG_DT.iconsX;
