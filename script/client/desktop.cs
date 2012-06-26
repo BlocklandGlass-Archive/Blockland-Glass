@@ -72,7 +72,7 @@ function circToPoint(%r, %a) {
 	%a = (%a/180)*$pi;
 	%x = %r * mCos(%a);
 	%y = %r * mSin(%a);
-	echo(mRound(%x) SPC mRound(%y));
+	return (mRound(%x) SPC mRound(%y));
 }
 
 //================================================
@@ -431,8 +431,84 @@ function nai4() {
 // Animation
 //================================================
 
+function BLG_DT::startScreenSaver(%this) {
+	if(%this.inScreensaver) {
+		return;
+	}
+
+	%this.inScreensaver = true;
+
+	%icons = %this.icons;
+	%r = 100;
+	%iconSize = "30 30";
+
+
+	%center = getWord(Canvas.getExtent(), 0)/2 SPC getWord(Canvas.getExtent(), 1)/2;
+	%interval = %this.screenSaveInterval = mRound(360/%icons);
+
+	for(%i = 0; %i < BLG_DT_IconGroup.getCount(); %i++) {
+		%obj = BLG_DT_IconGroup.getObject(%i);
+
+		%p = circToPoint(%r, (%interval*%i)-90);
+		echo(%p);
+
+		%this.animation[%this.animations] = %obj.gui TAB 20 TAB getWord(%center, 0)+getWord(%p, 0)-15 SPC getWord(%center, 1)+getWord(%p, 1)-15 TAB %iconSize TAB (%obj.dat !$= "" ? %obj.dat : "255 255 255 255");
+		%this.animations++;
+	}
+	%this.screenSaverRad = 100;
+	%this.schedule(200, screenSaverLoop);
+}
+
+function BLG_DT::stopScreensaver(%this) {
+	%this.inScreensaverLoop = false;
+	%this.inScreensaver = false;
+
+	for(%i = 0; %i < BLG_DT_IconGroup.getCount(); %i++) {
+		%obj = BLG_DT_IconGroup.getObject(%i);
+
+		%this.animation[%this.animations] = %obj.gui TAB 20 TAB 5 + 64 * getWord(%obj.gridPos, 0) SPC 5 + 64 * getWord(%obj.gridPos, 1) TAB "54 54" TAB %obj.gui.color;
+		%this.animations++;
+	}	
+}
+
+function BLG_DT::screenSaverLoop(%this) {
+	%this.inScreensaverLoop = true;
+	%this.screenSaverDeg += 2;
+	%this.screenSaverRad += 0.2;
+
+	if(%this.screenSaverDeg >= 360) {
+		%this.screenSaverDeg -= 360;
+	}
+
+	if(%this.screenSaverRad >= 200) {
+		%this.screenSaverRad = 0;
+	}
+
+	%r = %this.screenSaverRad > 100 ? 200 - %this.screenSaverRad : %this.screenSaverRad;
+
+	%center = getWord(Canvas.getExtent(), 0)/2 SPC getWord(Canvas.getExtent(), 1)/2;
+
+	for(%i = 0; %i < BLG_DT_IconGroup.getCount(); %i++) {
+		%obj = BLG_DT_IconGroup.getObject(%i);
+		%point = circToPoint(%r+50, (%this.screenSaveInterval*%i) - 90 + %this.screenSaverDeg);
+		%obj.gui.position = getWord(%center, 0)+getWord(%point, 0)-15 SPC getWord(%center, 1)+getWord(%point, 1)-15;
+	}
+}
+
 function BLG_DT::animate(%this) {
 	cancel(%this.animateLoop);
+
+	%this.animateLoop = %this.schedule(10, animate);
+
+	if(%this.lastMove+30000 <= getSimTime() && !%this.inScreensaver) {
+		%this.startScreenSaver();
+	} else if(%this.lastMove+30000 > getSimTime() && %this.inScreensaverLoop) {
+		%this.stopScreensaver();
+	}
+
+	if(%this.inScreensaverLoop) {
+		%this.screenSaverLoop();
+	}
 
 	if(%this.extent !$= Canvas.getExtent()) {
 		%this.extent = Canvas.getExtent();
@@ -440,8 +516,6 @@ function BLG_DT::animate(%this) {
 	}
 
 	BLG_Desktop_Clock.setValue(%this.getTime());
-
-	%this.animateLoop = %this.schedule(10, animate);
 	for(%i = 0; %i < %this.animations; %i++) {
 		%data = %this.animation[%i];
 		%object = getField(%data, 0);
@@ -641,6 +715,7 @@ package BLG_DT_Package {
 
 	function GuiMouseEventCtrl::onMouseMove(%this, %mod, %pos, %click) {
 		if(%this.getName() $= "BLG_Desktop_MouseCapture") {
+			BLG_DT.lastMove = getSimTime();
 			if(isObject(%obj = BLG_DT.getIconFromPos(%pos))) {
 				if(BLG_DT.hoverObject !$= %obj) {
 					BLG_DT.hoverObject = %obj;
