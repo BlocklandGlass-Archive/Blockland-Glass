@@ -439,7 +439,7 @@ function BLG_DT::startScreenSaver(%this) {
 	%this.inScreensaver = true;
 
 	%icons = %this.icons;
-	%r = 100;
+	%r = 150;
 	%iconSize = "30 30";
 
 
@@ -452,11 +452,11 @@ function BLG_DT::startScreenSaver(%this) {
 		%p = circToPoint(%r, (%interval*%i)-90);
 		echo(%p);
 
-		%this.animation[%this.animations] = %obj.gui TAB 20 TAB getWord(%center, 0)+getWord(%p, 0)-15 SPC getWord(%center, 1)+getWord(%p, 1)-15 TAB %iconSize TAB (%obj.dat !$= "" ? %obj.dat : "255 255 255 255");
+		%this.animation[%this.animations] = %obj.gui TAB 75 TAB getWord(%center, 0)+getWord(%p, 0)-15 SPC getWord(%center, 1)+getWord(%p, 1)-15 TAB %iconSize TAB (%obj.dat !$= "" ? %obj.dat : "255 255 255 255");
 		%this.animations++;
 	}
 	%this.screenSaverRad = 100;
-	%this.schedule(200, screenSaverLoop);
+	%this.schedule(1250, screenSaverLoop);
 }
 
 function BLG_DT::stopScreensaver(%this) {
