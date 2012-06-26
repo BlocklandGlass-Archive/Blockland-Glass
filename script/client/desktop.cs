@@ -455,6 +455,7 @@ function BLG_DT::startScreenSaver(%this) {
 		%this.animation[%this.animations] = %obj.gui TAB 75 TAB getWord(%center, 0)+getWord(%p, 0)-15 SPC getWord(%center, 1)+getWord(%p, 1)-15 TAB %iconSize TAB (%obj.dat !$= "" ? %obj.dat : "255 255 255 255");
 		%this.animations++;
 	}
+	%this.screenSaverDeg = 0;
 	%this.screenSaverRad = 100;
 	%this.screensaverStartCountdown = 75;
 }
