@@ -777,10 +777,10 @@ activatePackage(BLG_DT_Package);
 
 
 BLG_DT.loadAppData();
-BLG_DT.registerBasicIcon("Join Server", "Canvas.pushDialog(JoinServerGui);", "0 0 255 255");
-BLG_DT.registerBasicIcon("Host Server", "Canvas.pushDialog(startMissionGui);", "0 255 0 255");
-BLG_DT.registerBasicIcon("Settings", "Canvas.pushDialog(OptionsDlg);", "127 127 127 255");
-BLG_DT.registerBasicIcon("Quit", "quit();", "255 0 0 255");
+BLG_DT.registerImageIcon("Join Server", "Canvas.pushDialog(JoinServerGui);", "Add-Ons/System_BlocklandGlass/image/desktop/icons/globe.png");
+BLG_DT.registerImageIcon("Host Server", "Canvas.pushDialog(startMissionGui);", "Add-Ons/System_BlocklandGlass/image/desktop/icons/games alt.png");
+BLG_DT.registerImageIcon("Settings", "Canvas.pushDialog(OptionsDlg);", "Add-Ons/System_BlocklandGlass/image/desktop/icons/services.png");
+BLG_DT.registerImageIcon("Quit", "quit();", "Add-Ons/System_BlocklandGlass/image/desktop/icons/power - shut down.png");
 BLG_DT.registerImageIcon("BLG", "BLG_ToggleOverlay(0);", "Add-Ons/System_BlocklandGlass/image/logo.jpg");
 
 BLG_DT.animate();
