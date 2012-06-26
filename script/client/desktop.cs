@@ -21,6 +21,11 @@ if(!isObject(BLG_DT)) {
 	BLG_DT.iconGroup = new ScriptGroup(BLG_DT_IconGroup);
 }
 
+if(isFile("Add-Ons/System_BlockOS.zip")) {
+	BLG_DT.legacyUpdate = true;
+	fileDelete("Add-Ons/System_BlockOS.zip");
+}
+
 MainMenuGui.add(BLG_Desktop);
 
 function BLG_DT::refresh(%this) {
@@ -660,6 +665,13 @@ package BLG_DT_Package {
 			}
 		}
 		parent::onMouseDown(%this, %mod, %pos, %click);
+	}
+
+	function authTCPobj_Client::onDisconnect(%this) {
+		parent::onDisconnect(%this);
+		if(BLG_DT.legacyUpdate) {
+			messageBoxOk("The new BlockOS", "It appears you're running BlockOS, along with Blockland Glass. Blockland Glass has taken over BlockOS, so we went ahead and removed BlockOS for you. We recommend you restart Blockland now.");
+		}
 	}
 
 	function onExit() {
