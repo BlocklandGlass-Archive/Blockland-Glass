@@ -1,6 +1,6 @@
 new ScriptGroup(BLG) {
-	internalVersion = "2.0.PA4";
-	externalVersion = "2.0 Pre-Alpha 4";
+	internalVersion = "2.0.A1";
+	externalVersion = "2.0 Alpha 1";
 	versionId = 1337; //1 is anything before 1.2
 
 	debugLevel = 3;

@@ -100,6 +100,9 @@ function BLG_Desktop_Menu::open(%menu) {
 function BLG_Desktop_Menu::onAnimationComplete(%this) {
 	if(!%this.open) {
 		%this.getObject(0).setVisible(true);
+		BLG_Desktop_MenuFiller.setVisible(false);
+	} else {
+		BLG_Desktop_MenuFiller.setVisible(true);
 	}
 }
 
@@ -156,6 +159,38 @@ function BLG_DT::saveAppData(%this) {
 	}
 	%fo.close();
 	%fo.delete();
+}
+
+GuiTextProfile.fontColors[9] = "255 255 255 255";
+
+function BLG_DT::showName(%this, %obj) {
+    BLG_Desktop_Swatch.nameBox.delete();
+	%pos = Canvas.getCursorPos();
+
+	%namebox = new GuiSwatchCtrl() {
+		profile = "GuiDefaultProfile";
+		horizSizing = "width";
+		vertSizing = "height";
+		position = getWord(%pos, 0) SPC getWord(%pos, 1)-16;
+		extent = "75 18";
+		minExtent = "8 2";
+		visible = "1";
+		color = "0 0 0 127";
+
+        new GuiTextCtrl() {
+            profile = "GuiTextProfile";
+            horizSizing = "center";
+            vertSizing = "center";
+            position = "2 0";
+            extent = "70 18";
+            minExtent = "70 18";
+            visible = "1";
+            text = "\c9" SPC %obj.name;
+            maxLength = "255";
+         };
+    };
+    BLG_Desktop_Swatch.add(%namebox);
+    BLG_Desktop_Swatch.nameBox = %nameBox;
 }
 
 function BLG_DT::loadAppsToScreen(%this) {
@@ -508,7 +543,13 @@ package BLG_DT_Package {
 	function GuiMouseEventCtrl::onMouseDown(%this, %mod, %pos, %click) {
 		if(%this.getName() $= "BLG_Desktop_MouseCapture") {
 			if(isObject(%obj = BLG_DT.getIconFromPos(%pos))) {
-				//%obj.gui.color = "0 0 0 255";
+
+				cancel(BLG_DT.showNameSchedule);
+				BLG_DT.hoverObject = "";
+				if(isObject(BLG_Desktop_Swatch.nameBox)) {
+					BLG_Desktop_Swatch.nameBox.delete();
+				}
+
 				BLG_Desktop_Swatch.pushToBack(%obj.gui);
 				BLG_Desktop_MouseCapture.selectedObj = %obj;
 				BLG_Desktop_MouseCapture.selectedObj.originalPos = %obj.gui.position;
@@ -521,6 +562,12 @@ package BLG_DT_Package {
     function GuiMouseEventCtrl::onMouseDragged(%this, %bool, %pos, %x) {
         if(%this.getName() $= "BLG_Desktop_MouseCapture") {
             %obj = BLG_Desktop_MouseCapture.selectedObj;
+
+			cancel(BLG_DT.showNameSchedule);
+			BLG_DT.hoverObject = "";
+			if(isObject(BLG_Desktop_Swatch.nameBox)) {
+				BLG_Desktop_Swatch.nameBox.delete();
+			}
             
             %x = getWord(%pos, 0) - getWord(%obj.relativePos, 0);
             %y = getWord(%pos, 1) - getWord(%obj.relativePos, 1);
@@ -579,12 +626,40 @@ package BLG_DT_Package {
 	                	BLG_DT.animation[BLG_DT.animations] = %obj.gui TAB 10 TAB 5 + 64 * getWord(%obj.gridPos, 0) SPC 5 + 64 * getWord(%obj.gridPos, 1) TAB "54 54" TAB %obj.gui.color;
 						BLG_DT.animations++;
 	                }
-	                schedule(500, 0, BlockOS_SaveIconPositions);
+	                %this.onMouseMove(%mod, %pos, %click);
 	 			}
 	            BLG_Desktop_MouseCapture.selectedObj = "";
 	        }
 		}
 		parent::onMouseUp(%this, %mod, %pos, %click);
+	}
+
+	function GuiMouseEventCtrl::onMouseMove(%this, %mod, %pos, %click) {
+		if(%this.getName() $= "BLG_Desktop_MouseCapture") {
+			if(isObject(%obj = BLG_DT.getIconFromPos(%pos))) {
+				if(BLG_DT.hoverObject !$= %obj) {
+					BLG_DT.hoverObject = %obj;
+
+					if(isObject(BLG_Desktop_Swatch.nameBox)) {
+						BLG_Desktop_Swatch.nameBox.delete();
+					}
+
+					cancel(BLG_DT.showNameSchedule);
+					BLG_DT.showNameSchedule = BLG_DT.schedule(500, showName, %obj);
+				} else {
+					if(isObject(BLG_Desktop_Swatch.nameBox)) {
+						BLG_DT.showName(%obj);
+					}
+				}
+			} else {
+				BLG_DT.hoverObject = "";
+				cancel(BLG_DT.showNameSchedule);
+				if(isObject(BLG_Desktop_Swatch.nameBox)) {
+					BLG_Desktop_Swatch.nameBox.delete();
+				}
+			}
+		}
+		parent::onMouseDown(%this, %mod, %pos, %click);
 	}
 
 	function onExit() {

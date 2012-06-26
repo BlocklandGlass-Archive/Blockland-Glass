@@ -1,0 +1,113 @@
+//--- OBJECT WRITE BEGIN ---
+new GuiControl(BLG_Desktop_MenuFiller) {
+   profile = "GuiDefaultProfile";
+   horizSizing = "right";
+   vertSizing = "bottom";
+   position = "0 0";
+   extent = "640 480";
+   minExtent = "8 2";
+   visible = "1";
+
+   new GuiSwatchCtrl() {
+      profile = "GuiDefaultProfile";
+      horizSizing = "right";
+      vertSizing = "bottom";
+      position = "0 0";
+      extent = "640 480";
+      minExtent = "8 2";
+      visible = "1";
+      color = "255 255 255 255";
+
+      new GuiBitmapButtonCtrl() {
+         profile = "BlockButtonProfile";
+         horizSizing = "right";
+         vertSizing = "bottom";
+         position = "5 5";
+         extent = "140 30";
+         minExtent = "8 2";
+         visible = "1";
+         text = "Background";
+         groupNum = "-1";
+         buttonType = "PushButton";
+         bitmap = "./image/desktop/tab";
+         lockAspectRatio = "0";
+         alignLeft = "0";
+         overflowImage = "0";
+         mKeepCached = "0";
+         mColor = "255 255 255 255";
+      };
+      new GuiBitmapButtonCtrl() {
+         profile = "BlockButtonProfile";
+         horizSizing = "right";
+         vertSizing = "bottom";
+         position = "150 5";
+         extent = "140 30";
+         minExtent = "8 2";
+         visible = "1";
+         text = "Options";
+         groupNum = "-1";
+         buttonType = "PushButton";
+         bitmap = "./image/desktop/tab";
+         lockAspectRatio = "0";
+         alignLeft = "0";
+         overflowImage = "0";
+         mKeepCached = "0";
+         mColor = "255 255 255 255";
+      };
+      new GuiBitmapButtonCtrl() {
+         profile = "BlockButtonProfile";
+         horizSizing = "right";
+         vertSizing = "bottom";
+         position = "295 5";
+         extent = "140 30";
+         minExtent = "8 2";
+         visible = "1";
+         text = "Apps";
+         groupNum = "-1";
+         buttonType = "PushButton";
+         bitmap = "./image/desktop/tab";
+         lockAspectRatio = "0";
+         alignLeft = "0";
+         overflowImage = "0";
+         mKeepCached = "0";
+         mColor = "255 255 255 255";
+      };
+      new GuiBitmapButtonCtrl() {
+         profile = "BlockButtonProfile";
+         horizSizing = "right";
+         vertSizing = "bottom";
+         position = "440 5";
+         extent = "140 30";
+         minExtent = "8 2";
+         visible = "1";
+         text = "Filler";
+         groupNum = "-1";
+         buttonType = "PushButton";
+         bitmap = "./image/desktop/tab";
+         lockAspectRatio = "0";
+         alignLeft = "0";
+         overflowImage = "0";
+         mKeepCached = "0";
+         mColor = "255 255 255 255";
+      };
+      new GuiBitmapButtonCtrl() {
+         profile = "GuiDefaultProfile";
+         horizSizing = "right";
+         vertSizing = "bottom";
+         position = "620 5";
+         extent = "15 15";
+         minExtent = "8 2";
+         visible = "1";
+         command = "BLG_DT.toggleMenu();";
+         groupNum = "-1";
+         buttonType = "PushButton";
+         bitmap = "./image/desktop/x";
+         lockAspectRatio = "0";
+         alignLeft = "0";
+         overflowImage = "0";
+         mKeepCached = "0";
+         mColor = "255 255 255 255";
+      };
+   };
+};
+//--- OBJECT WRITE END ---

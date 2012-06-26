@@ -84,6 +84,7 @@ function BLG_GAU_Downloader::onConnected(%this) {
 }
 
 function BLG_GAU_Downloader::onLine(%this, %line) {
+	BLG.debug(%line);
 	if(strPos(%line, "Content-Length:") >= 0)
 		%this.size = getWord(%line, 1);
 	
