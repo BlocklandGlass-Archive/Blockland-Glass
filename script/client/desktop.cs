@@ -175,10 +175,10 @@ function BLG_DT::showName(%this, %obj) {
 
 	%namebox = new GuiSwatchCtrl() {
 		profile = "GuiDefaultProfile";
-		horizSizing = "width";
-		vertSizing = "height";
+		horizSizing = "right";
+		vertSizing = "bottom";
 		position = getWord(%pos, 0) SPC getWord(%pos, 1)-16;
-		extent = "75 18";
+		extent = BLG_Desktop_Swatch.nameBoxExtent;
 		minExtent = "8 2";
 		visible = "1";
 		color = "0 0 0 127";
@@ -187,22 +187,28 @@ function BLG_DT::showName(%this, %obj) {
             profile = "GuiTextProfile";
             horizSizing = "center";
             vertSizing = "center";
-            position = "2 0";
+            position = "1 0";
             extent = "70 18";
-            minExtent = "70 18";
+            minExtent = "2 18";
             visible = "1";
             text = "\c9" SPC %obj.name;
             maxLength = "255";
          };
     };
+
     BLG_Desktop_Swatch.add(%namebox);
     BLG_Desktop_Swatch.nameBox = %nameBox;
+    if(BLG_Desktop_Swatch.nameBoxExtent != (%e = getWord(%namebox.getObject(0).extent, 0) + 4 SPC getWord(%namebox.getObject(0).extent, 1))) {
+    	BLG_Desktop_Swatch.nameBoxExtent = %e;
+    	%this.schedule(1, showName, %obj);
+    }
 }
 
 function BLG_DT::loadAppsToScreen(%this) {
 	for(%i = 0; %i < %this.icons; %i++) {
 		if(%this.saveData[%this.icon[%i]] !$= "") {
 			%grid[getWord(%this.saveData[%this.icon[%i]], 0), getWord(%this.saveData[%this.icon[%i]], 1)] = %this.icon[%i] TAB %this.iconCmd[%i];
+			echo("Loaded Icon " @ %this.icon[%i] @ " at " @ %this.saveData[%this.icon[%i]]);
 		}
 	}
 	for(%i = 0; %i < %this.icons; %i++) {
