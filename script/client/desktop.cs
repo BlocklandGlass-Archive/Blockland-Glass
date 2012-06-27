@@ -398,6 +398,20 @@ function BLG_DT::getIconFromPos(%this, %pos) {
     return false;
 }
 
+function BLG_DT::getIconFromGridPos(%this,%gridPos)
+{
+	for(%i = 0; %i < BLG_DT_IconGroup.getCount(); %i++)
+	{
+		%obj = BLG_DT_IconGroup.getObject(%i);
+
+		if(%obj.gridPos $= %gridPos)
+		{
+			return %obj;
+		}
+	}
+	return false;
+}
+
 function BLG_DT::newAppIcon(%this, %name, %eval, %x, %y, %mode) {
 	if(%name $= "") {
 		%name = "BLANK";
@@ -837,6 +851,16 @@ package BLG_DT_Package {
 	                	BLG_DT.animation[BLG_DT.animations] = %obj.gui TAB 10 TAB 5 + 64 * %gridX SPC 5 + 64 * %gridY TAB "54 54" TAB %obj.gui.color;
 						BLG_DT.animations++;
 	                } else {
+						%curObj = BLG_DT.getIconFromGridPos(%gridX SPC %gridY);
+
+						BLG_DT.appGrid[getWord(%obj.gridPos, 0), getWord(%obj.gridPos, 1)] = %curObj.name;
+						BLG_DT.appGrid[%gridX, %gridY] = %obj.name;
+
+						%curObj.gridPos = %obj.gridPos;
+						%obj.gridPos = %gridX SPC %gridY;
+
+						BLG_DT.animation[BLG_DT.animations] = %curObj.gui TAB 10 TAB 5 + 64 * getWord(%curObj.gridPos, 0) SPC 5 + 64 * getWord(%curObj.gridPos, 1) TAB "54 54" TAB %curObj.gui.color;
+						BLG_DT.animations++;
 	                	BLG_DT.animation[BLG_DT.animations] = %obj.gui TAB 10 TAB 5 + 64 * getWord(%obj.gridPos, 0) SPC 5 + 64 * getWord(%obj.gridPos, 1) TAB "54 54" TAB %obj.gui.color;
 						BLG_DT.animations++;
 	                }
@@ -917,9 +941,9 @@ BLG_DT.loadAppData();
 BLG_DT.loadData();
 BLG_DT.registerImageIcon("Join Server", "Canvas.pushDialog(JoinServerGui);", "Add-Ons/System_BlocklandGlass/image/desktop/icons/globe.png");
 BLG_DT.registerImageIcon("Host Server", "Canvas.pushDialog(startMissionGui);", "Add-Ons/System_BlocklandGlass/image/desktop/icons/games alt.png");
+BLG_DT.registerImageIcon("Remote Control", "echo(\"Insert the Remote Control GUI\");", "Add-Ons/System_BlocklandGlass/image/desktop/icons/windows easy transfer.png");
+BLG_DT.registerImageIcon("Apps", "echo(\"Insert Apps GUI\");", "Add-Ons/System_BlocklandGlass/image/desktop/icons/my apps.png");
 BLG_DT.registerImageIcon("Quit", "quit();", "Add-Ons/System_BlocklandGlass/image/desktop/icons/power - shut down.png");
-BLG_DT.registerBasicIcon("Remote Control", "echo(\"Insert the Remote Control GUI\");", "255 128 128 255");
-BLG_DT.registerBasicIcon("Apps", "echo(\"Insert Apps GUI\");", "255 255 255 255");
 BLG_DT.registerBasicIcon("Filler1", "echo(\"This is just to test animation\");", "0 0 0 255");
 BLG_DT.registerBasicIcon("Filler2", "echo(\"This is just to test animation\");", "128 0 128 255");
 
