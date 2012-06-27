@@ -571,11 +571,14 @@ function BLG_DT::startScreenSaver(%this) {
 
 		%p = circToPoint(%r, (%interval*%i)-90);
 
-		BLG_CAS.newAnimation(%obj.gui).setDuration(750).setPosition(getWord(%center, 0)+getWord(%p, 0)-15 SPC getWord(%center, 1)+getWord(%p, 1)-15).setExtent(%iconSize).start();
+		if(%i == 0) {
+			BLG_CAS.newAnimation(%obj.gui).setDuration(750).setPosition(getWord(%center, 0)+getWord(%p, 0)-15 SPC getWord(%center, 1)+getWord(%p, 1)-15).setExtent(%iconSize).setFinishHandle("BLG_DT.screenSaverLoop").start();
+		} else {
+			BLG_CAS.newAnimation(%obj.gui).setDuration(750).setPosition(getWord(%center, 0)+getWord(%p, 0)-15 SPC getWord(%center, 1)+getWord(%p, 1)-15).setExtent(%iconSize).start();
+		}
 	}
 	%this.screenSaverDeg = 0;
 	%this.screenSaverRad = 100;
-	%this.screensaverStartCountdown = 75;
 }
 
 function BLG_DT::stopScreensaver(%this) {
