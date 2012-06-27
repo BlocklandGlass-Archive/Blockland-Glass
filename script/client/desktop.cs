@@ -8,8 +8,7 @@ if(!isObject(BLG_DT)) {
 	new ScriptObject(BLG_DT) {
 		apps = 0;
 
-		animations = 0;
-		timeMode = 2;
+		timeMode = 3;
 
 		icons = 0;
 
@@ -89,7 +88,6 @@ function BLG_DT::loadData(%this) {
 function BLG_DT::populateBackgroundList(%this) {
 	BLG_Desktop_BackgroundList.deleteAll();
 	%ratio = getWord(Canvas.getExtent(), 1)/getWord(Canvas.getExtent(), 0);
-	echo(%ratio);
 
 	%bitmap = new GuiBitmapCtrl() {
 		profile = "GuiDefaultProfile";
@@ -193,12 +191,10 @@ function BLG_DT::toggleMenu(%this) {
 	if(!%menu.isAnimating) {
 		if(%menu.open) {
 			%menu.isAnimating = true;
-			%this.animation[%this.animations] = %menu TAB 10 TAB 5 SPC getWord(Canvas.getExtent(), 1)-59 TAB "54 54" TAB "0 0 0 127";
-			%this.animations++;
+			BLG_CAS.newAnimation(%menu).setDuration(100).setPosition(5 SPC getWord(Canvas.getExtent(), 1)-59).setExtent("54 54").setColor("0 0 0 127").setFinishHandle("BLG_Desktop_Menu.onAnimationComplete").start();
 		} else {
 			%menu.isAnimating = true;
-			%this.animation[%this.animations] = %menu TAB 10 TAB (getWord(Canvas.getExtent(), 0)/2)-320 SPC (getWord(Canvas.getExtent(), 1)/2)-240 TAB "640 480" TAB "255 255 255 255";
-			%this.animations++;
+			BLG_CAS.newAnimation(%menu).setDuration(100).setPosition((getWord(Canvas.getExtent(), 0)/2)-320 SPC (getWord(Canvas.getExtent(), 1)/2)-240).setExtent("640 480").setColor("255 255 255 255").setFinishHandle("BLG_Desktop_Menu.onAnimationComplete").start();
 		}
 		%menu.open = !%menu.open;
 	}
@@ -317,7 +313,6 @@ function BLG_DT::loadAppsToScreen(%this) {
 	for(%i = 0; %i < %this.icons; %i++) {
 		if(%this.saveData[%this.icon[%i]] !$= "") {
 			%grid[getWord(%this.saveData[%this.icon[%i]], 0), getWord(%this.saveData[%this.icon[%i]], 1)] = %this.icon[%i] TAB %this.iconCmd[%i];
-			echo("Loaded Icon " @ %this.icon[%i] @ " at " @ %this.saveData[%this.icon[%i]]);
 		}
 	}
 	for(%i = 0; %i < %this.icons; %i++) {
@@ -515,15 +510,11 @@ function BLG_DT::newAppIcon(%this, %name, %eval, %x, %y, %mode) {
     BLG_DT_IconGroup.add(%icon);
     BLG_Desktop_Swatch.add(%gui);
 
-    %color = "0 0 0 0";
     if(%icon.type $= "basic" && %icon.dat !$= "") {
-    	%color = %icon.dat;
+		BLG_CAS.newAnimation(%gui).setDuration(1000).setPosition(5 + 64 * %x SPC 5 + 64 * %y).setExtent("54 54").setColor(%icon.dat).start();
+    } else {  	
+		BLG_CAS.newAnimation(%gui).setDuration(1000).setPosition(5 + 64 * %x SPC 5 + 64 * %y).setExtent("54 54").start();
     }
-
-
-	%this.animation[%this.animations] = %gui TAB 100 TAB 5 + 64 * %x SPC 5 + 64 * %y TAB "54 54" TAB %color;
-	%this.animations++;
-
 
 	%this.apps++;
 }
@@ -579,10 +570,8 @@ function BLG_DT::startScreenSaver(%this) {
 		%obj = BLG_DT_IconGroup.getObject(%i);
 
 		%p = circToPoint(%r, (%interval*%i)-90);
-		echo(%p);
 
-		%this.animation[%this.animations] = %obj.gui TAB 75 TAB getWord(%center, 0)+getWord(%p, 0)-15 SPC getWord(%center, 1)+getWord(%p, 1)-15 TAB %iconSize TAB (%obj.dat !$= "" ? %obj.dat : "255 255 255 255");
-		%this.animations++;
+		BLG_CAS.newAnimation(%obj.gui).setDuration(750).setPosition(getWord(%center, 0)+getWord(%p, 0)-15 SPC getWord(%center, 1)+getWord(%p, 1)-15).setExtent(%iconSize).start();
 	}
 	%this.screenSaverDeg = 0;
 	%this.screenSaverRad = 100;
@@ -590,14 +579,13 @@ function BLG_DT::startScreenSaver(%this) {
 }
 
 function BLG_DT::stopScreensaver(%this) {
+	cancel(%this.screenSaverLoop);
 	%this.inScreensaverLoop = false;
 	%this.inScreensaver = false;
 
 	for(%i = 0; %i < BLG_DT_IconGroup.getCount(); %i++) {
 		%obj = BLG_DT_IconGroup.getObject(%i);
-
-		%this.animation[%this.animations] = %obj.gui TAB 20 TAB 5 + 64 * getWord(%obj.gridPos, 0) SPC 5 + 64 * getWord(%obj.gridPos, 1) TAB "54 54" TAB %obj.gui.color;
-		%this.animations++;
+		BLG_CAS.newAnimation(%obj.gui).setDuration(200).setPosition(5 + 64 * getWord(%obj.gridPos, 0) SPC 5 + 64 * getWord(%obj.gridPos, 1)).setExtent("54 54").start();
 	}	
 }
 
@@ -623,12 +611,14 @@ function BLG_DT::screenSaverLoop(%this) {
 		%point = circToPoint(%r+50, (%this.screenSaveInterval*%i) - 90 + %this.screenSaverDeg);
 		%obj.gui.position = getWord(%center, 0)+getWord(%point, 0)-15 SPC getWord(%center, 1)+getWord(%point, 1)-15;
 	}
+
+	%this.screenSaverLoop = %this.schedule(10, screenSaverLoop);
 }
 
-function BLG_DT::animate(%this) {
-	cancel(%this.animateLoop);
+function BLG_DT::timeLoop(%this) {
+	cancel(%this.timeLoop);
 
-	%this.animateLoop = %this.schedule(10, animate);
+	%this.timeLoop = %this.schedule(250, timeLoop);
 
 	if(%this.lastMove+30000 <= getSimTime() && !%this.inScreensaver) {
 		%this.startScreenSaver();
@@ -636,88 +626,12 @@ function BLG_DT::animate(%this) {
 		%this.stopScreensaver();
 	}
 
-	if(%this.inScreensaverLoop) {
-		%this.screenSaverLoop();
-	}
-
 	if(%this.extent !$= Canvas.getExtent()) {
 		%this.extent = Canvas.getExtent();
 		%this.refresh();
 	}
 
-	if(%this.screensaverStartCountdown > 0) {
-		%this.screensaverStartCountdown--;
-		if(%this.screensaverStartCountdown == 0) {
-			BLG_DT.screenSaverLoop();
-		}
-	} 
-
 	BLG_Desktop_Clock.setValue(%this.getTime());
-	for(%i = 0; %i < %this.animations; %i++) {
-		%data = %this.animation[%i];
-		%object = getField(%data, 0);
-		%ticks = getField(%data, 1);
-		%color = getField(%data, 4);
-		%startPosX = getWord(%object.position, 0);
-		%startPosY = getWord(%object.position, 1);
-		%startExtX = getWord(%object.extent, 0);
-		%startExtY = getWord(%object.extent, 1);
-		%startColR = getWord(%object.color, 0);
-		%startColG = getWord(%object.color, 1);
-		%startColB = getWord(%object.color, 2);
-		%startColA = getWord(%object.color, 3);
-		%endPosX = getWord(getField(%data, 2), 0);
-		%endPosY = getWord(getField(%data, 2), 1);
-		%endExtX = getWord(getField(%data, 3), 0);
-		%endExtY = getWord(getField(%data, 3), 1);
-		%endColR = getWord(getField(%data, 4), 0);
-		%endColG = getWord(getField(%data, 4), 1);
-		%endColB = getWord(getField(%data, 4), 2);
-		%endColA = getWord(getField(%data, 4), 3);
-
-		if(%this.animationStart[%i] $= "") {
-			%object.isAnimating = true;
-			%this.animationStart[%i] = %object.position SPC %object.extent;
-			%this.animationChange[%i] = (%endPosX-%startPosX)/%ticks SPC (%endPosY-%startPosY)/%ticks SPC (%endExtX-%startExtX)/%ticks SPC (%endExtY-%startExtY)/%ticks;
-			%this.animationColor[%i] = (%endColR-%startColR)/%ticks SPC (%endColG-%startColG)/%ticks SPC (%endColB-%startColB)/%ticks SPC (%endColA-%startColA)/%ticks;
-		}
-
-		%ticks--;
-		%this.animation[%i] = %object TAB %ticks TAB getField(%data, 2) TAB getField(%data, 3) TAB getField(%data, 4);
-
-		if(%ticks == 0) {
-			%object.position = getField(%data, 2);
-			%object.extent = getField(%data, 3);
-			%object.color = getField(%data, 4);
-			%this.animation[%i] = "";
-			%this.animationStart[%i] = "";
-			%this.animationChange[%i] = "";
-			%this.animationColor[%i] = "";
-			%object.isAnimating = false;
-			if(isFunction(%object, onAnimationComplete)) {
-				%object.onAnimationComplete();
-			}
-		} else {
-			%object.position = mFloor(%endPosX-(getWord(%this.animationChange[%i], 0)*%ticks)) SPC mFloor(%endPosY-(getWord(%this.animationChange[%i], 1)*%ticks));
-			%object.extent = mFloor(%endExtX-(getWord(%this.animationChange[%i], 2)*%ticks)) SPC mFloor(%endExtY-(getWord(%this.animationChange[%i], 3)*%ticks));
-			%object.color = mFloor(%endColR-(getWord(%this.animationColor[%i], 0)*%ticks)) SPC mFloor(%endColG-(getWord(%this.animationColor[%i], 1)*%ticks)) SPC mFloor(%endColB-(getWord(%this.animationColor[%i], 2)*%ticks)) SPC mFloor(%endColA-(getWord(%this.animationColor[%i], 3)*%ticks));
-		}
-	}
-
-	%lastFound = -1;
-	for(%i = 0; %i < %this.animations; %i++) {
-		if(%this.animation[%i] $= "" && %this.animation[%i+1] !$= "") {
-			%this.animation[%i] = %this.animation[%i+1];
-			%this.animation[%i+1] = "";
-			%this.animationStart[%i+1] = "";
-			%this.animationChange[%i+1] = "";
-			%this.animationColor[%i+1] = "";
-			%lastFound = %i;
-		} else if(%this.animation[%i] !$= "") {
-			%lastFound = %i;
-		}
-	}
-	%this.animations = %lastFound+1;
 }
 
 function BLG_DT::getTime(%this) {
@@ -760,6 +674,149 @@ function BLG_DT::getTime(%this) {
 		}
 		return %hour @ ":" @ getField(%explode, 1) @ ":" @ getField(%explode, 2) SPC %apm;
 
+	}
+}
+
+//================================================
+// Animation System
+//================================================
+
+if(!isObject(BLG_CAS)) {
+	new ScriptGroup(BLG_CAS) {
+		isRunning = false;
+	};
+}
+
+function BLG_CAS::newAnimation(%this, %object) {
+	%handle = new ScriptObject() {
+		class = "BLG_Animation";
+		object = %object;
+	};
+
+	return %handle;
+}
+
+function BLG_CAS::start(%this) {
+	if(%this.isRunning) {
+		return;
+	}
+
+	%this.start = "";
+	%this.isRunning = true;
+	%this.loop();
+}
+
+function BLG_CAS::loop(%this) {
+	%this.schedule = %this.schedule(10, loop);
+	if(%this.getCount() == 0) {
+		%this.isRunning = false;
+		cancel(%this.schedule);
+	}
+
+	for(%i = 0; %i < %this.getCount(); %i++) {
+		%handle = %this.getObject(%i);
+
+		%object = %handle.object;
+		%ticks = %handle.ticks;
+		%color = %handle.color;
+
+		if(%handle.color !$= "") {
+			%startColR = getWord(%object.color, 0);
+			%startColG = getWord(%object.color, 1);
+			%startColB = getWord(%object.color, 2);
+			%startColA = getWord(%object.color, 3);
+
+			%endColR = getWord(%handle.color, 0);
+			%endColG = getWord(%handle.color, 1);
+			%endColB = getWord(%handle.color, 2);
+			%endColA = getWord(%handle.color, 3);
+		}
+
+		if(%handle.position !$= "") {
+			%startPosX = getWord(%object.position, 0);
+			%startPosY = getWord(%object.position, 1);
+
+			%endPosX = getWord(%handle.position, 0);
+			%endPosY = getWord(%handle.position, 1);
+		}
+
+		if(%handle.extent !$= "") {
+			%startExtX = getWord(%object.extent, 0);
+			%startExtY = getWord(%object.extent, 1);
+
+			%endExtX = getWord(%handle.extent, 0);
+			%endExtY = getWord(%handle.extent, 1);
+		}
+
+
+
+		if(%handle.colorChange $= "" && %handle.color !$= "") {
+			%handle.colorChange = (%endColR-%startColR)/%ticks SPC (%endColG-%startColG)/%ticks SPC (%endColB-%startColB)/%ticks SPC (%endColA-%startColA)/%ticks;
+		}
+
+		if(%handle.sizeChange $= "" && %handle.position !$= "") {
+			%handle.posChange = (%endPosX-%startPosX)/%ticks SPC (%endPosY-%startPosY)/%ticks;
+		}
+
+		if(%handle.sizeChange $= "" && %handle.extent !$= "") {
+			%handle.sizeChange = (%endExtX-%startExtX)/%ticks SPC (%endExtY-%startExtY)/%ticks;
+		}
+
+
+
+		%handle.ticks = %ticks--;
+
+		if(%ticks <= 0) {
+			%object.position = %handle.position !$= "" ? %handle.position : %object.position;
+			%object.extent = %handle.extent !$= "" ? %handle.extent : %object.extent;
+			%object.color = %handle.color !$= "" ? %handle.color : %handle.color;
+			%this.remove(%handle);
+			%object.isAnimating = false;
+			if(%handle.finish !$= "") {
+				eval(%handle.finish @ "(" @ %object @ ");");
+			}
+		} else {
+			if(%handle.posChange !$= "") %object.position = mFloor(%endPosX-(getWord(%handle.posChange, 0)*%ticks)) SPC mFloor(%endPosY-(getWord(%handle.posChange, 1)*%ticks));
+			if(%handle.sizeChange !$= "") %object.extent = mFloor(%endExtX-(getWord(%handle.sizeChange, 0)*%ticks)) SPC mFloor(%endExtY-(getWord(%handle.sizeChange, 1)*%ticks));
+			if(%handle.colorChange !$= "") %object.color = mFloor(%endColR-(getWord(%handle.colorChange, 0)*%ticks)) SPC mFloor(%endColG-(getWord(%handle.colorChange, 1)*%ticks)) SPC mFloor(%endColB-(getWord(%handle.colorChange, 2)*%ticks)) SPC mFloor(%endColA-(getWord(%handle.colorChange, 3)*%ticks));
+		}
+	}
+
+	if(%this.getCount() == 0) {
+		cancel(%this.schedule);
+		%this.isRunning = false;
+	}
+}
+
+function BLG_Animation::setPosition(%this, %position) {
+	%this.position = %position;
+	return %this;
+}
+
+function BLG_Animation::setExtent(%this, %ext) {
+	%this.extent = %ext;
+	return %this;
+}
+
+function BLG_Animation::setColor(%this, %col) {
+	%this.color = %col;
+	return %this;
+}
+
+function BLG_Animation::setDuration(%this, %time) {
+	%this.ticks = mRound(%time/10);
+	return %this;
+}
+
+function BLG_Animation::setFinishHandle(%this, %eval) {
+	%this.finish = %eval;
+	return %this;
+}
+
+function BLG_Animation::start(%this) {
+	BLG_CAS.add(%this);
+	if(!BLG_CAS.isRunning && BLG_CAS.start $= "") {
+		BLG_CAS.start = BLG_CAS.schedule(5, start);
 	}
 }
 
@@ -854,8 +911,7 @@ package BLG_DT_Package {
 
 	                	%obj.gridPos = %gridX SPC %gridY;
 
-	                	BLG_DT.animation[BLG_DT.animations] = %obj.gui TAB 10 TAB 5 + 64 * %gridX SPC 5 + 64 * %gridY TAB "54 54" TAB %obj.gui.color;
-						BLG_DT.animations++;
+						BLG_CAS.newAnimation(%obj.gui).setDuration(100).setPosition(5 + 64 * %gridX SPC 5 + 64 * %gridY).start();
 	                } else {
 						%curObj = BLG_DT.getIconFromGridPos(%gridX SPC %gridY);
 
@@ -865,10 +921,8 @@ package BLG_DT_Package {
 						%curObj.gridPos = %obj.gridPos;
 						%obj.gridPos = %gridX SPC %gridY;
 
-						BLG_DT.animation[BLG_DT.animations] = %curObj.gui TAB 10 TAB 5 + 64 * getWord(%curObj.gridPos, 0) SPC 5 + 64 * getWord(%curObj.gridPos, 1) TAB "54 54" TAB %curObj.gui.color;
-						BLG_DT.animations++;
-	                	BLG_DT.animation[BLG_DT.animations] = %obj.gui TAB 10 TAB 5 + 64 * getWord(%obj.gridPos, 0) SPC 5 + 64 * getWord(%obj.gridPos, 1) TAB "54 54" TAB %obj.gui.color;
-						BLG_DT.animations++;
+						BLG_CAS.newAnimation(%curObj.gui).setDuration(100).setPosition(5 + 64 * getWord(%curObj.gridPos, 0) SPC 5 + 64 * getWord(%curObj.gridPos, 1)).start();
+						BLG_CAS.newAnimation(%obj.gui).setDuration(100).setPosition(5 + 64 * getWord(%obj.gridPos, 0) SPC 5 + 64 * getWord(%obj.gridPos, 1)).start();
 	                }
 	                %this.onMouseMove(%mod, %pos, %click);
 	 			}
@@ -951,5 +1005,5 @@ BLG_DT.registerImageIcon("Remote Control", "echo(\"Insert the Remote Control GUI
 BLG_DT.registerImageIcon("Apps", "echo(\"Insert Apps GUI\");", "Add-Ons/System_BlocklandGlass/image/desktop/icons/my apps.png");
 BLG_DT.registerImageIcon("Quit", "quit();", "Add-Ons/System_BlocklandGlass/image/desktop/icons/power - shut down.png");
 
-BLG_DT.animate();
+BLG_DT.timeLoop();
 BLG_DT.refresh();
