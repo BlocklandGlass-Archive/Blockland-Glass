@@ -289,6 +289,20 @@ function BLG_DT::getIconFromPos(%this, %pos) {
     return false;
 }
 
+function BLG_DT::getIconFromGridPos(%this,%gridPos)
+{
+	for(%i = 0; %i < BLG_DT_IconGroup.getCount(); %i++)
+	{
+		%obj = BLG_DT_IconGroup.getObject(%i);
+
+		if(%obj.gridPos $= %gridPos)
+		{
+			return %obj;
+		}
+	}
+	return false;
+}
+
 function BLG_DT::newAppIcon(%this, %name, %eval, %x, %y, %mode) {
 	if(%name $= "") {
 		%name = "BLANK";
@@ -728,6 +742,16 @@ package BLG_DT_Package {
 	                	BLG_DT.animation[BLG_DT.animations] = %obj.gui TAB 10 TAB 5 + 64 * %gridX SPC 5 + 64 * %gridY TAB "54 54" TAB %obj.gui.color;
 						BLG_DT.animations++;
 	                } else {
+						%curObj = BLG_DT.getIconFromGridPos(%gridX SPC %gridY);
+
+						BLG_DT.appGrid[getWord(%obj.gridPos, 0), getWord(%obj.gridPos, 1)] = %curObj.name;
+						BLG_DT.appGrid[%gridX, %gridY] = %obj.name;
+
+						%curObj.gridPos = %obj.gridPos;
+						%obj.gridPos = %gridX SPC %gridY;
+
+						BLG_DT.animation[BLG_DT.animations] = %curObj.gui TAB 10 TAB 5 + 64 * getWord(%curObj.gridPos, 0) SPC 5 + 64 * getWord(%curObj.gridPos, 1) TAB "54 54" TAB %curObj.gui.color;
+						BLG_DT.animations++;
 	                	BLG_DT.animation[BLG_DT.animations] = %obj.gui TAB 10 TAB 5 + 64 * getWord(%obj.gridPos, 0) SPC 5 + 64 * getWord(%obj.gridPos, 1) TAB "54 54" TAB %obj.gui.color;
 						BLG_DT.animations++;
 	                }
