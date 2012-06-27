@@ -242,62 +242,45 @@ new GuiControl(BLG_Desktop) {
             mColor = "255 255 255 255";
             text = "";
          };
+         new GuiSwatchCtrl(BLG_Desktop_Menu_Background) {
+            profile = "GuiDefaultProfile";
+            horizSizing = "right";
+            vertSizing = "bottom";
+            position = "5 40";
+            extent = "630 435";
+            minExtent = "8 2";
+            visible = "1";
+            color = "200 200 200 255";
+
+            new GuiScrollCtrl() {
+               profile = "BLG_ScrollProfile";
+               horizSizing = "right";
+               vertSizing = "bottom";
+               position = "5 5";
+               extent = "620 425";
+               minExtent = "8 2";
+               visible = "1";
+               willFirstRespond = "0";
+               hScrollBar = "alwaysOff";
+               vScrollBar = "alwaysOn";
+               constantThumbHeight = "0";
+               childMargin = "0 0";
+               rowHeight = "40";
+               columnWidth = "30";
+
+               new GuiSwatchCtrl(BLG_Desktop_BackgroundList) {
+                  profile = "GuiDefaultProfile";
+                  horizSizing = "right";
+                  vertSizing = "bottom";
+                  position = "0 0";
+                  extent = "620 0";
+                  minExtent = "8 2";
+                  visible = "1";
+                  color = "0 236 172 11";
+               };
+            };
+         };
       };
    };
 };
 //--- OBJECT WRITE END ---
-return;
-new GuiSwatchCtrl(BLG_Desktop_BottomBar) {
-      profile = "GuiDefaultProfile";
-      horizSizing = "width";
-      vertSizing = "top";
-      position = "160 416";
-      extent = "320 64";
-      minExtent = "8 2";
-      visible = "1";
-      color = "0 0 0 127";
-
-      new GuiSwatchCtrl(BLG_Desktop_Join) {
-         profile = "GuiDefaultProfile";
-         horizSizing = "relative";
-         vertSizing = "top";
-         position = "5 5";
-         extent = "70 59";
-         minExtent = "8 2";
-         visible = "1";
-         color = "0 255 0 255";
-      };
-
-      new GuiSwatchCtrl(BLG_Desktop_Host) {
-         profile = "GuiDefaultProfile";
-         horizSizing = "relative";
-         vertSizing = "top";
-         position = "85 5";
-         extent = "70 59";
-         minExtent = "8 2";
-         visible = "1";
-         color = "0 0 255 255";
-      };
-
-      new GuiSwatchCtrl(BLG_Desktop_Settings) {
-         profile = "GuiDefaultProfile";
-         horizSizing = "relative";
-         vertSizing = "top";
-         position = "170 5";
-         extent = "70 59";
-         minExtent = "8 2";
-         visible = "1";
-         color = "127 127 127 255";
-      };
-
-      new GuiSwatchCtrl(BLG_Desktop_Quit) {
-         profile = "GuiDefaultProfile";
-         horizSizing = "relative";
-         vertSizing = "top";
-         position = "255 5";
-         extent = "70 59";
-         minExtent = "8 2";
-         visible = "1";
-         color = "255 0 0 255";
-      };
-   };

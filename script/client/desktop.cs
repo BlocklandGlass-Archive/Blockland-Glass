@@ -17,6 +17,8 @@ if(!isObject(BLG_DT)) {
 		iconsY = mFloor(getWord(BLG_Desktop_Swatch.getExtent(), 1)/64);
 
 		loadAppMode = 4;
+
+		datas = "";
 	};
 	BLG_DT.iconGroup = new ScriptGroup(BLG_DT_IconGroup);
 }
@@ -34,20 +36,11 @@ function BLG_DT::refresh(%this) {
 		%this.loadedApps = true;
 	}
 
-	%w = (getWord(BLG_Desktop_BottomBar.getExtent(), 0) - 25)/4;
-	BLG_Desktop_Join.position = "5 5";
-	BLG_Desktop_Host.position = 10 + %w SPC 5;
-	BLG_Desktop_Settings.position = 15 + %w*2 SPC 5;
-	BLG_Desktop_Quit.position = 20 + %w*3 SPC 5;
-
-	BLG_Desktop_Join.extent = %w SPC 59;
-	BLG_Desktop_Host.extent = %w SPC 59;
-	BLG_Desktop_Settings.extent = %w SPC 59;
-	BLG_Desktop_Quit.extent = %w SPC 59;
-
 	BLG_Desktop_MouseCapture.extent = BLG_Desktop_Swatch.extent = getWord(Canvas.getExtent(), 0) SPC getWord(Canvas.getExtent(), 1)-64;
 	%this.iconsX = mFloor(getWord(BLG_Desktop_Swatch.getExtent(), 0)/64);
 	%this.iconsY = mFloor(getWord(BLG_Desktop_Swatch.getExtent(), 1)/64);
+
+	BLG_DT.populateBackgroundList();
 }
 
 function mRound(%a)
@@ -73,6 +66,122 @@ function circToPoint(%r, %a) {
 	%x = %r * mCos(%a);
 	%y = %r * mSin(%a);
 	return (mRound(%x) SPC mRound(%y));
+}
+
+//================================================
+// Settings
+//================================================
+
+function BLG_DT::loadData(%this) {
+	%fo = new FileObject();
+	%fo.openForRead("config/BLG/client/desktop/.dat");
+	while(!%fo.isEOF()) {
+		%line = %fo.readLine();
+		%this.data[getField(%line, 0)] = strReplace(getField(%line, 1), "\\t", "\t");
+		%this.datas = %this.datas TAB getField(%line, 0);
+	}
+	%this.datas = trim(%this.datas);
+	%fo.close();
+	%fo.delete();
+	%this.proccessSettings();
+}
+
+function BLG_DT::populateBackgroundList(%this) {
+	BLG_Desktop_BackgroundList.deleteAll();
+	%ratio = getWord(Canvas.getExtent(), 1)/getWord(Canvas.getExtent(), 0);
+	echo(%ratio);
+
+	%bitmap = new GuiBitmapCtrl() {
+		profile = "GuiDefaultProfile";
+		horizSizing = "right";
+		vertSizing = "bottom";
+		position = 0 SPC mRound((621*%ratio)*%i);
+		extent = 611 SPC mRound(611*%ratio);
+		minExtent = "8 2";
+		visible = "1";
+		bitmap = "Add-Ons/System_BlocklandGlass/image/desktop/desktop.jpg";
+		wrap = "0";
+		lockAspectRatio = "0";
+		alignLeft = "0";
+		overflowImage = "0";
+		keepCached = "0";
+
+		new GuiMouseEventCtrl(BLG_Desktop_Menu_BackgroundSelect) {
+			image = "Add-Ons/System_BlocklandGlass/image/desktop/desktop.jpg";
+			profile = "GuiDefaultProfile";
+			horizSizing = "right";
+			vertSizing = "bottom";
+			position = "0 0";
+			extent = 611 SPC mRound(611*%ratio);
+			minExtent = "8 2";
+			visible = "1";
+			lockMouse = "0";
+		};
+	};
+
+	BLG_Desktop_BackgroundList.add(%bitmap);
+	%i++;
+
+
+	%file = findFirstFile("config/BLG/client/desktop/background/*.jpg");
+	while(%file !$= "") {
+	    %bitmap = new GuiBitmapCtrl() {
+			profile = "GuiDefaultProfile";
+			horizSizing = "right";
+			vertSizing = "bottom";
+			position = 0 SPC mRound((621*%ratio)*%i);
+			extent = 611 SPC mRound(611*%ratio);
+			minExtent = "8 2";
+			visible = "1";
+			bitmap = %file;
+			wrap = "0";
+			lockAspectRatio = "0";
+			alignLeft = "0";
+			overflowImage = "0";
+			keepCached = "0";
+
+			new GuiMouseEventCtrl(BLG_Desktop_Menu_BackgroundSelect) {
+				image = %file;
+
+				profile = "GuiDefaultProfile";
+				horizSizing = "right";
+				vertSizing = "bottom";
+				position = "0 0";
+				extent = 611 SPC mRound(611*%ratio);
+				minExtent = "8 2";
+				visible = "1";
+				lockMouse = "0";
+			};
+		};
+
+		BLG_Desktop_BackgroundList.add(%bitmap);
+
+		%i++;
+		%file = findNextFile("config/BLG/client/desktop/background/*.jpg");
+	}
+	BLG_Desktop_BackgroundList.extent = 620 SPC mRound(((621*%ratio))*%i)-10;
+	%scroll = BLG_Desktop_BackgroundList.getGroup();
+	%group = %scroll.getGroup();
+	%group.remove(%scroll);
+	%group.add(%scroll);
+}
+
+function BLG_DT::saveData(%this) {
+	%fo = new FileObject();
+	%fo.openForWrite("config/BLG/client/desktop/.dat");
+	for(%i = 0; %i < getFieldCount(%this.datas); %i++) {
+		%fo.writeLine(getField(%this.datas, %i) TAB strReplace(%this.data[getField(%this.datas, %i)], "\t", "\\t"));
+	}
+	%fo.close();
+	%fo.delete();
+}
+
+function BLG_DT::proccessSettings(%this) {
+	%bg = BLG_Desktop_Background;
+	%bg.bitmap = %this.data["background"] $= "" ? "Add-Ons/System_BlocklandGlass/image/desktop.jpg" : %this.data["background"];
+	%g = %bg.getGroup();
+	%g.remove(%bg);
+	%g.add(%bg);
 }
 
 //================================================
@@ -608,12 +717,12 @@ function BLG_DT::getTime(%this) {
 		%hour = getField(%explode, 0);
 		if(getField(%explode, 0) < 12) {
 			%apm = "AM";
+			if(%hour $= "00") {
+				%hour = 12;
+			}
 		} else {
 			%apm = "PM";
 			%hour = %hour-12;
-			if(%hour == 0) {
-				%hour = 12;
-			}
 		}
 		return %hour @ ":" @ getField(%explode, 1) SPC %apm;
 	} else if(%this.timeMode == 3) {
@@ -622,12 +731,12 @@ function BLG_DT::getTime(%this) {
 		%hour = getField(%explode, 0);
 		if(getField(%explode, 0) < 12) {
 			%apm = "AM";
+			if(%hour $= "00") {
+				%hour = 12;
+			}
 		} else {
 			%apm = "PM";
 			%hour = %hour-12;
-			if(%hour == 0) {
-				%hour = 12;
-			}
 		}
 		return %hour @ ":" @ getField(%explode, 1) @ ":" @ getField(%explode, 2) SPC %apm;
 
@@ -735,6 +844,13 @@ package BLG_DT_Package {
 	 			}
 	            BLG_Desktop_MouseCapture.selectedObj = "";
 	        }
+		} else if(%this.getName() $= "BLG_Desktop_Menu_BackgroundSelect") {
+			echo("New Background:" SPC %this.image);
+			if(strPos(BLG_DT.datas, "background") != -1) {
+				BLG.datas = "\tbackground";
+			}
+			BLG_DT.data["background"] = %this.image;
+			BLG_DT.proccessSettings();
 		}
 		parent::onMouseUp(%this, %mod, %pos, %click);
 	}
@@ -790,6 +906,7 @@ package BLG_DT_Package {
 
 	function onExit() {
 		BLG_DT.saveAppData();
+		BLG_DT.saveData();
 		parent::onExit();
 	}
 };
@@ -797,6 +914,7 @@ activatePackage(BLG_DT_Package);
 
 
 BLG_DT.loadAppData();
+BLG_DT.loadData();
 BLG_DT.registerImageIcon("Join Server", "Canvas.pushDialog(JoinServerGui);", "Add-Ons/System_BlocklandGlass/image/desktop/icons/globe.png");
 BLG_DT.registerImageIcon("Host Server", "Canvas.pushDialog(startMissionGui);", "Add-Ons/System_BlocklandGlass/image/desktop/icons/games alt.png");
 BLG_DT.registerImageIcon("Quit", "quit();", "Add-Ons/System_BlocklandGlass/image/desktop/icons/power - shut down.png");
