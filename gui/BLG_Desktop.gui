@@ -9,7 +9,6 @@ new GuiControl(BLG_Desktop) {
    minExtent = "8 2";
    visible = "1";
 
-
    new GuiSwatchCtrl() {
       profile = "GuiDefaultProfile";
       horizSizing = "width";
@@ -34,13 +33,24 @@ new GuiControl(BLG_Desktop) {
 
    new GuiSwatchCtrl(BLG_Desktop_Swatch) {
       profile = "GuiDefaultProfile";
-      horizSizing = "width";
+      horizSizing = "right";
       vertSizing = "height";
       position = "0 0";
       extent = "640 480";
       minExtent = "8 2";
       visible = "1";
       color = "0 0 0 0";
+   };
+
+   new GuiSwatchCtrl(BLG_Desktop_BottomBorder) {
+      profile = "GuiDefaultProfile";
+      horizSizing = "right";
+      vertSizing = "bottom";
+      position = "0 416";
+      extent = "640 5";
+      minExtent = "8 2";
+      visible = "1";
+      color = "0 0 0 127";
    };
 
    new GuiSwatchCtrl(BLG_Desktop_BottomBar) {
@@ -61,7 +71,7 @@ new GuiControl(BLG_Desktop) {
          extent = "100 24";
          minExtent = "100 20";
          visible = "1";
-         color = "0 0 0 64";
+         color = "0 0 0 128";
 
          new GuiTextCtrl(BLG_Desktop_Clock) {
             profile = "BLG_TimeText";
@@ -84,7 +94,7 @@ new GuiControl(BLG_Desktop) {
          extent = "200 24";
          minExtent = "100 20";
          visible = "1";
-         color = "0 0 0 64";
+         color = "0 0 0 128";
 
          new GuiTextCtrl(MM_AuthText) {
             profile = "BLG_TimeText";
@@ -102,8 +112,8 @@ new GuiControl(BLG_Desktop) {
 
    new GuiMouseEventCtrl(BLG_Desktop_MouseCapture) {
       profile = "GuiDefaultProfile";
-      horizSizing = "width";
-      vertSizing = "height";
+      horizSizing = "right";
+      vertSizing = "bottom";
       position = "0 0";
       extent = "640 480";
       minExtent = "8 2";
@@ -119,7 +129,7 @@ new GuiControl(BLG_Desktop) {
       extent = "54 54";
       minExtent = "8 2";
       visible = "1";
-      color = "0 0 0 64";
+      color = "0 0 0 128";
       open = false;
 
       new GuiBitmapButtonCtrl() {
@@ -276,7 +286,7 @@ new GuiControl(BLG_Desktop) {
                   extent = "620 0";
                   minExtent = "8 2";
                   visible = "1";
-                  color = "0 236 172 11";
+                  color = "0 0 0 0";
                };
             };
          };

@@ -30,14 +30,22 @@ if(isFile("Add-Ons/System_BlockOS.zip")) {
 MainMenuGui.add(BLG_Desktop);
 
 function BLG_DT::refresh(%this) {
+	echo($pref::Video::windowedRes);
+
+	echo(BLG_Desktop_Swatch.extent = getWord($pref::Video::windowedRes, 0) SPC getWord($pref::Video::windowedRes, 1)-64);
+
+	%this.iconsX = mFloor(getWord($pref::Video::windowedRes, 0)/64);
+	%this.iconsY = mFloor((getWord($pref::Video::windowedRes, 1)-64)/64);
+
+	BLG_Desktop_BottomBorder.position = 0 SPC %this.iconsY*64;
+	BLG_Desktop_BottomBorder.extent = getWord($pref::Video::windowedRes, 0) SPC getWord($pref::Video::windowedRes, 1) - 64 - (%this.iconsY*64);
+
+	BLG_Desktop_MouseCapture.extent = getWord(BLG_Desktop_Swatch.extent, 0) SPC getWord(BLG_Desktop_Swatch.extent, 1)-getWord(BLG_Desktop_BottomBorder.extent, 1);
+
 	if(!%this.loadedApps) {
 		%this.loadAppsToScreen();
 		%this.loadedApps = true;
 	}
-
-	BLG_Desktop_MouseCapture.extent = BLG_Desktop_Swatch.extent = getWord(Canvas.getExtent(), 0) SPC getWord(Canvas.getExtent(), 1)-64;
-	%this.iconsX = mFloor(getWord(BLG_Desktop_Swatch.getExtent(), 0)/64);
-	%this.iconsY = mFloor(getWord(BLG_Desktop_Swatch.getExtent(), 1)/64);
 
 	BLG_DT.populateBackgroundList();
 }
@@ -317,8 +325,8 @@ function BLG_DT::loadAppsToScreen(%this) {
 	}
 	for(%i = 0; %i < %this.icons; %i++) {
 		if(%this.saveData[%this.icon[%i]] $= "") {
-			for(%y = 0; %y < %this.iconsY; %y++) {
-				for(%x = 0; %x < %this.iconsX; %x++) {
+			for(%y = 0; %y <= %this.iconsY; %y++) {
+				for(%x = 0; %x <= %this.iconsX; %x++) {
 					if(%grid[%x, %y] $= "") {
 						%grid[%x, %y] = %this.icon[%i] TAB %this.iconCmd[%i];
 						%b = true;
@@ -332,8 +340,8 @@ function BLG_DT::loadAppsToScreen(%this) {
 
 	switch(%this.loadAppMode) {
 		case 1:
-			for(%y = 0; %y < %this.iconsY; %y++) {
-				for(%x = 0; %x < %this.iconsX; %x++) {
+			for(%y = 0; %y <= %this.iconsY; %y++) {
+				for(%x = 0; %x <= %this.iconsX; %x++) {
 					if(%grid[%x, %y] !$= "") {
 						%this.schedule(50 * %i, newAppIcon, getField(%grid[%x, %y], 0), getField(%grid[%x, %y], 1), %x, %y, 2);
 						%i++;
@@ -342,8 +350,8 @@ function BLG_DT::loadAppsToScreen(%this) {
 			}
 
 		case 2:
-			for(%y = 0; %y < %this.iconsY; %y++) {
-				for(%x = 0; %x < %this.iconsX; %x++) {
+			for(%y = 0; %y <= %this.iconsY; %y++) {
+				for(%x = 0; %x <= %this.iconsX; %x++) {
 					if(%grid[%x, %y] !$= "") {
 						%this.newAppIcon(getField(%grid[%x, %y], 0), getField(%grid[%x, %y], 1), %x, %y, 1);
 					}
@@ -351,8 +359,8 @@ function BLG_DT::loadAppsToScreen(%this) {
 			}
 
 		case 3:
-			for(%y = 0; %y < %this.iconsY; %y++) {
-				for(%x = 0; %x < %this.iconsX; %x++) {
+			for(%y = 0; %y <= %this.iconsY; %y++) {
+				for(%x = 0; %x <= %this.iconsX; %x++) {
 					if(%grid[%x, %y] !$= "") {
 						%this.schedule(getRandom(0, 2000), newAppIcon, getField(%grid[%x, %y], 0), getField(%grid[%x, %y], 1), %x, %y, 1);
 						%i++;
@@ -361,8 +369,8 @@ function BLG_DT::loadAppsToScreen(%this) {
 			}
 
 		case 4:
-			for(%y = 0; %y < %this.iconsY; %y++) {
-				for(%x = 0; %x < %this.iconsX; %x++) {
+			for(%y = 0; %y <= %this.iconsY; %y++) {
+				for(%x = 0; %x <= %this.iconsX; %x++) {
 					if(%grid[%x, %y] !$= "") {
 						%this.schedule(getRandom(0, 2000), newAppIcon, getField(%grid[%x, %y], 0), getField(%grid[%x, %y], 1), %x, %y, 2);
 						%i++;
@@ -439,8 +447,8 @@ function BLG_DT::newAppIcon(%this, %name, %eval, %x, %y, %mode) {
 	}
 
 	if(%mode == 1) {
-		%l = getWord(Canvas.getExtent(), 0);
-	    %w = getWord(Canvas.getExtent(), 1);
+		%l = getWord($pref::Video::windowedRes, 0);
+	    %w = getWord($pref::Video::windowedRes, 1);
 	    %peri = (%l + %w) * 2;
 	    %point = getRandom(0, %peri);
 	    if((%point - ((%l * 2) + %w)) >= 0) {
@@ -453,7 +461,7 @@ function BLG_DT::newAppIcon(%this, %name, %eval, %x, %y, %mode) {
 	    	%start = %point SPC 0;
 	    }
 	} else if(%mode == 2) {
-		%start = "61" SPC getWord(Canvas.getExtent(), 1)-61;
+		%start = "61" SPC getWord($pref::Video::windowedRes, 1)-61;
 	}
 
     %icon = new ScriptObject() {
@@ -629,8 +637,8 @@ function BLG_DT::timeLoop(%this) {
 		%this.stopScreensaver();
 	}
 
-	if(%this.extent !$= Canvas.getExtent()) {
-		%this.extent = Canvas.getExtent();
+	if(%this.extent !$= $pref::Video::windowedRes) {
+		%this.extent = $pref::Video::windowedRes;
 		%this.refresh();
 	}
 
@@ -860,12 +868,12 @@ package BLG_DT_Package {
             %x = getWord(%pos, 0) - getWord(%obj.relativePos, 0);
             %y = getWord(%pos, 1) - getWord(%obj.relativePos, 1);
 
-            if(%x > getWord(BLG_Desktop_Swatch.extent, 0) - getWord(%obj.gui.extent, 0)) {
-				%x = getWord(BLG_Desktop_Swatch.extent, 0) - getWord(%obj.gui.extent, 0);
+            if(%x > getWord(BLG_Desktop_MouseCapture.extent, 0) - getWord(%obj.gui.extent, 0)) {
+				%x = getWord(BLG_Desktop_MouseCapture.extent, 0) - getWord(%obj.gui.extent, 0);
 			}
 
-			if(%y > getWord(BLG_Desktop_Swatch.extent, 1) - getWord(%obj.gui.extent, 1)) {
-				%y = getWord(BLG_Desktop_Swatch.extent, 1) - getWord(%obj.gui.extent, 1);
+			if(%y > getWord(BLG_Desktop_MouseCapture.extent, 1) - getWord(%obj.gui.extent, 1)) {
+				%y = getWord(BLG_Desktop_MouseCapture.extent, 1) - getWord(%obj.gui.extent, 1);
 			}
 
 			if(%x < 0) {
