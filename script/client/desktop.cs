@@ -737,6 +737,9 @@ function BLG_DT::getTime(%this) {
 		} else {
 			%apm = "PM";
 			%hour = %hour-12;
+			if(%hour == 0) {
+				%hour = 12;
+			}
 		}
 		return %hour @ ":" @ getField(%explode, 1) SPC %apm;
 	} else if(%this.timeMode == 3) {
@@ -751,6 +754,9 @@ function BLG_DT::getTime(%this) {
 		} else {
 			%apm = "PM";
 			%hour = %hour-12;
+			if(%hour == 0) {
+				%hour = 12;
+			}
 		}
 		return %hour @ ":" @ getField(%explode, 1) @ ":" @ getField(%explode, 2) SPC %apm;
 
