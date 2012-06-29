@@ -65,20 +65,25 @@ function BLG_DT::setEnabled(%this, %bool) {
 	}
 }
 
-function BLG_DT::openMenuTab(%this, %name) {
-	BLG_Desktop_Menu_Background.setVisible(false);
-	BLG_Desktop_Menu_Options.setVisible(false);
+function BLG_DT::openMenuTab(%this,%flag)
+{
+	%tab = "BLG_Desktop_Menu_" @ %flag;
+	if(!isObject(%tab) || !BLG_Desktop_MenuFiller.isMember(%tab))
+		return false;
 
-	switch$(%name) {
-		case "Options":
-			BLG_Desktop_Menu_Options.setVisible(true);
+	%count = BLG_Desktop_MenuFiller.getCount();
+	for(%i = 0; %i < %count; %i ++)
+	{
+		%obj = BLG_Desktop_MenuFiller.getObject(%i);
 
-		case "Background":
-			BLG_Desktop_Menu_Background.setVisible(true);
-
-		case "Apps":
-			return;
+		%name = %obj.getName();
+		if(striPos(%name,"BLG_Desktop_Menu_") == 0)
+			%obj.setVisible(false);
 	}
+
+	%tab.setVisible(true);
+
+	return %tab;
 }
 
 function mRound(%a)
