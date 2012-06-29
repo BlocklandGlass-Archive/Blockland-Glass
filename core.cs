@@ -1,6 +1,6 @@
 new ScriptGroup(BLG) {
-	internalVersion = "2.0 Dev";
-	externalVersion = "2.0 Development";
+	internalVersion = "2.0.A2";
+	externalVersion = "2.0 Alpha 2";
 	versionId = 1337; //1 is anything before 1.2
 
 	debugLevel = 3;
@@ -9,6 +9,8 @@ new ScriptGroup(BLG) {
 	//2 = In-depth
 	//3 = Spam me. Please.
 	required = false;
+
+	desktopEnabled = true;
 };
 
 function BLG::start(%this, %implementation) {
@@ -33,7 +35,6 @@ function BLG::start(%this, %implementation) {
 		echo("Loading BLG [" @ %this.internalVersion @ "] client implementation");
 
 		exec("./gui/profile.cs");
-		exec("./gui/BLG_Desktop.gui");
 		exec("./gui/BLG_HUD.gui");
 		exec("./gui/BLG_remapGui.gui");
 		exec("./gui/BLG_keybindGui.gui");

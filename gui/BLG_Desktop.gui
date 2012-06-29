@@ -28,6 +28,8 @@ new GuiControl(BLG_Desktop) {
          minExtent = "8 2";
          visible = "1";
          bitmap = "Add-Ons/System_BlocklandGlass/image/desktop.jpg";
+         lockAspectRatio = "1";
+         overflowImage = "1";
       };
    };
 
@@ -177,6 +179,7 @@ new GuiControl(BLG_Desktop) {
             overflowImage = "0";
             mKeepCached = "0";
             mColor = "255 255 255 255";
+            command = "BLG_DT.openMenuTab(Background);";
          };
          new GuiBitmapButtonCtrl() {
             profile = "BlockButtonProfile";
@@ -195,6 +198,7 @@ new GuiControl(BLG_Desktop) {
             overflowImage = "0";
             mKeepCached = "0";
             mColor = "255 255 255 255";
+            command = "BLG_DT.openMenuTab(Options);";
          };
          new GuiBitmapButtonCtrl() {
             profile = "BlockButtonProfile";
@@ -213,6 +217,7 @@ new GuiControl(BLG_Desktop) {
             overflowImage = "0";
             mKeepCached = "0";
             mColor = "255 255 255 255";
+            command = "BLG_DT.openMenuTab(Apps);";
          };
          new GuiBitmapButtonCtrl() {
             profile = "BlockButtonProfile";
@@ -288,6 +293,41 @@ new GuiControl(BLG_Desktop) {
                   visible = "1";
                   color = "0 0 0 0";
                };
+            };
+         };
+         new GuiSwatchCtrl(BLG_Desktop_Menu_Options) {
+            profile = "GuiDefaultProfile";
+            horizSizing = "right";
+            vertSizing = "bottom";
+            position = "5 40";
+            extent = "630 435";
+            minExtent = "8 2";
+            visible = "0";
+            color = "0 238 45 14";
+
+            new GuiCheckBoxCtrl(BLG_Desktop_Menu_Enabled) {
+               profile = "GuiCheckBoxProfile";
+               horizSizing = "center";
+               vertSizing = "center";
+               position = "179 202";
+               extent = "271 30";
+               minExtent = "8 2";
+               visible = "1";
+               command = "BLG_DT.setEnabled(false);";
+               text = "Desktop Enabled (Can only be reversed via console)";
+               groupNum = "-1";
+               buttonType = "ToggleButton";
+            };
+            new GuiTextCtrl() {
+               profile = "GuiTextProfile";
+               horizSizing = "center";
+               vertSizing = "bottom";
+               position = "204 0";
+               extent = "221 18";
+               minExtent = "8 2";
+               visible = "1";
+               text = "More stuff coming soon. Bug me about it later.";
+               maxLength = "255";
             };
          };
       };

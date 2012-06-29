@@ -4,6 +4,13 @@
 
 //This project is based off of BlockOS after its abandonment in June of 2012.
 
+if(!BLG.desktopEnabled || $Pref::Client::BLG::DesktopDisabled) {
+	return;
+} else { 
+	exec("Add-Ons/System_BlocklandGlass/gui/BLG_Desktop.gui");
+	BLG_Desktop_Menu_Enabled.setValue(true);
+}
+
 if(!isObject(BLG_DT)) {
 	new ScriptObject(BLG_DT) {
 		apps = 0;
@@ -48,6 +55,30 @@ function BLG_DT::refresh(%this) {
 	}
 
 	BLG_DT.populateBackgroundList();
+}
+
+function BLG_DT::setEnabled(%this, %bool) {
+	%bool = %bool ? 1 : 0;
+	$Pref::Client::BLG::DesktopDisabled = !%bool;
+	if(!%bool) {
+		messageBoxOk("Restart", "Sorry you don't want it. You need to restart Blockland now");
+	}
+}
+
+function BLG_DT::openMenuTab(%this, %name) {
+	BLG_Desktop_Menu_Background.setVisible(false);
+	BLG_Desktop_Menu_Options.setVisible(false);
+
+	switch$(%name) {
+		case "Options":
+			BLG_Desktop_Menu_Options.setVisible(true);
+
+		case "Background":
+			BLG_Desktop_Menu_Background.setVisible(true);
+
+		case "Apps":
+			return;
+	}
 }
 
 function mRound(%a)
@@ -95,7 +126,7 @@ function BLG_DT::loadData(%this) {
 
 function BLG_DT::populateBackgroundList(%this) {
 	BLG_Desktop_BackgroundList.deleteAll();
-	%ratio = getWord(Canvas.getExtent(), 1)/getWord(Canvas.getExtent(), 0);
+	%ratio = getWord($pref::Video::windowedRes, 1)/getWord($pref::Video::windowedRes, 0);
 
 	%bitmap = new GuiBitmapCtrl() {
 		profile = "GuiDefaultProfile";
@@ -989,13 +1020,11 @@ package BLG_DT_Package {
 	function BLG_Desktop_Swatch::onWake(%this) {
 		BLG.debug("Desktop awoken");
 		BLG_DT.lastMove = getSimTime();
-		BLG_DT.animate();
 		parent::onWake(%this);
 	}
 
 	function BLG_Desktop_Swatch::onSleep(%this) {
 		BLG.debug("Desktop sleeping");
-		cancel(BLG_DT.animateLoop);
 		parent::onWake(%this);
 	}
 
