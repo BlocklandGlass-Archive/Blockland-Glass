@@ -46,7 +46,7 @@ new GuiControl(BLG_Desktop) {
 
    new GuiSwatchCtrl(BLG_Desktop_BottomBorder) {
       profile = "GuiDefaultProfile";
-      horizSizing = "right";
+      horizSizing = "width";
       vertSizing = "bottom";
       position = "0 416";
       extent = "640 5";
