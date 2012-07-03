@@ -37,15 +37,15 @@ if(isFile("Add-Ons/System_BlockOS.zip")) {
 MainMenuGui.add(BLG_Desktop);
 
 function BLG_DT::refresh(%this) {
-	echo($pref::Video::windowedRes);
+	%res = getWords($Pref::Video::Resolution,0,1);
 
-	echo(BLG_Desktop_Swatch.extent = getWord($pref::Video::windowedRes, 0) SPC getWord($pref::Video::windowedRes, 1)-64);
+	BLG_Desktop_Swatch.extent = getWord(%res, 0) SPC getWord(%res, 1)-64;
 
-	%this.iconsX = mFloor(getWord($pref::Video::windowedRes, 0)/64);
-	%this.iconsY = mFloor((getWord($pref::Video::windowedRes, 1)-64)/64);
+	%this.iconsX = mFloor(getWord(%res, 0)/64);
+	%this.iconsY = mFloor((getWord(%res, 1)-64)/64);
 
 	BLG_Desktop_BottomBorder.position = 0 SPC %this.iconsY*64;
-	BLG_Desktop_BottomBorder.extent = getWord($pref::Video::windowedRes, 0) SPC getWord($pref::Video::windowedRes, 1) - 64 - (%this.iconsY*64);
+	BLG_Desktop_BottomBorder.extent = getWord(%res, 0) SPC getWord(%res, 1) - 64 - (%this.iconsY*64);
 
 	BLG_Desktop_MouseCapture.extent = getWord(BLG_Desktop_Swatch.extent, 0) SPC getWord(BLG_Desktop_Swatch.extent, 1)-getWord(BLG_Desktop_BottomBorder.extent, 1);
 
