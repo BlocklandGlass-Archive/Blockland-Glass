@@ -1044,8 +1044,8 @@ activatePackage(BLG_DT_Package);
 
 BLG_DT.loadAppData();
 BLG_DT.loadData();
-BLG_DT.registerImageIcon("Join Server", "Canvas.pushDialog(JoinServerGui);", "Add-Ons/System_BlocklandGlass/image/desktop/icons/globe.png");
-BLG_DT.registerImageIcon("Host Server", "Canvas.pushDialog(startMissionGui);", "Add-Ons/System_BlocklandGlass/image/desktop/icons/games alt.png");
+BLG_DT.registerImageIcon("Start Game", "Canvas.pushDialog(startMissionGui);", "Add-Ons/System_BlocklandGlass/image/desktop/icons/games alt.png");
+BLG_DT.registerImageIcon("Join Game", "Canvas.pushDialog(JoinServerGui);", "Add-Ons/System_BlocklandGlass/image/desktop/icons/globe.png");
 BLG_DT.registerImageIcon("Remote Control", "echo(\"Insert the Remote Control GUI\");", "Add-Ons/System_BlocklandGlass/image/desktop/icons/windows easy transfer.png");
 BLG_DT.registerImageIcon("Apps", "echo(\"Insert Apps GUI\");", "Add-Ons/System_BlocklandGlass/image/desktop/icons/my apps.png");
 BLG_DT.registerImageIcon("Quit", "quit();", "Add-Ons/System_BlocklandGlass/image/desktop/icons/power - shut down.png");
