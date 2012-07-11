@@ -36,6 +36,25 @@ if(isFile("Add-Ons/System_BlockOS.zip")) {
 
 MainMenuGui.add(BLG_Desktop);
 
+function BLG_Desktop::onWake(%this)
+{
+	BLG.debug("Desktop awoken");
+
+	BLG_DT.lastMove = getSimTime();
+
+	//begin loops
+	BLG_DT.timeLoop();
+}
+
+function BLG_Desktop::onSleep(%this)
+{
+	BLG.debug("Desktop sleeping");
+
+	//end loops
+	cancel(BLG_DT.timeLoop);
+	BLG_DT.stopScreensaver();
+}
+
 function BLG_DT::refresh(%this) {
 	%res = getWords($Pref::Video::Resolution,0,1);
 
@@ -1022,17 +1041,6 @@ package BLG_DT_Package {
 		}
 	}
 
-	function BLG_Desktop_Swatch::onWake(%this) {
-		BLG.debug("Desktop awoken");
-		BLG_DT.lastMove = getSimTime();
-		parent::onWake(%this);
-	}
-
-	function BLG_Desktop_Swatch::onSleep(%this) {
-		BLG.debug("Desktop sleeping");
-		parent::onWake(%this);
-	}
-
 	function onExit() {
 		BLG_DT.saveAppData();
 		BLG_DT.saveData();
@@ -1050,5 +1058,4 @@ BLG_DT.registerImageIcon("Remote Control", "echo(\"Insert the Remote Control GUI
 BLG_DT.registerImageIcon("Apps", "echo(\"Insert Apps GUI\");", "Add-Ons/System_BlocklandGlass/image/desktop/icons/my apps.png");
 BLG_DT.registerImageIcon("Quit", "quit();", "Add-Ons/System_BlocklandGlass/image/desktop/icons/power - shut down.png");
 
-BLG_DT.timeLoop();
 BLG_DT.refresh();
