@@ -4,12 +4,8 @@
 
 //This project is based off of BlockOS after its abandonment in June of 2012.
 
-if(!BLG.desktopEnabled || $Pref::Client::BLG::DesktopDisabled) {
-	return;
-} else { 
-	exec("Add-Ons/System_BlocklandGlass/gui/BLG_Desktop.gui");
-	BLG_Desktop_Menu_Enabled.setValue(true);
-}
+exec("Add-Ons/System_BlocklandGlass/gui/BLG_Desktop.gui");
+BLG_Desktop_Menu_Enabled.setValue(true);
 
 if(!isObject(BLG_DT)) {
 	new ScriptObject(BLG_DT) {

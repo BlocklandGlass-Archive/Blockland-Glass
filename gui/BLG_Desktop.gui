@@ -305,18 +305,26 @@ new GuiControl(BLG_Desktop) {
             visible = "0";
             color = "0 238 45 14";
 
-            new GuiCheckBoxCtrl(BLG_Desktop_Menu_Enabled) {
-               profile = "GuiCheckBoxProfile";
+            new GuiBitmapButtonCtrl() {
+               profile = "BlockButtonProfile";
                horizSizing = "center";
                vertSizing = "center";
-               position = "179 202";
-               extent = "271 30";
+               position = "110 200";
+               extent = "100 30";
                minExtent = "8 2";
                visible = "1";
-               command = "BLG_DT.setEnabled(false);";
-               text = "Desktop Enabled (Can only be reversed via console)";
+               command = "exec(\"Add-Ons/System_BlocklandGlass/installer/main.cs\");";
+               accelerator = "enter";
+               text = "Launch Installer";
                groupNum = "-1";
-               buttonType = "ToggleButton";
+               buttonType = "PushButton";
+               bitmap = "base/client/ui/button1";
+               lockAspectRatio = "0";
+               alignLeft = "0";
+               overflowImage = "0";
+               mKeepCached = "1";
+               mColor = "255 255 255 255";
+                  wrap = "0";
             };
             new GuiTextCtrl() {
                profile = "GuiTextProfile";

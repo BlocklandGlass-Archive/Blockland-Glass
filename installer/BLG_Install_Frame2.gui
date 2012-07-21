@@ -1,0 +1,77 @@
+//--- OBJECT WRITE BEGIN ---
+new GuiControl(BLG_Install_Frame2) {
+   profile = "GuiDefaultProfile";
+   horizSizing = "right";
+   vertSizing = "bottom";
+   position = "0 0";
+   extent = "640 480";
+   minExtent = "8 2";
+   visible = "1";
+      awoken = "1";
+
+   new GuiWindowCtrl() {
+      profile = "GuiWindowProfile";
+      horizSizing = "center";
+      vertSizing = "center";
+      position = "160 120";
+      extent = "320 240";
+      minExtent = "8 2";
+      visible = "1";
+      text = "Optional Features (2/3)";
+      maxLength = "255";
+      resizeWidth = "0";
+      resizeHeight = "0";
+      canMove = "0";
+      canClose = "0";
+      canMinimize = "0";
+      canMaximize = "0";
+      minSize = "50 50";
+
+      new GuiCheckBoxCtrl(BLG_IF2_DesktopToggle) {
+         profile = "GuiCheckBoxProfile";
+         horizSizing = "right";
+         vertSizing = "bottom";
+         position = "10 30";
+         extent = "140 16";
+         minExtent = "8 2";
+         visible = "1";
+         text = "Deskop";
+         groupNum = "-1";
+         buttonType = "ToggleButton";
+      };
+      new GuiCheckBoxCtrl(BLG_IF2_LoadingToggle) {
+         profile = "GuiCheckBoxProfile";
+         horizSizing = "right";
+         vertSizing = "bottom";
+         position = "10 45";
+         extent = "140 16";
+         minExtent = "8 2";
+         visible = "1";
+         text = "New Loading Screen";
+         groupNum = "-1";
+         buttonType = "ToggleButton";
+      };
+      new GuiBitmapButtonCtrl() {
+         profile = "BlockButtonProfile";
+         horizSizing = "center";
+         vertSizing = "bottom";
+         position = "110 200";
+         extent = "100 30";
+         minExtent = "8 2";
+         visible = "1";
+         command = "BLG_Installer.openStep(3);";
+         accelerator = "enter";
+         text = "Next";
+         groupNum = "-1";
+         buttonType = "PushButton";
+         bitmap = "base/client/ui/button1";
+         lockAspectRatio = "0";
+         alignLeft = "0";
+         overflowImage = "0";
+         mKeepCached = "1";
+         mColor = "255 255 255 255";
+            wrap = "0";
+      };
+   };
+};
+//--- OBJECT WRITE END ---

@@ -1,6 +1,6 @@
 new ScriptGroup(BLG) {
-	internalVersion = "2.0.A2";
-	externalVersion = "2.0 Alpha 2";
+	internalVersion = "2.0.DEV";
+	externalVersion = "2.0 Development";
 	versionId = 1337; //1 is anything before 1.2
 
 	debugLevel = 3;
@@ -16,9 +16,14 @@ new ScriptGroup(BLG) {
 function BLG::start(%this, %implementation) {
 	%this.implementation = %implementation;
 
-	exec("./script/support/serverConnection.cs");
+	if(isFile("config/BLG/prefs.cs")) {
+		exec("config/BLG/prefs.cs");
+	}
+	
 	if(%implementation $= "server") {
 		echo("Loading BLG [" @ %this.internalVersion @ "] server implementation");
+
+		exec("./script/support/serverConnection.cs");
 
 		exec("./script/server/bindManager.cs");
 		exec("./script/server/guiDownloader.cs");
@@ -32,33 +37,42 @@ function BLG::start(%this, %implementation) {
 		}
 
 	} else if(%implementation $= "client") {
-		echo("Loading BLG [" @ %this.internalVersion @ "] client implementation");
+		if(!$BLG::Pref::InstallerHasRun) {
+			echo("Loading BLG installer");
 
-		exec("./gui/profile.cs");
-		exec("./gui/BLG_HUD.gui");
-		exec("./gui/BLG_remapGui.gui");
-		exec("./gui/BLG_keybindGui.gui");
-		exec("./gui/BLG_Updater.gui");
-		exec("./gui/BLG_Home.gui");
-		exec("./gui/BLG_RemoteControl.gui");
-		exec("./gui/BLG_Overlay.gui");
-
-		exec("./script/client/bindManager.cs");
-		exec("./script/client/desktop.cs");
-		exec("./script/client/guiDownloader.cs");
-		exec("./script/client/hudManager.cs");
-		exec("./script/client/openOverlay.cs");
-		exec("./script/client/imageDownloader.cs");
-		exec("./script/client/updater.cs");
-
-		if(isFile("Add-Ons/System_ReturnToBlockland/server.cs")) {
-			exec("./script/client/hooks/RTB.cs");
+			exec("./installer/main.cs");
+			return 0;
 		} else {
-			exec("./script/client/hooks/default.cs");
-		}
+			echo("Loading BLG [" @ %this.internalVersion @ "] client implementation");
 
-		if($BlockOS::Enabled) {
-			exec("./script/client/hooks/BOS.cs");
+			exec("./script/support/serverConnection.cs");
+
+			exec("./gui/profile.cs");
+			exec("./gui/BLG_HUD.gui");
+			exec("./gui/BLG_remapGui.gui");
+			exec("./gui/BLG_keybindGui.gui");
+			exec("./gui/BLG_Updater.gui");
+			exec("./gui/BLG_Home.gui");
+			exec("./gui/BLG_RemoteControl.gui");
+			exec("./gui/BLG_Overlay.gui");
+
+			exec("./script/client/bindManager.cs");
+			if($BLG::Pref::Desktop) exec("./script/client/desktop.cs");
+			exec("./script/client/guiDownloader.cs");
+			exec("./script/client/hudManager.cs");
+			exec("./script/client/openOverlay.cs");
+			exec("./script/client/imageDownloader.cs");
+			exec("./script/client/updater.cs");
+
+			if(isFile("Add-Ons/System_ReturnToBlockland/server.cs")) {
+				exec("./script/client/hooks/RTB.cs");
+			} else {
+				exec("./script/client/hooks/default.cs");
+			}
+
+			if($BlockOS::Enabled) {
+				exec("./script/client/hooks/BOS.cs");
+			}
 		}
 
 		if(!isFile("config/BLG/firstrun")) {
@@ -73,7 +87,9 @@ function BLG::start(%this, %implementation) {
 	} else {
 		%this.debug("Unresolved Initiator");
 		error("Failed to load BLG [" @ %this.internalVersion @ "]. Please redownload from http://blocklandglass.com");
-	} 
+		return 0;
+	}
+	return 1;
 }
 
 function BLG::debug(%this, %msg, %level) {
@@ -94,3 +110,12 @@ function BLG::debug(%this, %msg, %level) {
 function BLG::setRequired(%this) {
 	%this.required = true;
 }
+
+package BLG_Package {
+	function onExit() {
+		echo("Exporting BLG Prefs");
+		export("$BLG::*", "config/BLG/prefs.cs");
+		parent::onExit();
+	}
+};
+activatePackage(BLG_Package);

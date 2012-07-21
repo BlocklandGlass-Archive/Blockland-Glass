@@ -1,6 +1,6 @@
 //Blockland Glass Client Implementation
 exec("./core.cs");
-BLG.start("client");
+if(!BLG.start("client")) return;
 
 %mm = new GuiTextCtrl(BLG_Version) {
 	profile = "BLG_VersionTextProfile";
