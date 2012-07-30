@@ -4,9 +4,7 @@ if(!isObject(BLG_Installer)) {
 	};
 }
 
-if(isObject(BLG_DT)) {
-	Canvas.popDialog(MainMenuGui);
-}
+Canvas.popDialog(MainMenuGui);
 
 function BLG_Install_BG::onWake(%this) {
 	if(!BLG_Install_Frame1.awoken) {
@@ -50,8 +48,4 @@ new GuiSwatchCtrl(BLG_Install_BG) {
 	minExtent = "8 2";
 };
 
-if(isObject(BLG_DT)) {
-	Canvas.pushDialog(BLG_Install_BG);
-} else {
-	MainMenuGui.add(BLG_Install_BG);
-}
+Canvas.pushDialog(BLG_Install_BG);

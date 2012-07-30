@@ -1,4 +1,5 @@
 //Blockland Glass Client Implementation
+exec("./Support_Byte.cs");
 exec("./core.cs");
 if(!BLG.start("client")) return;
 
