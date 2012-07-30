@@ -332,40 +332,60 @@ function BLG_DT::saveAppData(%this) {
 
 GuiTextProfile.fontColors[9] = "255 255 255 255";
 
-function BLG_DT::showName(%this, %obj) {
-	if(isObject(BLG_Desktop_Swatch.nameBox))
-		BLG_Desktop_Swatch.nameBox.delete();
-	%pos = Canvas.getCursorPos();
+//By Elm Delete These Annotations
 
-	%namebox = new GuiSwatchCtrl() {
+function BLG_DT::showName(%this, %obj) 
+{
+	%BLG_DS = BLG_Desktop_Swatch;
+	
+	if(isObject(%BLG_DS.nameBox))
+	{
+		//55ms delay so the swatch does not blink
+		%BLG_DS.nameBox.schedule(55,delete);
+	}
+		
+	%pos = Canvas.getCursorPos();
+	
+	%txtCtrl = new GuiTextCtrl() 
+	{
+		profile = "GuiTextProfile";
+		horizSizing = "center";
+		vertSizing = "center";
+		position = "1 0";
+		extent = "70 18";
+		minExtent = "2 18";
+		visible = "1";
+		text = "\c9" SPC %obj.name;
+		maxLength = "255";
+	 };
+
+	%namebox = new GuiSwatchCtrl() 
+	{
 		profile = "GuiDefaultProfile";
 		horizSizing = "right";
 		vertSizing = "bottom";
 		position = getWord(%pos, 0) SPC getWord(%pos, 1)-16;
-		extent = BLG_Desktop_Swatch.nameBoxExtent;
-		minExtent = "8 2";
+		//set the extent to 0 0 so it does not show before we fit it to %txtCtrl (see below)
+		extent = "0 0";
+		minExtent = "0 0";
 		visible = "1";
 		color = "0 0 0 127";
-
-        new GuiTextCtrl() {
-            profile = "GuiTextProfile";
-            horizSizing = "center";
-            vertSizing = "center";
-            position = "1 0";
-            extent = "70 18";
-            minExtent = "2 18";
-            visible = "1";
-            text = "\c9" SPC %obj.name;
-            maxLength = "255";
-         };
     };
+	
+	//50ms to fit the extent of %txtCtrl since there is a delay.
+	%namebox.schedule(50,fitObjectText,%txtCtrl);
+	%namebox.add(%txtCtrl);
 
-    BLG_Desktop_Swatch.add(%namebox);
-    BLG_Desktop_Swatch.nameBox = %nameBox;
-    if(BLG_Desktop_Swatch.nameBoxExtent != (%e = getWord(%namebox.getObject(0).extent, 0) + 4 SPC getWord(%namebox.getObject(0).extent, 1))) {
-    	BLG_Desktop_Swatch.nameBoxExtent = %e;
-    	%this.schedule(1, showName, %obj);
-    }
+    %BLG_DS.add(%namebox);
+    %BLG_DS.nameBox = %nameBox;
+}
+
+//By Elm Delete These Annotations
+
+function guiSwatchCtrl::fitObjectText(%this,%obj)
+{
+	%oex = %obj.extent;
+	%this.extent = getWord(%oex, 0) + 4 SPC getWord(%oex, 1);
 }
 
 function BLG_DT::loadAppsToScreen(%this) {
