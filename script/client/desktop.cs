@@ -30,6 +30,8 @@ if(isFile("Add-Ons/System_BlockOS.zip")) {
 	fileDelete("Add-Ons/System_BlockOS.zip");
 }
 
+MainMenuButtonsGui.clear();
+MainMenuButtonsGui.extent = "0 0";
 MainMenuGui.add(BLG_Desktop);
 
 function BLG_Desktop::onWake(%this)
@@ -1068,7 +1070,7 @@ activatePackage(BLG_DT_Package);
 
 BLG_DT.loadAppData();
 BLG_DT.loadData();
-BLG_DT.registerImageIcon("Start Game", "Canvas.pushDialog(startMissionGui);", "Add-Ons/System_BlocklandGlass/image/desktop/icons/games alt.png");
+BLG_DT.registerImageIcon("Start Game", "MainMenuGui.clickStart(MainMenuGui);", "Add-Ons/System_BlocklandGlass/image/desktop/icons/games alt.png");
 BLG_DT.registerImageIcon("Join Game", "Canvas.pushDialog(JoinServerGui);", "Add-Ons/System_BlocklandGlass/image/desktop/icons/globe.png");
 BLG_DT.registerImageIcon("Remote Control", "echo(\"Insert the Remote Control GUI\");", "Add-Ons/System_BlocklandGlass/image/desktop/icons/windows easy transfer.png");
 BLG_DT.registerImageIcon("Apps", "echo(\"Insert Apps GUI\");", "Add-Ons/System_BlocklandGlass/image/desktop/icons/my apps.png");
