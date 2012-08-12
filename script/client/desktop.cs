@@ -18,8 +18,6 @@ if(!isObject(BLG_DT)) {
 		iconsY = mFloor(getWord(BLG_Desktop_Swatch.getExtent(), 1)/64);
 
 		loadAppMode = 4;
-
-		datas = "";
 	};
 	BLG_DT.iconGroup = new ScriptGroup(BLG_DT_IconGroup);
 }
@@ -137,20 +135,6 @@ function circToPoint(%r, %a) {
 // Settings
 //================================================
 
-function BLG_DT::loadData(%this) {
-	%fo = new FileObject();
-	%fo.openForRead("config/BLG/client/desktop/.dat");
-	while(!%fo.isEOF()) {
-		%line = %fo.readLine();
-		%this.data[getField(%line, 0)] = strReplace(getField(%line, 1), "\\t", "\t");
-		%this.datas = %this.datas TAB getField(%line, 0);
-	}
-	%this.datas = trim(%this.datas);
-	%fo.close();
-	%fo.delete();
-	%this.proccessSettings();
-}
-
 function BLG_DT::populateBackgroundList(%this) {
 	BLG_Desktop_BackgroundList.deleteAll();
 	%ratio = getWord($pref::Video::windowedRes, 1)/getWord($pref::Video::windowedRes, 0);
@@ -230,19 +214,9 @@ function BLG_DT::populateBackgroundList(%this) {
 	%group.add(%scroll);
 }
 
-function BLG_DT::saveData(%this) {
-	%fo = new FileObject();
-	%fo.openForWrite("config/BLG/client/desktop/.dat");
-	for(%i = 0; %i < getFieldCount(%this.datas); %i++) {
-		%fo.writeLine(getField(%this.datas, %i) TAB strReplace(%this.data[getField(%this.datas, %i)], "\t", "\\t"));
-	}
-	%fo.close();
-	%fo.delete();
-}
-
 function BLG_DT::proccessSettings(%this) {
 	%bg = BLG_Desktop_Background;
-	%bg.bitmap = %this.data["background"] $= "" ? "Add-Ons/System_BlocklandGlass/image/desktop.jpg" : %this.data["background"];
+	%bg.bitmap = $BLG::Pref::Desktop::Background $= "" ? "Add-Ons/System_BlocklandGlass/image/desktop.jpg" : $BLG::Pref::Desktop::Background;
 	%g = %bg.getGroup();
 	%g.remove(%bg);
 	%g.add(%bg);
@@ -1037,10 +1011,7 @@ package BLG_DT_Package {
 	        }
 		} else if(%this.getName() $= "BLG_Desktop_Menu_BackgroundSelect") {
 			echo("New Background:" SPC %this.image);
-			if(strPos(BLG_DT.datas, "background") != -1) {
-				BLG.datas = "\tbackground";
-			}
-			BLG_DT.data["background"] = %this.image;
+			$BLG::Pref::Desktop::Background = %this.image;
 			BLG_DT.proccessSettings();
 		}
 		parent::onMouseUp(%this, %mod, %pos, %click);
@@ -1084,15 +1055,14 @@ package BLG_DT_Package {
 
 	function onExit() {
 		BLG_DT.saveAppData();
-		BLG_DT.saveData();
 		parent::onExit();
 	}
 };
 activatePackage(BLG_DT_Package);
 
 
+BLG_DT.proccessSettings();
 BLG_DT.loadAppData();
-BLG_DT.loadData();
 BLG_DT.registerImageIcon("Start Game", "MainMenuGui.clickStart(MainMenuGui);", "Add-Ons/System_BlocklandGlass/image/desktop/icons/games alt.png");
 BLG_DT.registerImageIcon("Join Game", "Canvas.pushDialog(JoinServerGui);", "Add-Ons/System_BlocklandGlass/image/desktop/icons/globe.png");
 BLG_DT.registerImageIcon("Remote Control", "echo(\"Insert the Remote Control GUI\");", "Add-Ons/System_BlocklandGlass/image/desktop/icons/windows easy transfer.png");

@@ -34,21 +34,18 @@ function Byte::getByte(%this) {
 }
 
 function Byte::getChar(%this) {
-	%int = %this.getInteger();
-	if(%int > 127) {
-		return -1;
-	}
-
-	return Ascii.int[%int] !$= "" ? Ascii.int[%int] : -1;
+	%hex = %this.getHex();
+	return Ascii.hex[%hex] !$= "" ? Ascii.hex[%hex] : -1;
 }
 
 function Byte::setHex(%this, %hex) {
+	%hex = strUpr(%hex);
 	%o = "0123456789ABCDEF";
 	%char1 = getSubStr(%hex, 0, 1);
 	%char2 = getSubStr(%hex, 1, 1);
 	%int += strPos(%o, %char1)*16;
 	%int += strPos(%o, %char2);
-	%this.setInteger(%int);
+	return %this.setInteger(%int);
 }
 
 function Byte::setInteger(%this, %i) {
@@ -192,17 +189,6 @@ function ByteGroup::getInteger(%this) {
 		%int += %this.byte[%i].getInteger() * mPow(256, %i-1);
 	}
 	return %int;
-}
-
-function ByteGroup::encrypt(%this, %e, %n) {
-	%int = %this.getInteger();
-	%enc = mMod(mPow(%int, %e), %n);
-	return %enc;
-}
-
-function ByteGroup::fromDecrypt(%this, %enc, %d, %n) {
-	%dec = mMod(mPow(%enc, %d), %n);
-	%this.fromInteger(%dec);
 }
 
 function ByteGroup::print(%this) {

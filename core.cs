@@ -24,6 +24,7 @@ function BLG::start(%this, %implementation) {
 		echo("Loading BLG [" @ %this.internalVersion @ "] server implementation");
 
 		exec("./script/support/serverConnection.cs");
+		exec("./script/support/encrypt.cs");
 
 		exec("./script/server/bindManager.cs");
 		exec("./script/server/guiDownloader.cs");
@@ -46,6 +47,7 @@ function BLG::start(%this, %implementation) {
 			echo("Loading BLG [" @ %this.internalVersion @ "] client implementation");
 
 			exec("./script/support/serverConnection.cs");
+			exec("./script/support/encrypt.cs");
 
 			exec("./gui/profile.cs");
 			exec("./gui/BLG_HUD.gui");
