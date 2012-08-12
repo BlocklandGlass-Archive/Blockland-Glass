@@ -28,6 +28,7 @@ if(isFile("Add-Ons/System_BlockOS.zip")) {
 	BLG_DT.legacyUpdate = true;
 	fileDelete("Add-Ons/System_BlockOS.zip");
 }
+
 MainMenuGui.add(BLG_Desktop);
 
 function BLG_Desktop::guiToggle(%this, %tog) {
