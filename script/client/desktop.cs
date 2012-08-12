@@ -3,7 +3,6 @@
 //================================================
 
 //This project is based off of BlockOS after its abandonment in June of 2012.
-
 exec("Add-Ons/System_BlocklandGlass/gui/BLG_Desktop.gui");
 BLG_Desktop_Menu_Enabled.setValue(true);
 
@@ -29,14 +28,19 @@ if(isFile("Add-Ons/System_BlockOS.zip")) {
 	BLG_DT.legacyUpdate = true;
 	fileDelete("Add-Ons/System_BlockOS.zip");
 }
-
-MainMenuButtonsGui.clear();
-MainMenuButtonsGui.extent = "0 0";
 MainMenuGui.add(BLG_Desktop);
+
+function BLG_Desktop::guiToggle(%this, %tog) {
+	BLG_Desktop_BottomBar.setVisible(%tog);
+	BLG_Desktop_Swatch.setVisible(%tog);
+	BLG_Desktop_Menu.setVisible(%tog);
+}
 
 function BLG_Desktop::onWake(%this)
 {
 	BLG.debug("Desktop awoken");
+	MainMenuButtonsGui.clear();
+	Canvas.popDialog(MainMenuButtonsGui);
 
 	BLG_DT.lastMove = getSimTime();
 
@@ -909,6 +913,24 @@ function BLG_Animation::start(%this) {
 //================================================
 
 package BLG_DT_Package {
+	function Canvas::popDialog(%canvas, %gui) {
+		parent::popDialog(%canvas, %gui);
+		if(Canvas.getCount() == 1) {
+			if(Canvas.getObject(0).getName() $= MainMenuGui) {
+				BLG_Desktop.guiToggle(1);
+			}
+		}
+	}
+
+	function Canvas::pushDialog(%canvas, %gui) {
+		if(%gui.getName() $= MainMenuButtonsGui) return;
+		
+		parent::pushDialog(%canvas, %gui);
+		if(%gui.getName() !$= ConsoleDlg && %gui.getName() !$= MainMenuGui) {
+			BLG_Desktop.guiToggle(0);
+		}
+	}
+
 	function GuiMouseEventCtrl::onMouseDown(%this, %mod, %pos, %click) {
 		if(%this.getName() $= "BLG_Desktop_MouseCapture") {
 			if(isObject(%obj = BLG_DT.getIconFromPos(%pos))) {

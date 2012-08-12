@@ -44,17 +44,6 @@ new GuiControl(BLG_Desktop) {
       color = "0 0 0 0";
    };
 
-   new GuiSwatchCtrl(BLG_Desktop_BottomBorder) {
-      profile = "GuiDefaultProfile";
-      horizSizing = "width";
-      vertSizing = "bottom";
-      position = "0 416";
-      extent = "640 5";
-      minExtent = "8 2";
-      visible = "1";
-      color = "0 0 0 127";
-   };
-
    new GuiSwatchCtrl(BLG_Desktop_BottomBar) {
       profile = "GuiDefaultProfile";
       horizSizing = "width";
@@ -69,8 +58,8 @@ new GuiControl(BLG_Desktop) {
          profile = "GuiDefaultProfile";
          horizSizing = "left";
          vertSizing = "top";
-         position = "535 6";
-         extent = "100 24";
+         position = "522 6";
+         extent = "113 24";
          minExtent = "100 20";
          visible = "1";
          color = "0 0 0 128";
@@ -80,7 +69,7 @@ new GuiControl(BLG_Desktop) {
             horizSizing = "center";
             vertSizing = "center";
             position = "0 2";
-            extent = "100 20";
+            extent = "110 20";
             minExtent = "100 20";
             visible = "1";
             text = "3:34 PM";
@@ -92,8 +81,8 @@ new GuiControl(BLG_Desktop) {
          profile = "GuiDefaultProfile";
          horizSizing = "left";
          vertSizing = "top";
-         position = "435 35";
-         extent = "200 24";
+         position = "405 35";
+         extent = "230 24";
          minExtent = "100 20";
          visible = "1";
          color = "0 0 0 128";
@@ -107,6 +96,28 @@ new GuiControl(BLG_Desktop) {
             minExtent = "200 20";
             visible = "1";
             text = "Offline Mode";
+            maxLength = "255";
+         };
+      };
+
+      new GuiSwatchCtrl() {
+         profile = "GuiDefaultProfile";
+         horizSizing = "left";
+         vertSizing = "top";
+         position = "405 6";
+         extent = "112 24";
+         minExtent = "100 20";
+         visible = "1";
+         color = "0 0 0 128";
+
+         new GuiTextCtrl(MM_Version) {
+            profile = "BLG_TimeText";
+            horizSizing = "center";
+            vertSizing = "center";
+            position = "0 2";
+            extent = "112 20";
+            minExtent = "112 20";
+            visible = "1";
             maxLength = "255";
          };
       };
