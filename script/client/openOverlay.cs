@@ -6,22 +6,21 @@ if(!isObject(BLG_GOO)) {
 	new ScriptObject(BLG_GOO);
 }
 
-//================================================
-// BLG_GOO
-//================================================
-GlobalActionMap.bind("keyboard", "CTRL SPACE", "BLG_ToggleOverlay");
+if(!isFile("Add-Ons/System_ReturnToBlockland/server.cs")) {
+	GlobalActionMap.bind("keyboard", "CTRL TAB","BLG_toggleOverlay");
+	BLG_GOO.overlay = BLG_Overlay;
+} else {
+	BLG_GOO.overlay = RTB_Overlay;
+}
 
-function BLG_ToggleOverlay(%down) {
-	BLG.debug("Toggle overlay [" @ %down @ "]");
+function BLG_toggleOverlay(%down) {
 	if(!%down) {
 		%this = BLG_GOO;
-		%this.overlayOpen += 0;
-		if(!%this.overlayOpen) {
+		%this.open = !%this.open;
+		if(%this.open) {
 			canvas.pushDialog(BLG_Overlay);
-			%this.overlayOpen = true;
 		} else {
 			canvas.popDialog(BLG_Overlay);
-			%this.overlayOpen = false;
 		}
 	}
 }
@@ -38,6 +37,7 @@ function BLG_GOO::registerGui(%this, %gui, %replicable) {
 				%obj.save(%file);
 				%this.replicate[%gui] = %file;
 				%this.windowName[%gui] = %obj.getName();
+				break;
 			}
 		}
 		%this.type[%gui] = "instance";
@@ -72,7 +72,7 @@ function BLG_GOO::newInstance(%this, %gui) {
 	%this.instanceObj[%this.instanceId] = %ins = eval(%script);
 	%this.mapObject(%ins, %ins);
 
-	BLG_Overlay.add(%ins);
+	%this.overlay.add(%ins);
 
 	return %ins;
 }
@@ -90,77 +90,27 @@ function BLG_GOO::mapObject(%this, %base, %obj) {
 }
 
 function BLG_GOO::removeInstance(%this, %instance) {
-	BLG_Overlay.remove(%instance);
+	%this.overlay.remove(%instance);
 }
 
 function BLG_GOO::openGui(%this, %gui) {
-	BLG_Overlay.add(%this.window[%gui]);
+	%this.overlay.add(%this.window[%gui]);
 }
 
 function BLG_GOO::closeGui(%this, %gui) {
 	%win = %this.window[%gui];
-	if(BLG_Overlay.isMember(%win)) {
-		BLG_Overlay.remove(%win);
+	if(%this.overlay.isMember(%win)) {
+		%this.overlay.remove(%win);
 	}
 }
 
-function BLG_GOO::newIcon(%this, %name, %gui, %icon) {
-	%this.iconY += 0;
-	%this.iconX += 0;
-	%icon = new GuiSwatchCtrl() {
-		profile = "GuiDefaultProfile";
-		horizSizing = "right";
-		vertSizing = "bottom";
-		position = %this.iconX SPC %this.iconY;
-		extent = "80 85";
-		minExtent = "8 2";
-		visible = "1";
-		color = "0 0 0 0";
-		BLG_GUI = %gui;
-		className = "BLG_Icon";
+//package BLG_GOO {
+	//function RTB_toggleOverlay(%trigger) {
+	//	BLG_toggleOverlay();
+	//}
+//};
+//`activatePackage(BLG_GOO);
 
-		new GuiTextCtrl() {
-			profile = "GuiCenterTextProfile";
-			horizSizing = "right";
-			vertSizing = "bottom";
-			position = "0 67";
-			extent = "80 18";
-			minExtent = "75 2";
-			visible = "1";
-			text = "\c3" @ %name;
-			maxLength = "255";
-		};
-
-		new GuiBitmapButtonCtrl() {
-			profile = "GuiDefaultProfile";
-			horizSizing = "center";
-			vertSizing = "bottom";
-			position = "15 15";
-			extent = "50 50";
-			minExtent = "8 2";
-			visible = "1";
-			wrap = "0";
-			lockAspectRatio = "0";
-			alignLeft = "0";
-			overflowImage = "0";
-			keepCached = "0";
-			text = "";
-			bitmap = %icon;
-			command = %this.type[%gui] $= "instance" ? "BLG_GOO.newInstance(" @ %gui @ ");" : "BLG_GOO.openGui(" @ %gui @ ");";
-		};
-	};
-
-	BLG_Overlay_Swatch.add(%icon);
-
-	if(%this.iconX/getWord(canvas.getExtent(), 0) == 1) {
-		%this.iconX = 0;
-		%this.iconY += 90;
-	} else {
-		%this.iconX += 80;
-	}
-}
-
-BLG_GOO.newIcon("Home", BLG_Home, "Add-Ons/System_BlocklandGlass/image/logo");
 BLG_GOO.registerGui(BLG_Home, false);
 BLG_GOO.registerGui(BLG_RemoteControl, true);
 BLG_GOO.openGui(BLG_Home);
