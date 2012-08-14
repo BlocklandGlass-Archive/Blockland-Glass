@@ -23,6 +23,9 @@ function isUpperCase(%char)
 }
 
 function GEA::setKey(%this, %key) {
+	if(%this.set) return 0;
+	%this.set = true;
+	
 	if(strLen(%key) != 512) return 0;
 
 	%byte = new ScriptObject() { class = Byte; };
@@ -43,11 +46,15 @@ function GEA::setKey(%this, %key) {
 	}
 	%byte.delete();
 	%byte2.delete();
+	%this.key = %key;
 	return 1;
 
 }
 
 function GEA::newKey(%this) {
+	if(%this.set) return %this.key;
+
+	%this.set = true;
 	%byte = new ScriptObject() { class = Byte; };
 	%byte2 = new ScriptObject() { class = Byte; };
 	for(%i = 0; %i < 256; %i++) {

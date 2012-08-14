@@ -6,7 +6,29 @@ if(!isObject(BLG_GSC)) {
 	new ScriptObject(BLG_GSC) {
 		host = "localhost";
 		port = 9898;
+		pubid = $BLG::Server::PubId;
 	};
+
+	if($Server::Dedicated) {
+		BLG_GSC.gea = new ScriptObject() { class = GEA; };
+		if($BLG::Server::PrivateKey $= "") {
+			BLG.debug("New private key: " @ ($BLG::Server::PrivateKey = BLG_GSC.gea.newKey()));
+		} else {
+			BLG_GSC.gea.setKey($BLG::Server::PrivateKey);
+		}
+
+		if(BLG_GSC.pubid $= "") {
+			%byte = new ScriptObject() { class = Byte; };
+			for(%i = 0; %i < 10; %i++) {
+				%byte.setInteger(getRandom(0, 255));
+				$BLG::Server::PubId = $BLG::Server::PubId @ %byte.getHex();
+			}
+			BLG_GSC.pubid = $BLG::Server::PubId;
+			%byte.delete();
+		}
+
+		export("$BLG::*", "config/BLG/prefs.cs");
+	}
 
 	if(!isObject(BLG_GSC_TCP)) {
 		BLG_GSC.tcp = new TCPObject(BLG_GSC_TCP) {
@@ -20,8 +42,16 @@ function BLG_GSC::registerHandle(%this, %key, %func) {
 	%this.handle[%key] = %func;
 }
 
+function BLG_GSC::registerSecureHandle(%this, %key, %func) {
+	%this.secureHandle[%key] = %func;
+}
+
 function BLG_GSC::init(%this) {
 	%this.tcp.connect(%this.host @ ":" @ %this.port);
+}
+
+function BLG_GSC::relay(%this, %target, %msg, %gea) {
+	%this.tcp.send("relay" TAB %target TAB %gea.encrypt("GEA-ENC" TAB %msg) @ "\r\n");
 }
 
 //================================================
@@ -30,7 +60,7 @@ function BLG_GSC::init(%this) {
 
 function BLG_GSC_TCP::onConnected(%this) {
 	BLG.debug("Connected to Glass Server, sending handshake");
-	%this.send("handshake" TAB "init" TAB $Pref::Player::NetName TAB BLG.internalVersion @ "\r\n");
+	%this.send("handshake" TAB "init" TAB $Pref::Player::NetName TAB ($Server::Dedicated ? "server" : "client") TAB BLG.internalVersion @ "\r\n");
 }
 
 function BLG_GSC_TCP::onLine(%this, %line) {
@@ -38,10 +68,24 @@ function BLG_GSC_TCP::onLine(%this, %line) {
 	%proto = getField(%line, 0);
 
 	if(%this.authed) {
-		if(%this.parent.handle[%proto] !$= "") {
-			eval(%proto @ "(" @ %line @ ");");
+		if(%proto $= "relay") {
+			%msg = BLG_GSC.gea.decrypt(getField(%line, 2));
+			echo(%msg);
+			if(strPos(%msg, "GEA-ENC") == 0) {
+				%msg = getSubStr(%msg, 8, strLen(%msg));
+			} else {
+				BLG.error("Bad Crypt");
+				return;
+			}
+			%msg = strReplace(%msg, "\"", "\\\"");
+			echo(%this.parent.secureHandle[getField(%msg, 0)] @ "(" @ getField(%line, 1) @ ", \"" @ %msg @ "\");");
+			eval(%this.parent.secureHandle[getField(%msg, 0)] @ "(" @ getField(%line, 1) @ ", \"" @ %msg @ "\");");
 		} else {
-			BLG.debug("Unhandled Line: " @ %line);
+			if(%this.parent.handle[%proto] !$= "") {
+				eval(%this.parent.handle[%proto] @ "(%line);");
+			} else {
+				BLG.debug("Unhandled Line: " @ %line);
+			}
 		}
 	} else if(%proto $= "handshake") {
 		switch$(getField(%line, 1)) {
@@ -57,6 +101,12 @@ function BLG_GSC_TCP::onLine(%this, %line) {
 					BLG.error("Challenge/Response failed. IP Spoofing?");
 				} else if(%result $= "1") {
 					echo("BLG Auth Success");
+					%this.authed = true;
+					if($Server::Dedicated) {
+						%this.send("handshake\tdata\t" @ BLG.internalVersion @ "\t" @ BLG_GSC.pubId @ "\t" @ $Pref::Server::Port @ "\r\n");
+					} else {
+						%this.send("handshake\tdata\t" @ BLG.internalVersion @ "\r\n");
+					}
 				}
 		}
 	}
@@ -64,12 +114,20 @@ function BLG_GSC_TCP::onLine(%this, %line) {
 
 function BLG_GSC_TCP::onDisconnect(%this) {
 	BLG.debug("Disconnected from Glass Server");
+	%this.rcSchedule = BLG_GSC.schedule(getRandom(1000, 10000), init);
 }
 
 package BLG_GSC_Package {
 	function MM_AuthBar::blinkSuccess(%this) {
 		parent::blinkSuccess(%this);
 		BLG_GSC.init();
+	}
+
+	function postServerTCPObj::connect(%this, %addr) {
+		parent::connect(%this, %addr);
+		if($Server::Dedicated && !%this.authed) {
+			BLG_GSC.init();
+		}
 	}
 };
 activatePackage(BLG_GSC_Package);

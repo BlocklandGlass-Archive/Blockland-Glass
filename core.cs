@@ -19,17 +19,21 @@ function BLG::start(%this, %implementation) {
 	if(isFile("config/BLG/prefs.cs")) {
 		exec("config/BLG/prefs.cs");
 	}
+
+
+	exec("./Support_Byte.cs");
+	exec("./script/support/encrypt.cs");
 	
 	if(%implementation $= "server") {
 		echo("Loading BLG [" @ %this.internalVersion @ "] server implementation");
 
 		exec("./script/support/serverConnection.cs");
-		exec("./script/support/encrypt.cs");
 
 		exec("./script/server/bindManager.cs");
 		exec("./script/server/guiDownloader.cs");
 		exec("./script/server/hudManager.cs");
 		exec("./script/server/imageDownloader.cs");
+		exec("./script/server/remoteControl.cs");
 
 		if(isFile("Add-Ons/System_ReturnToBlockland/server.cs")) {
 			exec("./script/server/hooks/RTB.cs");
@@ -107,6 +111,10 @@ function BLG::debug(%this, %msg, %level) {
 	} else {
 		echo("\c5BLG Debug >>\c1 " @ %msg);
 	}
+}
+
+function BLG::error(%this, %msg) {
+	%this.debug(%msg, 0);
 }
 
 function BLG::setRequired(%this) {

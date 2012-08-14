@@ -1,53 +1,27 @@
 //================================================
-// Title: Glass Remote Control
+// Title: Glass Remote Server Control
 //================================================
 
-$BLG::GRC::UseDefaultProxy = true;
-
-$BLG::GRC::AlternateProxyAddr = "myAlternateProxy.com"; //Paranoid? Change UseDefaultProxy to false and host your own. You'll need to port-forward, btw.
-$BLG::GRC::AlternateProxyPort = 9898;
-
-if(!isObject(BLG_GRC)) {
-	new ScriptObject(BLG_GRC);
+if(!isObject(BLG_GRSC)) {
+	new ScriptGroup(BLG_GRSC);
 }
 
-if($BLG::GRC::UseDefaultProxy) {
-	BLG_GSC.registerHandle("server", "BLG_GSC.onServerLine");
-	BLG_GSC.registerHandle("rc", "BLG_GSC.onLine");
-}
+BLG_GSC.registerHandle("rsc", "BLG_GRSC.onLine");
 
-function BLG_GSC::onLine(%this, %line) {
-	%arg1 = getField(%line, 0);
-	switch$(%arg1) {
-		case "console":
-			BLG_RemoteControl.newConsole(%line);
+function BLG_GRSC::onLine(%this, %line) {
+	switch$(getField(%line, 1)) {
+		case "server":
+			%cmd = getField(%line, 2);
 
-		case "playerCount":
-			%players = getField(%line, 1);
-			%max = getField(%line, 2);
-			if(%players == 0) {
-				%text = "\c1";
-			} else if(%player == %max) {
-				%text = "\c3";
-			} else {
-				%text = "\c2";
+			if(%cmd $= "clear") {
+				%this.clear();
+			} else if(%cmd $= "add") {
+				new ScriptObject() {
+					class = BLG_ServerHandle;
+
+					cid = getField(%line, 3);
+					pubId = getField(%line, 4);
+				};
 			}
-			BLG_RemoteControl_PlayerCount.setValue(%text @ %players @ "/" @ %max);
-
-		case "serverName":
-			BLG_RemoteControl_ServerName.setValue("\c3" @ getField(%line, 1));
-
-		case "addPlayer":
-			BLG_RemoteControl_PlayerList.addRow(BLG_RemoteControl_PlayerList.getCount(), getField(%line, 3) TAB getField(%line, 1) TAB getField(%line, 2));
-
-		case "removePlayer":
-			//TODO
-
-		case "chat":
-			BLG_RemoteControl.newChat(getField(%line, 1), getField(%line, 2));
 	}
-}
-
-function BLG_GSC::onServerLine(%this, %line) {
-	//TODO
 }
