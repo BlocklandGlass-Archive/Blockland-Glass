@@ -17,11 +17,22 @@ function BLG_RemoteControlWindow::openPane(%this, %pane) {
 }
 
 function BLG_RemoteControlWindow::newChat(%this, %sender, %message) {
-   %this.part["chat"].setText(trim(%this.part["chat"].getText() NL "<color:0000ff>" @ %sender @ "<color:000000>: " @ %msg));
+   %this.part["chat"].setText(trim(%this.part["chat"].getText() NL "<color:DDDD00>" @ %sender @ "<color:000000>: " @ %message));
 }
 
 function BLG_RemoteControlWindow::newConsole(%this, %line) {
    %this.part["console"].setText(trim(%this.part["console"].getText() NL "[" @ getWord(getDateTime(), 1) @ "] " @ %line));
+}
+
+function BLG_RemoteControlWindow::sendMessage(%this) {
+   if(trim(%this.part["chatInput"].getValue()) $= "") {
+      %this.part["chatInput"].setValue("");
+      return;
+   }
+
+   BLG_GSC.relay(%this.handle.cid, "servercontrol\tchat\t" @ %this.part["chatInput"].getValue(), %this.handle.gea);
+   %this.part["chat"].setText(trim(%this.part["chat"].getText() NL "<color:4444ff>You<color:000000>: " @ %this.part["chatInput"].getValue()));
+   %this.part["chatInput"].setValue("");
 }
 
 //function BLG_RemoteControlWindow
@@ -285,6 +296,9 @@ new GuiControl(BLG_RemoteControl) {
                password = "0";
                tabComplete = "0";
                sinkAllKeyEvents = "0";
+               accelerator = "enter";
+               altCommand = "BLG_RemoteControlWindow.sendMessage();";
+               BLG_InstanceTag = "chatInput";
             };
          };
          new GuiSwatchCtrl(BLG_RemoteControlWindow_Pane3) {

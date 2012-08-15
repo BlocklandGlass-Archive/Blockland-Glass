@@ -60,6 +60,7 @@ function BLG::start(%this, %implementation) {
 			exec("./gui/BLG_Updater.gui");
 			exec("./gui/BLG_Home.gui");
 			exec("./gui/BLG_RemoteControl.gui");
+			exec("./gui/BLG_SelectServer.gui");
 			exec("./gui/BLG_Overlay.gui");
 
 			exec("./script/client/bindManager.cs");
@@ -68,6 +69,7 @@ function BLG::start(%this, %implementation) {
 			exec("./script/client/hudManager.cs");
 			exec("./script/client/openOverlay.cs");
 			exec("./script/client/imageDownloader.cs");
+			exec("./script/client/remoteControl.cs");
 			exec("./script/client/updater.cs");
 
 			if(isFile("Add-Ons/System_ReturnToBlockland/server.cs")) {

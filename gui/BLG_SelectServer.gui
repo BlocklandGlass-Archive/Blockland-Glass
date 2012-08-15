@@ -1,0 +1,53 @@
+//--- OBJECT WRITE BEGIN ---
+new GuiControl(BLG_SelectServer) {
+   profile = "GuiDefaultProfile";
+   horizSizing = "right";
+   vertSizing = "bottom";
+   position = "0 0";
+   extent = "640 480";
+   minExtent = "8 2";
+   enabled = "1";
+   visible = "1";
+   clipToParent = "1";
+
+   new GuiWindowCtrl() {
+      profile = "GuiWindowProfile";
+      horizSizing = "right";
+      vertSizing = "bottom";
+      position = "0 0";
+      extent = "350 300";
+      minExtent = "8 2";
+      enabled = "1";
+      visible = "1";
+      clipToParent = "1";
+      text = "Select Server";
+      maxLength = "255";
+      resizeWidth = "0";
+      resizeHeight = "0";
+      canMove = "1";
+      canClose = "1";
+      canMinimize = "0";
+      canMaximize = "0";
+      minSize = "50 50";
+
+      new GuiScrollCtrl(BLG_SelectServer_Scroll) {
+         profile = "BLG_ScrollProfile";
+         horizSizing = "right";
+         vertSizing = "bottom";
+         position = "10 30";
+         extent = "330 260";
+         minExtent = "8 2";
+         enabled = "1";
+         visible = "1";
+         clipToParent = "1";
+         willFirstRespond = "0";
+         hScrollBar = "alwaysOff";
+         vScrollBar = "alwaysOn";
+         constantThumbHeight = "0";
+         childMargin = "1 1";
+         rowHeight = "40";
+         columnWidth = "30";
+      };
+   };
+};
+//--- OBJECT WRITE END ---

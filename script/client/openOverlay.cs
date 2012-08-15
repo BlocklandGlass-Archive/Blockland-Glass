@@ -46,6 +46,7 @@ function BLG_GOO::registerGui(%this, %gui, %replicable) {
 			%obj = %gui.getObject(%i);
 			if(%obj.getClassName() $= "GuiWindowCtrl") {
 				%this.window[%gui] = %obj;
+				break;
 			}
 		}
 		%this.type[%gui] = "window";
@@ -91,6 +92,7 @@ function BLG_GOO::mapObject(%this, %base, %obj) {
 
 function BLG_GOO::removeInstance(%this, %instance) {
 	%this.overlay.remove(%instance);
+	%instance.delete();
 }
 
 function BLG_GOO::openGui(%this, %gui) {
@@ -113,4 +115,5 @@ function BLG_GOO::closeGui(%this, %gui) {
 
 BLG_GOO.registerGui(BLG_Home, false);
 BLG_GOO.registerGui(BLG_RemoteControl, true);
+BLG_GOO.registerGui(BLG_SelectServer, false);
 BLG_GOO.openGui(BLG_Home);

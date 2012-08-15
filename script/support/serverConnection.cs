@@ -67,9 +67,35 @@ function BLG_GSC_TCP::onLine(%this, %line) {
 	BLG.debug("Got line > " @ %line);
 	%proto = getField(%line, 0);
 
-	if(%this.authed) {
+	if(%proto $= "handshake") {
+		switch$(getField(%line, 1)) {
+			case "challenge":
+				%this.challenge = getField(%line, 2);
+				%this.send("handshake\tresponse\t" @ %this.challenge @ "\r\n");
+
+			case "result":
+				%result = getField(%line, 2);
+				if(%result $= "-1") {
+					BLG.error("Auth failed. You are you, right?");
+				} else if(%result $= "0") {
+					BLG.error("Challenge/Response failed. IP Spoofing?");
+				} else if(%result $= "1") {
+					echo("BLG Auth Success");
+					%this.authed = true;
+					if($Server::Dedicated) {
+						%this.send("handshake\tdata\t" @ BLG.internalVersion @ "\t" @ BLG_GSC.pubId @ "\t" @ $Pref::Server::Port @ "\t" @ $Server::Name @ "\r\n");
+					} else {
+						%this.send("handshake\tdata\t" @ BLG.internalVersion @ "\r\n");
+					}
+				}
+		}
+	} else if(%this.authed) {
 		if(%proto $= "relay") {
-			%msg = BLG_GSC.gea.decrypt(getField(%line, 2));
+			if($Server::Dedicated) {
+				%msg = BLG_GSC.gea.decrypt(getField(%line, 2));
+			} else {
+				%msg = BLG_GRSC.cid[getField(%line, 1)].gea.decrypt(getField(%line, 2));
+			}
 			echo(%msg);
 			if(strPos(%msg, "GEA-ENC") == 0) {
 				%msg = getSubStr(%msg, 8, strLen(%msg));
@@ -87,29 +113,12 @@ function BLG_GSC_TCP::onLine(%this, %line) {
 				BLG.debug("Unhandled Line: " @ %line);
 			}
 		}
-	} else if(%proto $= "handshake") {
-		switch$(getField(%line, 1)) {
-			case "challenge":
-				%this.challenge = getField(%line, 2);
-				%this.send("handshake\tresponse\t" @ %this.challenge @ "\r\n");
-
-			case "result":
-				%result = getField(%line, 2);
-				if(%result $= "-1") {
-					BLG.error("Auth failed. You are you, right?");
-				} else if(%result $= "0") {
-					BLG.error("Challenge/Response failed. IP Spoofing?");
-				} else if(%result $= "1") {
-					echo("BLG Auth Success");
-					%this.authed = true;
-					if($Server::Dedicated) {
-						%this.send("handshake\tdata\t" @ BLG.internalVersion @ "\t" @ BLG_GSC.pubId @ "\t" @ $Pref::Server::Port @ "\r\n");
-					} else {
-						%this.send("handshake\tdata\t" @ BLG.internalVersion @ "\r\n");
-					}
-				}
-		}
 	}
+}
+
+function BLG_GSC_TCP::onConnectFailed(%this) {
+	BLG.debug("Connecting to Glass Server failed. Retry");
+	%this.rcSchedule = BLG_GSC.schedule(getRandom(1000, 10000), init);
 }
 
 function BLG_GSC_TCP::onDisconnect(%this) {
@@ -125,7 +134,7 @@ package BLG_GSC_Package {
 
 	function postServerTCPObj::connect(%this, %addr) {
 		parent::connect(%this, %addr);
-		if($Server::Dedicated && !%this.authed) {
+		if($Server::Dedicated && !BLG_GSC_TCP.authed) {
 			BLG_GSC.init();
 		}
 	}

@@ -58,7 +58,7 @@ new GuiControl(BLG_Home) {
          overflowImage = "0";
          mKeepCached = "0";
          mColor = "255 255 255 255";
-         command = "BLG_GOO.newInstance(BLG_RemoteControl);";
+         command = "BLG_GOO.openGui(BLG_SelectServer);";
       };
       new GuiBitmapButtonCtrl() {
          profile = "BLG_BlockButtonProfile";
