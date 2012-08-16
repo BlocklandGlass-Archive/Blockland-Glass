@@ -2,6 +2,7 @@
 exec("./core.cs");
 
 BLG.start("server");
+activatePackage(BLG_GSC_Package);
 
 function serverCmdBLG_HandshakeResponse(%client, %extent) {
 	BLG.debug("Handshake response from " @ %client @ ", extent [" @ %extent @ "]");

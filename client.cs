@@ -2,6 +2,13 @@
 exec("./core.cs");
 if(!BLG.start("client")) return;
 
+activatePackage(BLG_GSC_Package);
+activatePackage(BLG_GKC_Package);
+activatePackage(BLG_GDC_Package);
+activatePackage(BLG_HUDC_Package);
+activatePackage(BLG_GRSC);
+activatePackage(BLG_Updater_Package);
+
 %mm = new GuiTextCtrl(BLG_Version) {
 	profile = "BLG_VersionTextProfile";
 	horizSizing = "center";
@@ -43,4 +50,4 @@ activatePackage(BLG_Client);
 //Thank-you, dearest Iban
 $cArg[8, mFloor($cArgs[8])] = "BLG" TAB BLG.internalVersion TAB BLG.versionId;
 $cArgs[8]++;
-exec("./Support_ModVersion.cs");
+//exec("./Support_ModVersion.cs");

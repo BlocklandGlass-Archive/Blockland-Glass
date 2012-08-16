@@ -154,4 +154,3 @@ package BLG_HUDC_Package {
 		BLG_HUDC.draw();
 	}
 };
-activatePackage(BLG_HUDC_Package);

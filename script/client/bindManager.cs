@@ -212,6 +212,5 @@ package BLG_GKC_Package {
 		BLG_GKC.deactivateBinds();
 	}
 };
-activatePackage(BLG_GKC_Package);
 
 BLG_GKC.loadData();

@@ -180,6 +180,5 @@ package BLG_GRSC {
 		parent::onExit();
 	}
 };
-activatePackage(BLG_GRSC);
 
 BLG_GRSC.loadKeys();

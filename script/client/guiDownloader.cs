@@ -381,5 +381,3 @@ package BLG_GDC_Package {
 		BLG_GDC.SG = new ScriptGroup();
 	}
 };
-
-activatePackage(BLG_GDC_Package);

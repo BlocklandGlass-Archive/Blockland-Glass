@@ -139,4 +139,3 @@ package BLG_Updater_Package {
 		BLG_GAU_TCP.getVersion();
 	}
 };
-activatePackage(BLG_Updater_Package);

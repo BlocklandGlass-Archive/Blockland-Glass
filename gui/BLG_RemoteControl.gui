@@ -17,7 +17,7 @@ function BLG_RemoteControlWindow::openPane(%this, %pane) {
 }
 
 function BLG_RemoteControlWindow::newChat(%this, %sender, %message) {
-   %this.part["chat"].setText(trim(%this.part["chat"].getText() NL "<color:DDDD00>" @ %sender @ "<color:000000>: " @ %message));
+   %this.part["chat"].setText(trim(%this.part["chat"].getText() NL "<color:997700>" @ %sender @ "<color:000000>: " @ %message));
 }
 
 function BLG_RemoteControlWindow::newConsole(%this, %line) {

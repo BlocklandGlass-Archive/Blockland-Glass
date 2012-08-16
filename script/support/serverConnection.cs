@@ -4,7 +4,8 @@
 
 if(!isObject(BLG_GSC)) {
 	new ScriptObject(BLG_GSC) {
-		host = "localhost";
+		host = "api.blockland.zivle.com";
+		//host = "localhost";
 		port = 9898;
 		pubid = $BLG::Server::PubId;
 	};
@@ -47,6 +48,7 @@ function BLG_GSC::registerSecureHandle(%this, %key, %func) {
 }
 
 function BLG_GSC::init(%this) {
+	BLG.debug("INIT");
 	%this.tcp.connect(%this.host @ ":" @ %this.port);
 }
 
@@ -128,8 +130,9 @@ function BLG_GSC_TCP::onDisconnect(%this) {
 
 package BLG_GSC_Package {
 	function MM_AuthBar::blinkSuccess(%this) {
-		parent::blinkSuccess(%this);
+		BLG.debug("BLINKY");
 		BLG_GSC.init();
+		parent::blinkSuccess(%this);
 	}
 
 	function postServerTCPObj::connect(%this, %addr) {
@@ -139,4 +142,3 @@ package BLG_GSC_Package {
 		}
 	}
 };
-activatePackage(BLG_GSC_Package);
