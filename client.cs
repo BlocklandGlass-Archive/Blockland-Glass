@@ -40,7 +40,7 @@ package BLG_Client {
 
 	function MM_AuthBar::blinkSuccess(%this) {
 		if(BLG.firstRun) {
-			messageBoxOk("BLG First-run Placeholder", "This is a place holder for the welcome GUI of BLG2. If you're seeing this, you're in the Alpha. Welcome.<br><br>Btw, try CTRL + SPACE");
+			messageBoxOk("BLG First-run Placeholder", "This is a place holder for the welcome GUI of BLG2. If you're seeing this, you're in the Alpha. Welcome.");
 		}
 		parent::blinkSuccess(%this);
 	}
@@ -50,4 +50,4 @@ activatePackage(BLG_Client);
 //Thank-you, dearest Iban
 $cArg[8, mFloor($cArgs[8])] = "BLG" TAB BLG.internalVersion TAB BLG.versionId;
 $cArgs[8]++;
-//exec("./Support_ModVersion.cs");
+exec("./Support_ModVersion.cs");
