@@ -28,7 +28,7 @@ if(!isObject(BLG_GDC)) {
 	BLG_GDC.defaultHud[%i++] = "HUD_ToolNameBG";
 	BLG_GDC.defaultHuds = %i;
 	BLG_GDC.SG = new ScriptGroup();
-}
+} 
 
 //Protocol:
 //----------
@@ -86,12 +86,16 @@ function BLG_GDC::verifyAlphanumeric(%this, %string) {
 
 function BLG_GDC::finalizeObject(%this, %objId) {
 	%obj = %this.SG.objData[%objId];
-	if(isObject(%obj) && !isObject(%obj.name)) {
+	if(isObject(%obj)) {
 		%newobj = eval("return new " @ %obj.objClass @ "();");
-		%newobj.setName(%obj.name);
+		%newobj.setName("BLG_" @ %obj.name);
 
 		for(%i = 0; %i < %obj.attributes; %i++) {
-			eval("%newobj." @ %obj.attributeDat[%i] @ "=" @ %obj.attributeVal[%i]@";"); // TODO: remove eval
+			%val = strReplace(%obj.attributeVal[%i], "\\\\", "\\");
+			eval("%newobj." @ %obj.attributeDat[%i] @ "=" @ %val @ ";");
+			if(%obj.attributeDat[%i] $= "text") {
+				eval("%newobj.setText(" @ %val @ ");");
+			}
 		}
 
 		%newobj.BLG__OBJID = %objId;
@@ -381,5 +385,3 @@ package BLG_GDC_Package {
 		BLG_GDC.SG = new ScriptGroup();
 	}
 };
-
-activatePackage(BLG_GDC_Package);
