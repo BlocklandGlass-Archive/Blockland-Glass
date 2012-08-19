@@ -70,6 +70,24 @@ function BLG_IDC_Downloader::onBinChunk(%this, %chunk) {
 	}
 }
 
+function BLG_IDC_Downloader::onConnectFailed(%this) {
+	warn("BLG image download failed, ignoring");
+	if (%this.loadPhase) {
+		BLG_IDC.nextPhaseFile();
+	}
+
+	%this.schedule(1000, delete);
+}
+
+function BLG_IDC_Downloader::onDNSFailed(%this) {
+	warn("BLG image download failed, ignoring");
+	if (%this.loadPhase) {
+		BLG_IDC.nextPhaseFile();
+	}
+
+	%this.schedule(1000, delete);
+}
+
 function BLG_IDC_Downloader::onDisconnect(%this) {
 	BLG.debug("Downloader disconnected");
 }
