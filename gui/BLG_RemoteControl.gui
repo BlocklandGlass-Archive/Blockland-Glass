@@ -130,9 +130,9 @@ new GuiControl(BLG_RemoteControl) {
          position = "334 30";
          extent = "107 25";
          minExtent = "8 2";
-         visible = "0";
+         visible = "1";
          command = "BLG_RemoteControlWindow.openPane(4);";
-         text = "Schedule";
+         text = "Prefs";
          groupNum = "-1";
          buttonType = "PushButton";
          bitmap = "base/client/ui/tab1";
@@ -357,6 +357,241 @@ new GuiControl(BLG_RemoteControl) {
                password = "0";
                tabComplete = "0";
                sinkAllKeyEvents = "0";
+            };
+         };
+         new GuiSwatchCtrl(BLG_RemoteControlWindow_Pane4) {
+            profile = "GuiDefaultProfile";
+            horizSizing = "right";
+            vertSizing = "bottom";
+            position = "2 2";
+            extent = "426 381";
+            minExtent = "8 2";
+            visible = "1";
+            color = "200 200 200 255";
+            BLG_InstanceTag = "pane4";
+
+            new GuiScrollCtrl() {
+               profile = "BLG_ScrollProfile";
+               horizSizing = "right";
+               vertSizing = "bottom";
+               position = "8 33";
+               extent = "201 340";
+               minExtent = "8 2";
+               enabled = "1";
+               visible = "1";
+               clipToParent = "1";
+               willFirstRespond = "0";
+               hScrollBar = "alwaysOff";
+               vScrollBar = "alwaysOn";
+               constantThumbHeight = "0";
+               childMargin = "0 0";
+               rowHeight = "40";
+               columnWidth = "30";
+
+               new GuiSwatchCtrl() {
+                  profile = "GuiDefaultProfile";
+                  horizSizing = "right";
+                  vertSizing = "bottom";
+                  position = "1 1";
+                  extent = "191 35";
+                  minExtent = "8 2";
+                  enabled = "1";
+                  visible = "1";
+                  clipToParent = "1";
+                  color = "210 210 210 255";
+
+                  new GuiTextCtrl() {
+                     profile = "BLG_TextProfile";
+                     horizSizing = "right";
+                     vertSizing = "center";
+                     position = "5 8";
+                     extent = "54 18";
+                     minExtent = "8 2";
+                     enabled = "1";
+                     visible = "1";
+                     clipToParent = "1";
+                     text = "String Pref:";
+                     maxLength = "255";
+                  };
+                  new GuiTextEditCtrl() {
+                     profile = "BLG_TextEditProfile";
+                     horizSizing = "right";
+                     vertSizing = "bottom";
+                     position = "96 8";
+                     extent = "87 18";
+                     minExtent = "8 2";
+                     enabled = "1";
+                     visible = "1";
+                     clipToParent = "1";
+                     maxLength = "255";
+                     historySize = "0";
+                     password = "0";
+                     tabComplete = "0";
+                     sinkAllKeyEvents = "0";
+                  };
+               };
+               new GuiSwatchCtrl() {
+                  profile = "GuiDefaultProfile";
+                  horizSizing = "right";
+                  vertSizing = "bottom";
+                  position = "1 37";
+                  extent = "191 35";
+                  minExtent = "8 2";
+                  enabled = "1";
+                  visible = "1";
+                  clipToParent = "1";
+                  color = "210 210 210 255";
+
+                  new GuiTextCtrl() {
+                     profile = "BLG_TextProfile";
+                     horizSizing = "right";
+                     vertSizing = "center";
+                     position = "5 8";
+                     extent = "57 18";
+                     minExtent = "8 2";
+                     enabled = "1";
+                     visible = "1";
+                     clipToParent = "1";
+                     text = "Option Pref:";
+                     maxLength = "255";
+                  };
+                  new GuiPopUpMenuCtrl() {
+                     profile = "GuiPopUpMenuProfile";
+                     horizSizing = "right";
+                     vertSizing = "center";
+                     position = "96 8";
+                     extent = "87 18";
+                     minExtent = "8 2";
+                     enabled = "1";
+                     visible = "1";
+                     clipToParent = "1";
+                     maxLength = "255";
+                     maxPopupHeight = "200";
+                  };
+               };
+               new GuiSwatchCtrl() {
+                  profile = "GuiDefaultProfile";
+                  horizSizing = "right";
+                  vertSizing = "bottom";
+                  position = "1 73";
+                  extent = "191 35";
+                  minExtent = "8 2";
+                  enabled = "1";
+                  visible = "1";
+                  clipToParent = "1";
+                  color = "210 210 210 255";
+
+                  new GuiTextCtrl() {
+                     profile = "BLG_TextProfile";
+                     horizSizing = "right";
+                     vertSizing = "center";
+                     position = "5 8";
+                     extent = "58 18";
+                     minExtent = "8 2";
+                     enabled = "1";
+                     visible = "1";
+                     clipToParent = "1";
+                     text = "Toggle Pref:";
+                     maxLength = "255";
+                  };
+                  new GuiRadioCtrl() {
+                     profile = "GuiRadioProfile";
+                     horizSizing = "right";
+                     vertSizing = "center";
+                     position = "96 10";
+                     extent = "15 15";
+                     minExtent = "8 2";
+                     enabled = "1";
+                     visible = "1";
+                     clipToParent = "1";
+                     groupNum = "-1";
+                     buttonType = "RadioButton";
+                  };
+               };
+            };
+            new GuiTextCtrl() {
+               profile = "BLG_TextProfile";
+               horizSizing = "right";
+               vertSizing = "bottom";
+               position = "5 8";
+               extent = "66 18";
+               minExtent = "8 2";
+               enabled = "1";
+               visible = "1";
+               clipToParent = "1";
+               text = "Server Name:";
+               maxLength = "255";
+            };
+            new GuiTextEditCtrl() {
+               profile = "BLG_TextEditProfile";
+               horizSizing = "right";
+               vertSizing = "bottom";
+               position = "80 8";
+               extent = "230 18";
+               minExtent = "8 2";
+               enabled = "1";
+               visible = "1";
+               clipToParent = "1";
+               maxLength = "255";
+               historySize = "0";
+               password = "0";
+               tabComplete = "0";
+               sinkAllKeyEvents = "0";
+            };
+            new GuiTextCtrl() {
+               profile = "BLG_TextProfile";
+               horizSizing = "right";
+               vertSizing = "bottom";
+               position = "318 8";
+               extent = "60 18";
+               minExtent = "8 2";
+               enabled = "1";
+               visible = "1";
+               clipToParent = "1";
+               text = "Playercount:";
+               maxLength = "255";
+            };
+            new GuiTextEditCtrl() {
+               profile = "BLG_TextEditProfile";
+               horizSizing = "right";
+               vertSizing = "bottom";
+               position = "381 8";
+               extent = "37 18";
+               minExtent = "8 2";
+               enabled = "1";
+               visible = "1";
+               clipToParent = "1";
+               maxLength = "255";
+               historySize = "0";
+               password = "0";
+               tabComplete = "0";
+               sinkAllKeyEvents = "0";
+            };
+            new GuiSwatchCtrl() {
+               profile = "GuiDefaultProfile";
+               horizSizing = "right";
+               vertSizing = "bottom";
+               position = "217 33";
+               extent = "201 340";
+               minExtent = "8 2";
+               enabled = "1";
+               visible = "1";
+               clipToParent = "1";
+               color = "225 225 225 255";
+
+               new GuiTextCtrl() {
+                  profile = "BLG_TextCenterProfile";
+                  horizSizing = "center";
+                  vertSizing = "center";
+                  position = "76 161";
+                  extent = "48 18";
+                  minExtent = "8 2";
+                  enabled = "1";
+                  visible = "1";
+                  clipToParent = "1";
+                  text = "Filler for ?";
+                  maxLength = "255";
+               };
             };
          };
       };
