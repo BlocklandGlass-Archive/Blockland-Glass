@@ -6,6 +6,7 @@ activatePackage(BLG_GSC_Package);
 activatePackage(BLG_GKC_Package);
 activatePackage(BLG_GDC_Package);
 activatePackage(BLG_HUDC_Package);
+activatePackage(BLG_GNS_Package);
 activatePackage(BLG_GRSC);
 activatePackage(BLG_Updater_Package);
 

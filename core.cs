@@ -67,6 +67,7 @@ function BLG::start(%this, %implementation) {
 			if($BLG::Pref::Desktop) exec("./script/client/desktop.cs");
 			exec("./script/client/guiDownloader.cs");
 			exec("./script/client/hudManager.cs");
+			exec("./script/client/notification.cs");
 			exec("./script/client/openOverlay.cs");
 			exec("./script/client/imageDownloader.cs");
 			exec("./script/client/remoteControl.cs");

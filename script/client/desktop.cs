@@ -57,7 +57,7 @@ function BLG_Desktop::onSleep(%this)
 }
 
 function BLG_DT::refresh(%this) {
-	%res = getWords($Pref::Video::Resolution,0,1);
+	%res = getWords($pref::Video::windowedRes,0,1);
 
 	BLG_Desktop_Swatch.extent = getWord(%res, 0) SPC getWord(%res, 1)-64;
 
@@ -836,7 +836,7 @@ function BLG_CAS::loop(%this) {
 			%this.remove(%handle);
 			%object.isAnimating = false;
 			if(%handle.finish !$= "") {
-				eval(%handle.finish @ "(" @ %object @ ");");
+				eval(%handle.finish @ "(%object);");
 			}
 		} else {
 			if(%handle.posChange !$= "") %object.position = mFloor(%endPosX-(getWord(%handle.posChange, 0)*%ticks)) SPC mFloor(%endPosY-(getWord(%handle.posChange, 1)*%ticks));
