@@ -8,7 +8,7 @@ if(!isObject(BLG_GNS)) {
 	};
 }
 
-function BLG_GNS::newNotification(%this, %title, %text, %icon, %time, %command) {
+function BLG_GNS::newNotification(%this, %title, %text, %icon, %time, %command, %closeOnOverlay) {
 	if(%time != -1 && %time < 5000) {
 		%time = 5000;
 	}
@@ -25,6 +25,8 @@ function BLG_GNS::newNotification(%this, %title, %text, %icon, %time, %command) 
 		title = %title;
 		command = %command;
 		icon = %icon;
+
+		overlay = %closeOnOverlay;
 	};
 
 	%so.draw();
@@ -104,7 +106,11 @@ function BLG_Notification::draw(%this) {
 		};
 	};
 	%this.gui = %gui;
-	MainMenuGui.add(%gui);
+	if(Canvas.getContent().getName() $= "PlayGui")
+		PlayGui.add(%gui);
+	else
+		MainMenuGui.add(%gui);
+	
 	BLG_GNS.addToQueue("add", %this);
 }
 
@@ -144,7 +150,7 @@ function BLG_Notification::actionFinished(%this, %obj) {
 		}
 
 		BLG_GNS.notifications--;
-		BLG_GNS.height -= getWord(%obj.extent, 1);
+		BLG_GNS.height -= getWord(%obj.extent, 1)+5;
 		%obj.delete();
 		BLG_GNS.schedule(250, processQueue);
 		return;
@@ -160,11 +166,25 @@ function BLG_Notification::actionFinished(%this, %obj) {
 package BLG_GNS_Package {
 	function RTBCC_NotificationManager::push(%this,%title,%message,%icon,%key,%holdTime) {
 		//parent::push(%this,%title,%message,%icon,%key,%holdTime);
-		BLG_GNS.newNotification(%title, %message, %icon, %holdTime, "RTB_Overlay.fadeIn();");
+		echo("time:" SPC %holdTime);
+		BLG_GNS.newNotification(%title, %message, %icon, %holdTime, "RTB_Overlay.fadeIn();", true);
+	}
+
+	function RTB_Overlay::onWake(%this) {
+		parent::onWake(%this);
+		echo("Wakey wakey");
+		for(%i = 0; %i < BLG_GNS.notifications; %i++) {
+			if(BLG_GNS.slot[%i+1].obj.overlay) {
+				BLG_GNS.addToQueue("remove", BLG_GNS.slot[%i+1].obj);
+			}
+		}
 	}
 
 	function MM_AuthBar::blinkSuccess(%this) {
 		parent::blinkSuccess(%this);
-		BLG_GNS.newNotification("Welcome to BLG!", "Welcome to Blockland Glass! Click on me to access BLG, or simply press \"shift tab\".", "", -1, "RTB_Overlay.fadeIn();");
+		if(!$BLG::Notified) {
+			BLG_GNS.newNotification("Welcome to BLG!", "Welcome to Blockland Glass! Click on me to access BLG, or simply press \"shift tab\".", "", -1, "RTB_Overlay.fadeIn();", true);
+			$BLG::Notified = true;
+		}
 	}
 };

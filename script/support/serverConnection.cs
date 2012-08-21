@@ -48,7 +48,6 @@ function BLG_GSC::registerSecureHandle(%this, %key, %func) {
 }
 
 function BLG_GSC::init(%this) {
-	BLG.debug("INIT");
 	%this.tcp.connect(%this.host @ ":" @ %this.port);
 }
 
@@ -66,6 +65,11 @@ function BLG_GSC_TCP::onConnected(%this) {
 }
 
 function BLG_GSC_TCP::onLine(%this, %line) {
+	if(%this.reconnect) {
+	BLG_GNS.newNotification("Connection Resolved", "Reconnected");
+	}
+
+	%this.reconnect = false;
 	BLG.debug("Got line > " @ %line);
 	%proto = getField(%line, 0);
 
@@ -119,18 +123,23 @@ function BLG_GSC_TCP::onLine(%this, %line) {
 }
 
 function BLG_GSC_TCP::onConnectFailed(%this) {
-	BLG.debug("Connecting to Glass Server failed. Retry");
+	if(!%this.reconnect) {
+		BLG_GNS.newNotification("Connection Issue", "Failed to connect to BLG Server. Attempting reconnect.", "", 10000);
+	}
+
+	%this.reconnect = true;
+	BLG.debug("Retry");
 	%this.rcSchedule = BLG_GSC.schedule(getRandom(1000, 10000), init);
 }
 
 function BLG_GSC_TCP::onDisconnect(%this) {
+	BLG_GNS.newNotification("Connection Issue", "Unexpected disconnected from BLG Server. Attempting reconnect.");
 	BLG.debug("Disconnected from Glass Server");
 	%this.rcSchedule = BLG_GSC.schedule(getRandom(1000, 10000), init);
 }
 
 package BLG_GSC_Package {
 	function MM_AuthBar::blinkSuccess(%this) {
-		BLG.debug("BLINKY");
 		BLG_GSC.init();
 		parent::blinkSuccess(%this);
 	}
