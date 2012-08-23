@@ -325,7 +325,6 @@ new GuiControl(BLG_Desktop) {
                minExtent = "8 2";
                visible = "1";
                command = "exec(\"Add-Ons/System_BlocklandGlass/installer/main.cs\");";
-               accelerator = "enter";
                text = "Launch Installer";
                groupNum = "-1";
                buttonType = "PushButton";
