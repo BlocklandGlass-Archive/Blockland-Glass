@@ -48,6 +48,10 @@ function BLG_GSC::registerSecureHandle(%this, %key, %func) {
 }
 
 function BLG_GSC::init(%this) {
+	if($Pref::Player::NetName $= "") {
+		BLG.debug("No name. Aborting connect");
+		return;
+	}
 	%this.tcp.connect(%this.host @ ":" @ %this.port);
 }
 
@@ -146,6 +150,7 @@ package BLG_GSC_Package {
 
 	function postServerTCPObj::connect(%this, %addr) {
 		parent::connect(%this, %addr);
+		trace(1);
 		if($Server::Dedicated && !BLG_GSC_TCP.authed) {
 			BLG_GSC.init();
 		}

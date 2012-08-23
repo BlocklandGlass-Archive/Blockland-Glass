@@ -16,6 +16,10 @@ function BLG_ServerHandle::setKey(%this, %key) {
 	%this.gea = %gea;
 }
 
+function BLG_ServerHandle::relay(%this, %msg) {
+	BLG_GSC.relay(%this.cid, %msg, %this.gea);
+}
+
 function BLG_GRSC::saveKeys(%this) {
 	%fo = new FileObject();
 	%fo.openForWrite("config/BLG/client/keys.dat");
@@ -47,6 +51,9 @@ function BLG_GRSC::onSecureLine(%this, %sender, %line) {
 			if(isObject(%gui)) {
 				%gui.newChat(getField(%line, 2), getField(%line, 3));
 			}
+
+		case "ping":
+			BLG_GSC.relay(%sender, "servercontrol\tpong\t" @ getField(%line, 2), %this.cid[%sender].gea);
 	}
 }
 
