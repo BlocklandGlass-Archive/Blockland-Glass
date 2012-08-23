@@ -65,7 +65,7 @@ function BLG_GSC::relay(%this, %target, %msg, %gea) {
 
 function BLG_GSC_TCP::onConnected(%this) {
 	BLG.debug("Connected to Glass Server, sending handshake");
-	%this.send("handshake" TAB "init" TAB $Pref::Player::NetName TAB ($Server::Dedicated ? "server" : "client") TAB BLG.internalVersion @ "\r\n");
+	%this.send("handshake" TAB "init" TAB $Pref::Player::NetName TAB ($Server::Dedicated ? "server" : "client") TAB BLG.internalVersion @ ($Pref::Server::Port ? "\t" @ $Pref::Server::Port : "") @ "\r\n");
 }
 
 function BLG_GSC_TCP::onLine(%this, %line) {
@@ -150,7 +150,6 @@ package BLG_GSC_Package {
 
 	function postServerTCPObj::connect(%this, %addr) {
 		parent::connect(%this, %addr);
-		trace(1);
 		if($Server::Dedicated && !BLG_GSC_TCP.authed) {
 			BLG_GSC.init();
 		}

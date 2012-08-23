@@ -366,7 +366,7 @@ new GuiControl(BLG_RemoteControl) {
             position = "2 2";
             extent = "426 381";
             minExtent = "8 2";
-            visible = "1";
+            visible = "0";
             color = "200 200 200 255";
             BLG_InstanceTag = "pane4";
 

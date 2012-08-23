@@ -24,6 +24,11 @@ function BLG_GRSC::onLine(%this, %sender, %line) {
 				}
 			}
 
+			for(%i = 0; %i < $RTB::MSSC::Options; %i++) {
+				%pref = $RTB::MSSC::Option[%i]; //%optionName TAB %type TAB %pref TAB %callback TAB %message;
+				BLG_GSC.relay(%sender, "rsc\tprefs\tadd\t" @ getField(%pref, 0) TAB getField(%pref, 1) TAB getField(%pref, 2), BLG_GSC.gea);
+			}
+
 		case "pong":
 			if(getField(%line, 2) $= %this.pingKey) {
 				%this.listener[%this.listeners+0] = %sender;
