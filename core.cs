@@ -1,6 +1,6 @@
 new ScriptGroup(BLG) {
-	internalVersion = "2.0.A4";
-	externalVersion = "2.0 Alpha 4";
+	internalVersion = "2.0.DEV";
+	externalVersion = "2.0 Development";
 	versionId = 1337; //1 is anything before 1.2
 
 	debugLevel = 3;
@@ -64,7 +64,7 @@ function BLG::start(%this, %implementation) {
 			exec("./gui/BLG_Overlay.gui");
 
 			exec("./script/client/bindManager.cs");
-			if($BLG::Pref::Desktop) exec("./script/client/desktop.cs");
+			if(!$Blota::Desktop) if($BLG::Pref::Desktop) exec("./script/client/desktop.cs");
 			exec("./script/client/guiDownloader.cs");
 			exec("./script/client/hudManager.cs");
 			exec("./script/client/notification.cs");
@@ -122,6 +122,14 @@ function BLG::error(%this, %msg) {
 
 function BLG::setRequired(%this) {
 	%this.required = true;
+}
+
+function BLG::getOverlay(%this) {
+	if(isObject(RTB_Overlay)) {
+		return RTB_Overlay;
+	} else {
+		return BLG_Overlay;
+	}
 }
 
 package BLG_Package {

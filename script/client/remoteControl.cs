@@ -83,9 +83,13 @@ function BLG_GRSC::onLine(%this, %line) {
 			} else if(%cmd $= "remove") {
 				%so = %this.cid[getField(%line, 3)];
 				%this.remove(%so);
+				BLG_GNS.newNotification("Server Offline", "Your server, \"" @ %so.name @ "\" is now offline!");
 				%so.delete();
 			} else if(%cmd $= "name") {
 				if(isObject(%this.cid[getField(%line, 3)])) {
+					if(%this.cid[getField(%line, 3)].name $= "") {
+						BLG_GNS.newNotification("Server Online", "Your server, \"" @ getField(%line, 4) @ "\" is now online!");
+					}
 					%this.cid[getField(%line, 3)].name = getField(%line, 4);
 				}
 			}
