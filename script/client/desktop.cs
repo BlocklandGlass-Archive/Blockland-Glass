@@ -2,6 +2,13 @@
 // Title: Glass Desktop
 //================================================
 
+new AudioProfile(BLG_Sound_Click)
+{
+	fileName = BLG.sound @ "/click.wav";
+	description = AudioGui;
+	preload = true;
+};
+
 //This project is based off of BlockOS after its abandonment in June of 2012.
 exec("Add-Ons/System_BlocklandGlass/gui/BLG_Desktop.gui");
 BLG_Desktop_Menu_Enabled.setValue(true);
@@ -33,6 +40,10 @@ function BLG_Desktop::guiToggle(%this, %tog) {
 	BLG_Desktop_BottomBar.setVisible(%tog);
 	BLG_Desktop_Swatch.setVisible(%tog);
 	BLG_Desktop_Menu.setVisible(%tog);
+
+	if(%tog) {
+		alxPlay(BLG_Sound_Click);
+	}
 }
 
 function BLG_Desktop::onWake(%this)
@@ -965,6 +976,7 @@ package BLG_DT_Package {
 			if(isObject(%obj)) {
 	            if(%obj.gui.position $= %obj.originalPos) {
 	                eval(%obj.command);
+	                alxPlay(BLG_Sound_Click);
 	            } else {
 	                %x = getWord(%pos, 0);
 	                %y = getWord(%pos, 1);

@@ -8,7 +8,14 @@ if(!isObject(BLG_GNS)) {
 	};
 }
 
-function BLG_GNS::newNotification(%this, %title, %text, %icon, %time, %key, %command, %closeOnOverlay) {
+new AudioProfile(BLG_Sound_Notification)
+{
+	fileName = BLG.sound @ "/noti.wav";
+	description = AudioGui;
+	preload = true;
+};
+
+function BLG_GNS::newNotification(%this, %title, %text, %icon, %time, %key, %sound, %command, %closeOnOverlay) {
 	if(isFunction(clientCmdBlota_MakeNotification)) {
 		switch(getRandom(1, 4)) {
 			case 1:
@@ -56,6 +63,7 @@ function BLG_GNS::newNotification(%this, %title, %text, %icon, %time, %key, %com
 		command = %command;
 		icon = %icon;
 		key = %this.key;
+		sound = %sound;
 
 		overlay = %closeOnOverlay;
 	};
@@ -68,7 +76,7 @@ function BLG_GNS::newNotification(%this, %title, %text, %icon, %time, %key, %com
 
 function BLG_GNS::updateNotification(%this, %key, %title, %text, %icon, %time) {
 	if(%time $= "") {
-    	%time = 3000;
+    	%time = 5000;
 	}
 
 	if(%time != 0 && %time < 3000) {
@@ -174,7 +182,7 @@ function BLG_Notification::draw(%this) {
 	else
 		MainMenuGui.add(%gui);
 	
-	BLG_GNS.addToQueue("add", %this);
+	BLG_GNS.schedule(10, addToQueue, "add", %this);
 }
 
 function BLG_Notification::finalize(%this, %gui, %tid) {
@@ -194,6 +202,7 @@ function BLG_Notification::finalize(%this, %gui, %tid) {
 	%gui.position = getWord(%gui.position, 0) SPC getWord(%res, 1)-(BLG_GNS.height);
 
 	BLG_CAS.newAnimation(%gui).setPosition(getWord(%res, 0)-205 SPC getWord(%res, 1) - (BLG_GNS.height)).setDuration(250).setColor(%gui.color).setFinishHandle(%this @ ".actionFinished").start();
+	if(%this.sound) alxPlay(BLG_Sound_Notification);
 }
 
 function BLG_Notification::pop(%this, %tid) {
@@ -249,10 +258,11 @@ package BLG_GNS_Package {
 			BLG_GNS.msgs[%title]++;
 			if(BLG_GNS.msgs[%title] > 1) {
 				BLG_GNS.updateNotification(%key, %title, "has sent you <font:Verdana Bold:12>" @ BLG_GNS.msgs[%title] @ " <font:Verdana:12>messages.", "comments");
+				alxPlay(BLG_Sound_Notification);
 				return;
 			}
 		}
-		BLG_GNS.newNotification(%title, %message, %icon, %holdTime, %key, "BLG.getOverlay().fadeIn();", true);
+		BLG_GNS.newNotification(%title, %message, %icon, %holdTime, %key, false, "BLG.getOverlay().fadeIn();", true);
 	}
 
 	function RTB_Overlay::onWake(%this) {
@@ -267,7 +277,7 @@ package BLG_GNS_Package {
 	function MM_AuthBar::blinkSuccess(%this) {
 		parent::blinkSuccess(%this);
 		if(!$BLG::Notified) {
-			BLG_GNS.newNotification("Welcome to BLG!", "Welcome to Blockland Glass! Click on me to access BLG, or simply press \"shift tab\".", "", 0, "", "BLG.getOverlay().fadeIn();", true);
+			BLG_GNS.newNotification("Welcome to BLG!", "Welcome to Blockland Glass! Click on me to access BLG, or simply press \"shift tab\".", "", 0, "", false, "BLG.getOverlay().fadeIn();", true);
 			$BLG::Notified = true;
 		}
 	}

@@ -11,6 +11,8 @@ new ScriptGroup(BLG) {
 	required = false;
 
 	desktopEnabled = true;
+
+	sound = "Add-Ons/System_BlocklandGlass/sound";
 };
 
 function BLG::start(%this, %implementation) {
