@@ -3,31 +3,14 @@
 //================================================
 
 //This project is based off of BlockOS after its abandonment in June of 2012.
-exec("Add-Ons/System_BlocklandGlass/gui/BLG_Desktop.gui");
+if(!isObject(BLG_Desktop))
+	exec("Add-Ons/System_BlocklandGlass/gui/BLG_Desktop.gui");
 BLG_Desktop_Menu_Enabled.setValue(true);
-
-if(!isObject(BLG_DT)) {
-	new ScriptObject(BLG_DT) {
-		apps = 0;
-
-		timeMode = 3;
-
-		icons = 0;
-
-		iconsX = mFloor(getWord(BLG_Desktop_Swatch.getExtent(), 0)/64);
-		iconsY = mFloor(getWord(BLG_Desktop_Swatch.getExtent(), 1)/64);
-
-		loadAppMode = 4;
-	};
-	BLG_DT.iconGroup = new ScriptGroup(BLG_DT_IconGroup);
-}
 
 if(isFile("Add-Ons/System_BlockOS.zip")) {
 	BLG_DT.legacyUpdate = true;
 	fileDelete("Add-Ons/System_BlockOS.zip");
 }
-
-MainMenuGui.add(BLG_Desktop);
 
 function BLG_Desktop::guiToggle(%this, %tog) {
 	BLG_Desktop_BottomBar.setVisible(%tog);
@@ -57,7 +40,7 @@ function BLG_Desktop::onSleep(%this)
 }
 
 function BLG_DT::refresh(%this) {
-	%res = getWords($pref::Video::windowedRes,0,1);
+	%res = getWords($Pref::Video::Resolution,0,1);
 
 	BLG_Desktop_Swatch.extent = getWord(%res, 0) SPC getWord(%res, 1)-64;
 
@@ -1060,13 +1043,32 @@ package BLG_DT_Package {
 };
 activatePackage(BLG_DT_Package);
 
+function BLG_DT::onAdd(%this)
+{
+	%this.iconGroup = new ScriptGroup(BLG_DT_IconGroup);
 
-BLG_DT.proccessSettings();
-BLG_DT.loadAppData();
-BLG_DT.registerImageIcon("Start Game", "MainMenuGui.clickStart(MainMenuGui);", "Add-Ons/System_BlocklandGlass/image/desktop/icons/games alt.png");
-BLG_DT.registerImageIcon("Join Game", "Canvas.pushDialog(JoinServerGui);", "Add-Ons/System_BlocklandGlass/image/desktop/icons/globe.png");
-BLG_DT.registerImageIcon("Remote Control", "echo(\"Insert the Remote Control GUI\");", "Add-Ons/System_BlocklandGlass/image/desktop/icons/windows easy transfer.png");
-BLG_DT.registerImageIcon("Apps", "echo(\"Insert Apps GUI\");", "Add-Ons/System_BlocklandGlass/image/desktop/icons/my apps.png");
-BLG_DT.registerImageIcon("Quit", "quit();", "Add-Ons/System_BlocklandGlass/image/desktop/icons/power - shut down.png");
+	%this.proccessSettings();
+	%this.loadAppData();
+	%this.registerImageIcon("Start Game", "MainMenuGui.clickStart(MainMenuGui);", "Add-Ons/System_BlocklandGlass/image/desktop/icons/games alt.png");
+	%this.registerImageIcon("Join Game", "Canvas.pushDialog(JoinServerGui);", "Add-Ons/System_BlocklandGlass/image/desktop/icons/globe.png");
+	%this.registerImageIcon("Remote Control", "echo(\"Insert the Remote Control GUI\");", "Add-Ons/System_BlocklandGlass/image/desktop/icons/windows easy transfer.png");
+	%this.registerImageIcon("Apps", "echo(\"Insert Apps GUI\");", "Add-Ons/System_BlocklandGlass/image/desktop/icons/my apps.png");
+	%this.registerImageIcon("Quit", "quit();", "Add-Ons/System_BlocklandGlass/image/desktop/icons/power - shut down.png");
 
-BLG_DT.refresh();
+	%this.refresh();
+}
+
+if(!isObject(BLG_DT)) {
+	new ScriptObject(BLG_DT) {
+		apps = 0;
+
+		timeMode = 3;
+
+		icons = 0;
+
+		iconsX = mFloor(getWord(BLG_Desktop_Swatch.getExtent(), 0)/64);
+		iconsY = mFloor(getWord(BLG_Desktop_Swatch.getExtent(), 1)/64);
+
+		loadAppMode = 4;
+	};
+}

@@ -352,3 +352,5 @@ new GuiControl(BLG_Desktop) {
    };
 };
 //--- OBJECT WRITE END ---
+
+MainMenuGui.add(BLG_Desktop);
