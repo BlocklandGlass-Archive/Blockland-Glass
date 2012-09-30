@@ -25,6 +25,7 @@ function BLG::start(%this, %implementation) {
 
 	exec("./Support_Byte.cs");
 	exec("./script/support/encrypt.cs");
+	exec("./script/support/queue.cs");
 	
 	if(%implementation $= "server") {
 		echo("Loading BLG [" @ %this.internalVersion @ "] server implementation");

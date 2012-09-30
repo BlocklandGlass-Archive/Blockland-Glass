@@ -4,7 +4,7 @@
 
 if(!isObject(BLG_GNS)) {
 	new ScriptObject(BLG_GNS) {
-		queueItems = -1;
+		queue = newQueue("BLG_GNS.queue");
 	};
 }
 
@@ -14,6 +14,22 @@ new AudioProfile(BLG_Sound_Notification)
 	description = AudioGui;
 	preload = true;
 };
+
+function BLG_GNS::queue(%this, %id, %ident) {
+	echo(%id TAB %ident);
+	%action = getField(%ident, 0);
+	%obj = getField(%ident, 1);
+
+	switch$(%action) {
+		case "add":
+			%obj.currentQueueId = %id;
+			%obj.finalize();
+
+		case "remove":
+			%obj.currentQueueId = %id;
+			%obj.pop();
+	}
+}
 
 function BLG_GNS::newNotification(%this, %title, %text, %icon, %time, %key, %sound, %command, %closeOnOverlay) {
 	if(isFunction(clientCmdBlota_MakeNotification)) {
@@ -93,55 +109,7 @@ function BLG_GNS::updateNotification(%this, %key, %title, %text, %icon, %time) {
 	%this.key[%key].gui.getObject(2).setText("<shadow:2:2><shadowcolor:00000066><color:DDDDDD><font:Verdana:12>" @ %text);
 
 	cancel(%this.key[%key].sched);
-	%this.key[%key].sched = BLG_GNS.schedule(%time, addToQueue, "remove", %this.key[%key]);
-}
-
-function BLG_GNS::addToQueue(%this, %action, %object) {
-	if(%this.queueItems == -1) {
-		%inactive = true;
-		%this.queueItems = 1;
-	}
-
-	%this.queueItem[%this.queueItems] = %action TAB %object;
-	%this.queueItems++;
-	BLG_GNS.processQueue();
-}
-
-function BLG_GNS::processQueue(%this, %taskId) {
-	if(%this.curTaskId !$= "") {
-		if(%this.curTaskId != %taskId) {
-			return;
-		} else {
-			%this.curTaskId = "";
-		}
-	}
-
-	%this.queueItem[0] = "";
-	for(%i = 0; %i < %this.queueItems; %i++) {
-		%this.queueItem[%i] = %this.queueItem[%i+1];
-	}
-
-	%this.queueItems--;
-
-	if(%this.queueItem[0] $= "") {
-		%this.queueItems = -1;
-		BLG.debug("Queue empty");
-		return;
-	}
-
-	%action = getField(%this.queueItem[0], 0);
-	%object = getField(%this.queueItem[0], 1);
-	%this.currentQueue = %action TAB %object;
-
-	switch$(%action) {
-		case "add":
-			%this.curTaskId = %this.taskId++;
-			%object.schedule(100, finalize, %object.gui, %this.curTaskId);
-
-		case "remove":
-			%this.curTaskId = %this.taskId++;
-			%object.pop(%this.curTaskId);
-	}
+	%this.key[%key].sched = BLG_GNS.queue.schedule(%time, addItem, "remove" TAB %this.key[%key]);
 }
 
 function BLG_Notification::draw(%this) {
@@ -173,7 +141,7 @@ function BLG_Notification::draw(%this) {
 			position = "0 0";
 			extent = "200 50";
 			text = " ";
-			command = "BLG_GNS.addToQueue(\"remove\", " @ %this @ ");" @ %this.command;
+			command = "BLG_GNS.queue.addItem(\"remove TAB" @ %this @ "\");" @ %this.command;
 		};
 	};
 	%this.gui = %gui;
@@ -182,12 +150,13 @@ function BLG_Notification::draw(%this) {
 	else
 		MainMenuGui.add(%gui);
 	
-	BLG_GNS.schedule(10, addToQueue, "add", %this);
+	BLG_GNS.queue.schedule(32, addItem, "add" TAB %this);
 }
 
-function BLG_Notification::finalize(%this, %gui, %tid) {
-	%this.tid = %tid;
+function BLG_Notification::finalize(%this) {
+	echo("ADD");
 	%this.action = "add";
+	%gui = %this.gui;
 
 	%res = getRes();
 	%msg = %gui.getObject(2).extent;
@@ -205,10 +174,10 @@ function BLG_Notification::finalize(%this, %gui, %tid) {
 	if(%this.sound) alxPlay(BLG_Sound_Notification);
 }
 
-function BLG_Notification::pop(%this, %tid) {
+function BLG_Notification::pop(%this) {
 	%this.key[%this.key] = "";
-	%this.tid = %tid;
 	%this.action = "remove";
+
 	BLG_CAS.newAnimation(%this.gui).setDuration(350).setColor("0 0 0 0").setFinishHandle(%this @ ".actionFinished").start();
 	if(strPos(%this.text, "has just sent you a message.") == 0) {
 		BLG_GNS.msgs[%this.title] = 0;
@@ -232,19 +201,22 @@ function BLG_Notification::actionFinished(%this, %obj) {
 		}
 		%obj.obj.delete();
 		%obj.delete();
-		BLG_GNS.schedule(100, processQueue, %this.tid);
+		//BLG_GNS.schedule(100, processQueue, %this.tid);
+		%qid = %this.currentQueueId;
+		%this.currentQueueId = "";
+		BLG_GNS.queue.schedule(100, reportFinished, %qid);
 		return;
 	} else if(%this.action $= "add") {
 		if(%this.time > -1) {
-			%this.sched = BLG_GNS.schedule(%this.time, addToQueue, "remove", %this);
+			%this.sched = BLG_GNS.queue.schedule(%this.time, addItem, "remove" TAB %this);
 		}
 	} else {
 		return;
 	}
 
-	%tid = %this.tid;
-	%this.tid = "";
-	BLG_GNS.processQueue(%tid);
+	%qid = %this.currentQueueId;
+	%this.currentQueueId = "";
+	BLG_GNS.queue.reportFinished(%qid);
 }
 
 package BLG_GNS_Package {
@@ -269,7 +241,7 @@ package BLG_GNS_Package {
 		parent::onWake(%this);
 		for(%i = 0; %i < BLG_GNS.notifications; %i++) {
 			if(BLG_GNS.slot[%i+1].obj.overlay) {
-				BLG_GNS.addToQueue("remove", BLG_GNS.slot[%i+1].obj);
+				BLG_GNS.queue.addItem("remove" TAB BLG_GNS.slot[%i+1].obj);
 			}
 		}
 	}
