@@ -37,7 +37,7 @@ function BLG_Installer::finish(%this) {
 exec("./BLG_Install_Frame1.gui");
 exec("./BLG_Install_Frame2.gui");
 exec("./BLG_Install_Frame3.gui");
-BLG_IF1_Welcome.setValue("Welcome to Blockland Glass version " @ BLG.externalVersion @ "! Blockland Glass is a multi-purpose Add-on, so we'd like to give you options on what is enabled and disabled.<br><br>We've categorized the different features into \"Framework\" and \"Visual\". All framework is manditory, where as none of the visual features are.");
+BLG_IF1_Welcome.setValue("Welcome to Blockland Glass version " @ BLG.externalVersion @ "! Blockland Glass is a multi-purpose Add-on, so we'd like to give you options on what is enabled and disabled.<br><br>We've categorized the different features into \"Framework\" and \"Visual\". All framework features are mandatory, but none of the visual features are.");
 
 new GuiSwatchCtrl(BLG_Install_BG) {
 	profile = "GuiDefaultProfile";
