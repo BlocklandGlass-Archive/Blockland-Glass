@@ -10,8 +10,6 @@ new ScriptGroup(BLG) {
 	//3 = Spam me. Please.
 	required = false;
 
-	desktopEnabled = true;
-
 	sound = "Add-Ons/System_BlocklandGlass/sound";
 };
 
@@ -55,6 +53,7 @@ function BLG::start(%this, %implementation) {
 
 			exec("./script/support/serverConnection.cs");
 			exec("./script/support/encrypt.cs");
+			exec("./script/support/animation.cs");
 
 			exec("./gui/profile.cs");
 			exec("./gui/BLG_HUD.gui");
@@ -67,7 +66,6 @@ function BLG::start(%this, %implementation) {
 			exec("./gui/BLG_Overlay.gui");
 
 			exec("./script/client/bindManager.cs");
-			if(!$Blota::Desktop) if($BLG::Pref::Desktop) exec("./script/client/desktop.cs");
 			exec("./script/client/guiDownloader.cs");
 			exec("./script/client/hudManager.cs");
 			exec("./script/client/notification.cs");
