@@ -40,7 +40,7 @@ function BLG_HUDC::updateValue(%this, %title, %value) {
 function BLG_HUDC::draw(%this) {
 	canvas.popDialog(BLG_HUD);
 	BLG_HUD.deleteAll();
-	if(PlayGui.isMemeber(BLG_HUD)) {
+	if(PlayGui.isMember(BLG_HUD)) {
 		PlayGui.remove(BLG_HUD);
 	}
 	
