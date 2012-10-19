@@ -121,6 +121,10 @@ function BLG_GuiObject::getAttributes(%this) {
 					continue;
 				}
 
+				if(getSubStr(%value, 0, 1) $= "~") {
+					%value = "config" @ getSubStr(%value, 1, strlen(%value));
+				}
+
 				%this.attributeData[%this.attributes] = %data;
 				%this.attributeValue[%this.attributes] = %value;
 				%this.attributes++;
