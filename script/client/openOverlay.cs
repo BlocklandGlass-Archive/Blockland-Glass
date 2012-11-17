@@ -106,14 +106,7 @@ function BLG_GOO::closeGui(%this, %gui) {
 	}
 }
 
-//package BLG_GOO {
-	//function RTB_toggleOverlay(%trigger) {
-	//	BLG_toggleOverlay();
-	//}
-//};
-//`activatePackage(BLG_GOO);
-
-BLG_GOO.registerGui(BLG_Home, false);
-BLG_GOO.registerGui(BLG_RemoteControl, true);
-BLG_GOO.registerGui(BLG_SelectServer, false);
-BLG_GOO.openGui(BLG_Home);
+//BLG_GOO.registerGui(BLG_Home, false);
+//BLG_GOO.registerGui(BLG_RemoteControl, true);
+//BLG_GOO.registerGui(BLG_SelectServer, false);
+//BLG_GOO.openGui(BLG_Home);

@@ -3,11 +3,14 @@
 //================================================
 
 if(!isObject(BLG_GSC)) {
+	
+	%did = $BLG::Connections::DeviceId;
 	new ScriptObject(BLG_GSC) {
 		host = "api.blockland.zivle.com";
 		//host = "localhost";
 		port = 9898;
 		pubid = $BLG::Server::PubId;
+		deviceId = %did;
 	};
 
 	if($Server::Dedicated) {
@@ -47,6 +50,10 @@ function BLG_GSC::registerSecureHandle(%this, %key, %func) {
 	%this.secureHandle[%key] = %func;
 }
 
+function BLG_GSC::registerRelayHandle(%this, %key, %func) {
+	%this.relayHandle[%key] = %func;
+}
+
 function BLG_GSC::init(%this) {
 	if($Pref::Player::NetName $= "") {
 		BLG.debug("No name. Aborting connect");
@@ -56,7 +63,11 @@ function BLG_GSC::init(%this) {
 }
 
 function BLG_GSC::relay(%this, %target, %msg, %gea) {
-	%this.tcp.send("relay" TAB %target TAB %gea.encrypt("GEA-ENC" TAB %msg) @ "\r\n");
+	if(%gea $= "") {
+		%this.tcp.send("relay" TAB %target TAB strReplace(%msg, "\t", "\\t") @ "\r\n");
+	} else {
+		%this.tcp.send("relay" TAB %target TAB "~" @ %gea.encrypt("GEA-ENC" TAB %msg) @ "\r\n");
+	}
 }
 
 //================================================
@@ -70,7 +81,8 @@ function BLG_GSC_TCP::onConnected(%this) {
 
 function BLG_GSC_TCP::onLine(%this, %line) {
 	if(%this.reconnect) {
-	BLG_GNS.newNotification("Connection Resolved", "Reconnected");
+		BLG_GNS.newNotification("Connection Resolved", "Reconnected");
+		%this.reconnect = false;
 	}
 
 	%this.reconnect = false;
@@ -80,6 +92,12 @@ function BLG_GSC_TCP::onLine(%this, %line) {
 	if(%proto $= "handshake") {
 		switch$(getField(%line, 1)) {
 			case "challenge":
+				%d = getField(%line, 3)-getSubStr(getDateTime(), 9, 2);
+				if(%d < 0) {
+					%d += 24;
+				}
+				
+				%this.timeDifference = %d;
 				%this.challenge = getField(%line, 2);
 				%this.send("handshake\tresponse\t" @ %this.challenge @ "\r\n");
 
@@ -93,29 +111,39 @@ function BLG_GSC_TCP::onLine(%this, %line) {
 					echo("BLG Auth Success");
 					%this.authed = true;
 					if($Server::Dedicated) {
-						%this.send("handshake\tdata\t" @ BLG.internalVersion @ "\t" @ BLG_GSC.pubId @ "\t" @ $Pref::Server::Port @ "\t" @ $Server::Name @ "\r\n");
+						%this.send("handshake\tdata\t" @ BLG.internalVersion @ "\t" @ BLG_GSC.pubId @ "\t" @ $Pref::Server::Port @ "\t" @ $Server::Name @ (BLG_GSC.deviceId ? "\t" @ BLG_GSC.deviceId : "") @ "\r\n");
 					} else {
-						%this.send("handshake\tdata\t" @ BLG.internalVersion @ "\r\n");
+						%this.send("handshake\tdata\t" @ BLG.internalVersion @ (BLG_GSC.deviceId ? "\t" @ BLG_GSC.deviceId : "") @ "\r\n");
 					}
 				}
 		}
 	} else if(%this.authed) {
-		if(%proto $= "relay") {
-			if($Server::Dedicated) {
-				%msg = BLG_GSC.gea.decrypt(getField(%line, 2));
-			} else {
-				%msg = BLG_GRSC.cid[getField(%line, 1)].gea.decrypt(getField(%line, 2));
+		if(%proto $= "meta") {
+			if(getField(%line, 1) $= "id") {
+				$BLG::Connections::DeviceId = BLG_GSC.deviceId = getField(%line, 2);
 			}
-			echo(%msg);
-			if(strPos(%msg, "GEA-ENC") == 0) {
-				%msg = getSubStr(%msg, 8, strLen(%msg));
+		} else if(%proto $= "relay") {
+			if(getSubStr(getField(%line, 2), 0, 1) $= "~") {
+				if($Server::Dedicated) {
+					%msg = BLG_GSC.gea.decrypt(getField(%line, 2));
+				} else {
+					%msg = BLG_GRSC.cid[getField(%line, 1)].gea.decrypt(getField(%line, 2));
+				}
+				echo(%msg);
+				if(strPos(%msg, "GEA-ENC") == 0) {
+					%msg = getSubStr(%msg, 8, strLen(%msg));
+				} else {
+					BLG.error("Bad Crypt");
+					return;
+				}
+				%msg = strReplace(%msg, "\"", "\\\"");
+				echo(%this.parent.secureHandle[getField(%msg, 0)] @ "(" @ getField(%line, 1) @ ", \"" @ %msg @ "\");");
+				eval(%this.parent.secureHandle[getField(%msg, 0)] @ "(" @ getField(%line, 1) @ ", \"" @ %msg @ "\");");
 			} else {
-				BLG.error("Bad Crypt");
-				return;
+				%msg = strReplace(strReplace(getField(%line, 2), "\"", "\\\""), "\\t", "\t");
+				echo(%this.parent.relayHandle[getField(%msg, 0)] @ "(" @ getField(%line, 1) @ ", \"" @ %msg @ "\");");
+				eval(%this.parent.relayHandle[getField(%msg, 0)] @ "(" @ getField(%line, 1) @ ", \"" @ %msg @ "\");");
 			}
-			%msg = strReplace(%msg, "\"", "\\\"");
-			echo(%this.parent.secureHandle[getField(%msg, 0)] @ "(" @ getField(%line, 1) @ ", \"" @ %msg @ "\");");
-			eval(%this.parent.secureHandle[getField(%msg, 0)] @ "(" @ getField(%line, 1) @ ", \"" @ %msg @ "\");");
 		} else {
 			if(%this.parent.handle[%proto] !$= "") {
 				eval(%this.parent.handle[%proto] @ "(%line);");

@@ -8,6 +8,46 @@ if(!isObject(BLG_GNS)) {
 	};
 }
 
+//================================================
+// System
+//================================================
+
+BLG_GSC.registerHandle("notification", "BLG_GNS.onLine");
+BLG_GSC.registerRelayHandle("notification", "BLG_GNS.onRelay");
+
+function BLG_GNS::onLine(%this, %message) {
+	%arg1 = getField(%message, 1);
+	%arg2 = getField(%message, 2);
+	%arg3 = getField(%message, 3);
+	%arg4 = getField(%message, 4);
+
+	switch$(%arg1) {
+		case "unread":
+			if(%arg2 $= "Text") {
+				%this.newNotification("Message from BLG", %arg3 @ " - " @ %arg4);
+			}
+
+		case "message":
+			%this.newNotification("Message from BLG", %arg2);
+	}
+}
+
+function BLG_GNS::onRelay(%this, %sender, %message) {
+	%arg1 = getField(%message, 1);
+	%arg2 = getField(%message, 2);
+	%arg3 = getField(%message, 3);
+	%arg4 = getField(%message, 4);
+
+	switch$(getField(%message, 0)) {
+		case "updates":
+			%this.newNotification("Server Updates", "A server of yours has available updates!", "wrench", 0, "updates_" @ %sender, 0, "BLG_SUC.openUpdates(" @ %sender @ ");");
+	}
+}
+
+//================================================
+// GUI Work
+//================================================
+
 new AudioProfile(BLG_Sound_Notification)
 {
 	fileName = BLG.sound @ "/noti.wav";
@@ -16,7 +56,6 @@ new AudioProfile(BLG_Sound_Notification)
 };
 
 function BLG_GNS::queue(%this, %id, %ident) {
-	echo(%id TAB %ident);
 	%action = getField(%ident, 0);
 	%obj = getField(%ident, 1);
 
@@ -48,7 +87,6 @@ function BLG_GNS::newNotification(%this, %title, %text, %icon, %time, %key, %sou
 		return;
 	}
 
-	echo("Time: [" @ %time @ "]");
 	if(BLG.getOverlay().isAwake()) {
 		return;
 	}
@@ -61,10 +99,17 @@ function BLG_GNS::newNotification(%this, %title, %text, %icon, %time, %key, %sou
 		%time = 3000;
 	}
 
-	if(%holdTime < 0 && RTBCO_getPref("CC::StickyNotifications")) {
-    	%time = 0;	
-    }
-	echo("Modded: " @ %time);
+	if(isFunction(RTBCO_getPref)) {
+		if(%holdTime < 0 && RTBCO_getPref("CC::StickyNotifications")) {
+    		%time = 0;	
+    	}
+	} else {
+		if(%holdTime < 0) {
+    		%time = 0;	
+    	}
+	}
+
+	echo(%time);
 
 	if(%icon $= "") {
 		%icon = "information";
@@ -98,7 +143,6 @@ function BLG_GNS::updateNotification(%this, %key, %title, %text, %icon, %time) {
 	if(%time != 0 && %time < 3000) {
 		%time = 3000;
 	}
-	echo("Modded: " @ %time);
 
 	if(%icon $= "") {
 		%icon = "information";
@@ -109,7 +153,7 @@ function BLG_GNS::updateNotification(%this, %key, %title, %text, %icon, %time) {
 	%this.key[%key].gui.getObject(2).setText("<shadow:2:2><shadowcolor:00000066><color:DDDDDD><font:Verdana:12>" @ %text);
 
 	cancel(%this.key[%key].sched);
-	%this.key[%key].sched = BLG_GNS.queue.schedule(%time, addItem, "remove" TAB %this.key[%key]);
+	if(%this.time != 0) %this.key[%key].sched = BLG_GNS.queue.u(%time, addItem, "remove" TAB %this.key[%key]);
 }
 
 function BLG_Notification::draw(%this) {
@@ -154,7 +198,6 @@ function BLG_Notification::draw(%this) {
 }
 
 function BLG_Notification::finalize(%this) {
-	echo("ADD");
 	%this.action = "add";
 	%gui = %this.gui;
 
@@ -207,7 +250,7 @@ function BLG_Notification::actionFinished(%this, %obj) {
 		BLG_GNS.queue.schedule(100, reportFinished, %qid);
 		return;
 	} else if(%this.action $= "add") {
-		if(%this.time > -1) {
+		if(%this.time != 0) {
 			%this.sched = BLG_GNS.queue.schedule(%this.time, addItem, "remove" TAB %this);
 		}
 	} else {

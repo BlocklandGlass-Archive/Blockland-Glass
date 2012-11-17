@@ -1,4 +1,4 @@
-new ScriptGroup(BLG) {
+ new ScriptGroup(BLG) {
 	internalVersion = "2.0.A6";
 	externalVersion = "2.0 Alpha 6";
 	versionId = 1337; //1 is anything before 1.2
@@ -31,10 +31,12 @@ function BLG::start(%this, %implementation) {
 		exec("./script/support/serverConnection.cs");
 
 		exec("./script/server/bindManager.cs");
+		exec("./script/server/downloadManager.cs");
 		exec("./script/server/guiDownloader.cs");
 		exec("./script/server/hudManager.cs");
 		exec("./script/server/imageDownloader.cs");
-		exec("./script/server/remoteControl.cs");
+		exec("./script/server/updater.cs");
+		//exec("./script/server/remoteControl.cs"); - Nope
 
 		if(isFile("Add-Ons/System_ReturnToBlockland/server.cs")) {
 			exec("./script/server/hooks/RTB.cs");
@@ -61,8 +63,9 @@ function BLG::start(%this, %implementation) {
 			exec("./gui/BLG_keybindGui.gui");
 			exec("./gui/BLG_Updater.gui");
 			exec("./gui/BLG_Home.gui");
-			exec("./gui/BLG_RemoteControl.gui");
-			exec("./gui/BLG_SelectServer.gui");
+			//exec("./gui/BLG_RemoteControl.gui");
+			//exec("./gui/BLG_SelectServer.gui");
+			exec("./gui/BLG_ServerUpdates.gui");
 			exec("./gui/BLG_Overlay.gui");
 
 			exec("./script/client/bindManager.cs");
@@ -71,7 +74,8 @@ function BLG::start(%this, %implementation) {
 			exec("./script/client/notification.cs");
 			exec("./script/client/openOverlay.cs");
 			exec("./script/client/imageDownloader.cs");
-			exec("./script/client/remoteControl.cs");
+			//exec("./script/client/remoteControl.cs");
+			exec("./script/client/serverUpdater.cs");
 			exec("./script/client/updater.cs");
 
 			if(isFile("Add-Ons/System_ReturnToBlockland/server.cs")) {
