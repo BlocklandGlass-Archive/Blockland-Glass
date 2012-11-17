@@ -38,7 +38,7 @@ function BLG_GNS::onRelay(%this, %sender, %message) {
 	%arg3 = getField(%message, 3);
 	%arg4 = getField(%message, 4);
 
-	switch$(getField(%message, 0)) {
+	switch$(getField(%message, 1)) {
 		case "updates":
 			%this.newNotification("Server Updates", "A server of yours has available updates!", "wrench", 0, "updates_" @ %sender, 0, "BLG_SUC.openUpdates(" @ %sender @ ");");
 	}
@@ -58,7 +58,7 @@ new AudioProfile(BLG_Sound_Notification)
 function BLG_GNS::queue(%this, %id, %ident) {
 	%action = getField(%ident, 0);
 	%obj = getField(%ident, 1);
-
+	echo(%action TAB %obj TAB %obj.key);
 	switch$(%action) {
 		case "add":
 			%obj.currentQueueId = %id;
@@ -123,11 +123,15 @@ function BLG_GNS::newNotification(%this, %title, %text, %icon, %time, %key, %sou
 		title = %title;
 		command = %command;
 		icon = %icon;
-		key = %this.key;
+		key = %key;
 		sound = %sound;
 
 		overlay = %closeOnOverlay;
 	};
+	echo(%key);
+	if(%key $= "") {
+		%key = %so;
+	}
 
 	%this.key[%key] = %so;
 
@@ -137,15 +141,16 @@ function BLG_GNS::newNotification(%this, %title, %text, %icon, %time, %key, %sou
 
 function BLG_GNS::updateNotification(%this, %key, %title, %text, %icon, %time) {
 	if(%time $= "") {
-    	%time = 5000;
+    	%time = %this.key[%key].time;
 	}
 
-	if(%time != 0 && %time < 3000) {
-		%time = 3000;
+	if(%time != 0 && %time < 100) {
+		%time = 100;
 	}
+	echo(%time);
 
 	if(%icon $= "") {
-		%icon = "information";
+		%icon = %this.key[%key].icon;
 	}
 
 	%this.key[%key].gui.getObject(0).setBitmap($RTB::Path@"images/icons/"@%icon);
@@ -153,7 +158,8 @@ function BLG_GNS::updateNotification(%this, %key, %title, %text, %icon, %time) {
 	%this.key[%key].gui.getObject(2).setText("<shadow:2:2><shadowcolor:00000066><color:DDDDDD><font:Verdana:12>" @ %text);
 
 	cancel(%this.key[%key].sched);
-	if(%this.time != 0) %this.key[%key].sched = BLG_GNS.queue.u(%time, addItem, "remove" TAB %this.key[%key]);
+	echo(%this.key[%key]);
+	if(%time != 0) %this.key[%key].sched = %this.queue.schedule(%time, addItem, "remove" TAB %this.key[%key]);
 }
 
 function BLG_Notification::draw(%this) {
@@ -185,7 +191,7 @@ function BLG_Notification::draw(%this) {
 			position = "0 0";
 			extent = "200 50";
 			text = " ";
-			command = "BLG_GNS.queue.addItem(\"remove TAB" @ %this @ "\");" @ %this.command;
+			command = "BLG_GNS.queue.addItem(\"remove\" TAB \"" @ %this @ "\");" @ %this.command;
 		};
 	};
 	%this.gui = %gui;
@@ -294,6 +300,14 @@ package BLG_GNS_Package {
 		if(!$BLG::Notified) {
 			BLG_GNS.newNotification("Welcome to BLG!", "Welcome to Blockland Glass! Click on me to access BLG, or simply press \"shift tab\".", "", 0, "", false, "BLG.getOverlay().fadeIn();", true);
 			$BLG::Notified = true;
+		}
+	}
+
+	function getRes() {
+		if(isObject(Canvas)) {
+			return Canvas.getExtent();
+		} else {
+			return parent::getRes();
 		}
 	}
 };

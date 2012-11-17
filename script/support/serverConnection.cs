@@ -117,6 +117,13 @@ function BLG_GSC_TCP::onLine(%this, %line) {
 					}
 				}
 		}
+	}  else if(%proto $= "disconnect") {
+		if(getField(%line, 1) $= "maintenance") {
+			%this.disconnect();
+			BLG.debug("Disconnected from Glass Server");
+			%this.reconnect = true;
+			%this.rcSchedule = BLG_GSC.schedule(getRandom(1000, 10000), init);
+		}
 	} else if(%this.authed) {
 		if(%proto $= "meta") {
 			if(getField(%line, 1) $= "id") {
@@ -155,19 +162,24 @@ function BLG_GSC_TCP::onLine(%this, %line) {
 }
 
 function BLG_GSC_TCP::onConnectFailed(%this) {
-	if(!%this.reconnect) {
+	if(!%this.reconnect && !$Server::Dedicated) {
 		BLG_GNS.newNotification("Connection Issue", "Failed to connect to BLG Server. Attempting reconnect.", "", 10000);
 	}
 
 	%this.reconnect = true;
-	BLG.debug("Retry");
+	BLG.debug("Retrying BLG server connection");
 	%this.rcSchedule = BLG_GSC.schedule(getRandom(1000, 10000), init);
 }
 
 function BLG_GSC_TCP::onDisconnect(%this) {
-	BLG_GNS.newNotification("Connection Issue", "Unexpected disconnected from BLG Server. Attempting reconnect.");
-	BLG.debug("Disconnected from Glass Server");
-	%this.rcSchedule = BLG_GSC.schedule(getRandom(1000, 10000), init);
+	if(!$Server::Dedicated) {
+		BLG_GNS.newNotification("Connection Issue", "Unexpected disconnect from BLG Server. Attempting reconnect.");
+		BLG.debug("Disconnected from Glass Server");
+		%this.rcSchedule = BLG_GSC.schedule(getRandom(1000, 10000), init);
+	} else {
+		BLG.debug("Disconnected from Glass Server");
+		%this.rcSchedule = BLG_GSC.schedule(getRandom(1000, 10000), init);
+	}
 }
 
 package BLG_GSC_Package {

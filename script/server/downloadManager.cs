@@ -8,7 +8,7 @@
 if(!isObject(BLG_SUS)) {
 	%sus = new ScriptObject(BLG_SUS);
 	%tcp = new TCPObject(BLG_SUS_RTBTCP);
-	%dl = new TCPObject(BLG_SUS_RTBDL);
+	%dl = new ScriptObject(BLG_SUS_RTBDL);
 	%list = new ScriptGroup(BLG_SUS_Updates);
 	%sus.list = %list;
 	%sus.RTBTCP = %tcp;
@@ -36,9 +36,6 @@ function BLG_SUS::getUpdates(%this) {
 					%id = getWord(%line, 1);
 				} else if(getWord(%line, 0) $= "version:") {
 					%version = getWord(%line, 1);
-					if(%version > 1) {
-						%version -= 1;
-					}
 				}
 			}
 			%fo.close();
@@ -55,7 +52,11 @@ function BLG_SUS::getUpdates(%this) {
 
 	%this.RTBTCP.requestId = 2;
 	%this.RTBTCP.connect("api.returntoblockland.com:80");
-	echo(%query);
+}
+
+function BLG_SUS::checkRTBUpdate(%this) {
+	%this.RTBTCP.requestId = 1;
+	%this.RTBTCP.connect("api.returntoblockland.com:80");
 }
 
 function BLG_SUS::updateRTBMod(%this, %rtbid) {
@@ -70,25 +71,53 @@ function BLG_SUS::updateRTBMod(%this, %rtbid) {
 BLG_GSC.registerRelayHandle("updates", "BLG_SUS.onLine");
 
 function BLG_SUS::addUpdate(%this, %title, %version, %callback) {
+	echo("UPDATE!!!");
 	%update = new ScriptObject() {
 		class = "BLG_SUS_Update";
 		callback = %callback;
 
 		name = %title;
-		version = %verison;
+		version = %version;
+		type = 1;
 	};
-	BLG_SUS.list.add(%update);
+	%this.list.add(%update);
 }
 
-function BLG_SUS::onLine(%this, %sender, %message, %moar) {
+function BLG_SUS::onLine(%this, %sender, %message) {
 	if(%message $= "updates\tgetupdates") {
+		echo(%this.list.getCount() SPC " update(s) available");
+		if(%this.list.getCount() == 0) return;
 		for(%i = 0; %i < %this.list.getCount(); %i++) {
 			%obj = %this.list.getObject(%i);
-			%str = %str @ "<->" @ %obj.name @  "<.>" @ %obj.version;
+			if(%obj.rtb) {
+				%type = 0;
+			} else if(%obj.blg) {
+				%type = 1;
+			} else {
+				%type = 2;
+			}
+			%str = %str @ "<->" @ %obj.name @  "<.>" @ %obj.version @ "<.>" @ %type;
+		}
+		BLG_GSC.relay(%sender, "updates\t" @ getSubStr(trim(%str), 3, strLen(%str)));
+	} else if(%message $= "updates\tcheckupdates") {
+		echo(%this.list.getCount() SPC " update(s) available");
+		if(%this.list.getCount() > 0) {
+			BLG_GSC.relay(%sender, "notification\tupdates");
+		}
+	} else if(getField(%message, 1) $= "confirm") {
+		for(%i = 0; %i < %this.list.getCount(); %i++) {
+			%obj = %this.list.getObject(%i);
+			if(%obj.name $= getField(%message, 2)) {
+				if(%obj.rtb) {
+					%this.updateRTBMod(%obj.id);
+				} else {
+					eval(%obj.callback @ "();");
+				}
+				%this.list.remove(%obj);
+				break;
+			}
 		}
 	}
-	echo(getSubStr(trim(%str), 3, strLen(%str)));
-	BLG_GSC.relay(%sender, "updates\t" @ getSubStr(trim(%str), 3, strLen(%str)));
 }
 
 //================================================
@@ -124,19 +153,23 @@ function BLG_SUS_RTBTCP::onConnected(%this) {
 
 function BLG_SUS_RTBTCP::onLine(%this, %line) {
 	if(%this.requestId == 2) {
+		BLG.debug(%line);
 		if(getField(%line, 0) $= "GETUPDATES") {
+			if(getField(%line, 1) == 0) return;
+
 			%update = new ScriptObject() {
 				class = "BLG_SUS_Update";
 				rtb = true;
 
 				id = getField(%line, 2);
 				name = getField(%line, 4);
-				version = getField(%line, 6);
+				version = "v" @ -getField(%line, 6);
 			};
 			BLG_SUS.list.add(%update);
 		}
+	} else if(%this.requestId == 1) {
+		//TODO
 	}
-	BLG.debug("RTBTCP: " @ %line);
 }
 
 //================================================
@@ -144,18 +177,62 @@ function BLG_SUS_RTBTCP::onLine(%this, %line) {
 //================================================
 
 function BLG_SUS_RTBDL::queue(%this, %id, %key) {
-	%this.curItem = %key;
-	%this.connect("forum.returntoblockland.com:80");
+	%tcp = new TCPObject(BLG_SUS_RTBDL_Downloader) {
+		curItem = %key;
+		id = %id;
+		size = "";
+		isFile = false;
+		filename = "";
+	};
+	%tcp.connect("forum.returntoblockland.com:80");
 }
 
-function BLG_SUS_RTBDL::onConnected(%this) {
-	%this.send("GET /dlm/getFile.php?id=" @ %this.curItem @ " HTTP/1.1\nHost: forum.returntoblockland.com");
+function BLG_SUS_RTBDL_Downloader::onConnected(%this) {
+	BLG.debug("Connected");
+	%this.send("GET /dlm/getFile.php?id=" @ %this.curItem @ " HTTP/1.1\nHost: forum.returntoblockland.com\n\n");
 }
 
-function BLG_SUS_RTBDL::onLine(%this, %line) {
+function BLG_SUS_RTBDL_Downloader::onLine(%this, %line) {
+	if(getWord(%line, 0) $= "Content-Length:")
+		%this.size = getWord(%line, 1);
 
+	if(strPos(%line, "Content-Disposition: attachment; filename=") == 0) {
+		%this.filename = getSubStr(%line, strLen("Content-Disposition: attachment; filename=\""), strLen(%line)-strLen("Content-Disposition: attachment; filename=")-3);
+		echo(%this.filename);
+	}
+
+	if(%line $= "Content-Type: application/zip")
+		%this.isFile = true;
+
+	if(%this.isFile && %this.size !$= "" && %this.filename !$= "" && %line $= "") {
+		%this.setBinarySize(%this.size);
+	}
 }
 
+function BLG_SUS_RTBDL_Downloader::onBinChunk(%this, %chunk) {
+	if(%chunk < %this.size) {
+		echo("RTB Download: " @ mFloor((%chunk/%this.size)*100) @ "%");
+	} else {
+		if(isWriteableFilename("Add-Ons/" @ %this.filename) && isWriteableFilename("config/BLG/updater/temp.zip")) {
+			%this.saveBufferToFile("config/BLG/updater/temp.zip"); //Just incase we crash for some reason, we dont leave some sort of corrupted shit
+			
+			fileCopy("config/BLG/updater/temp.zip", "Add-Ons/" @ %this.filename);
+			fileDelete("config/BLG/updater/temp.zip");
+			%this.disconnect();
+			echo("Done");
+			BLG.debug(BLG_SUS_RTBDL.queue.reportFinished(%this.id));
+		} else {
+			BLG.error("READ ONLY");
+			%this.disconnect();
+			BLG.debug(BLG_SUS_RTBDL.queue.reportFinished(%this.id));
+		}
+	}
+}
+
+function BLG_SUS_RTBDL_Downloader::onConnectFailed(%this) {
+	BLG.error("UNABLE TO CONNECT TO RTB FOR DOWNLOAD");
+	BLG_SUS_RTBDL.queue.reportFinished(%this.curItem);
+}
 
 
 //asdf

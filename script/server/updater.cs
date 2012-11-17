@@ -50,8 +50,6 @@ function BLG_GAU::downloadVersion(%this, %version) {
 		version = %version;
 	};
 
-	canvas.pushDialog(BLG_Updater);
-
 	%tcp.connect("api.blockland.zivle.com:80");
 }
 
@@ -112,8 +110,13 @@ function BLG_GAU_Downloader::onBinChunk(%this, %chunk) {
 }
 
 package BLG_Updater_Package {
-	function authTCPobj_Client::onDisconnect(%this) {
-		parent::onDisconnect(%this);
-		BLG_GAU_TCP.getVersion();
+	function postServerTCPObj::connect(%this, %addr) {
+		parent::connect(%this, %addr);
+		if($Server::Dedicated && !BLG_GAU_TCP.checked) {
+			echo("Checking BLG update");
+			BLG_GAU_TCP.checked = true;
+			BLG_GAU_TCP.getVersion();
+		}
 	}
 };
+activatePackage(BLG_Updater_Package);
