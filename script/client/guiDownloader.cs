@@ -277,7 +277,7 @@ function BLG_GDC::handleMessage(%this, %msg) {
 			}
 
 		case 8: //setValue
-			BLG_GDC.SG.objData[%objId].setValue(getField(%msg, 2));
+			BLG_GDC.SG.objData[%objId].object.setValue(getField(%msg, 2));
 
 		case 9:
 			%obj = BLG_GDC.SG.objData[%objId];
