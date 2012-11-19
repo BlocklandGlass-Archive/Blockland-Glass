@@ -1,7 +1,7 @@
 new ScriptGroup(BLG) {
-	internalVersion = "1.3.1";
-	externalVersion = "1.3.1";
-	versionId = 3; //1 is anything before 1.2
+	internalVersion = "1.3.2";
+	externalVersion = "1.3.2";
+	versionId = 4; //1 is anything before 1.2
 
 	debugLevel = 0;
 	//0 = Errors only

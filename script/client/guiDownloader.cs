@@ -94,8 +94,12 @@ function BLG_GDC::finalizeObject(%this, %objId) {
 			%val = strReplace(%obj.attributeVal[%i], "\\\\", "\\");
 			eval("%newobj." @ %obj.attributeDat[%i] @ "=" @ %val @ ";");
 			if(%obj.attributeDat[%i] $= "text") {
-				eval("%newobj.setText(" @ %val @ ");");
+				%text = %val;
 			}
+		}
+
+		if(%text !$= "") {
+			eval("%newobj.setValue(" @ %text @ ");");
 		}
 
 		%newobj.BLG__OBJID = %objId;
