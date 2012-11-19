@@ -1,4 +1,3 @@
-<<<<<<< HEAD
  new ScriptGroup(BLG) {
 	internalVersion = "2.0.B1.1";
 	externalVersion = "2.0 Beta 1.1";
