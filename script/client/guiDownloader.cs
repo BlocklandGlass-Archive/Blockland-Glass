@@ -94,8 +94,12 @@ function BLG_GDC::finalizeObject(%this, %objId) {
 			%val = strReplace(%obj.attributeVal[%i], "\\\\", "\\");
 			eval("%newobj." @ %obj.attributeDat[%i] @ "=" @ %val @ ";");
 			if(%obj.attributeDat[%i] $= "text") {
-				eval("%newobj.setText(" @ %val @ ");");
+				%text = %val;
 			}
+		}
+
+		if(%text !$= "") {
+			eval("%newobj.setValue(" @ %text @ ");");
 		}
 
 		%newobj.BLG__OBJID = %objId;
@@ -277,7 +281,7 @@ function BLG_GDC::handleMessage(%this, %msg) {
 			}
 
 		case 8: //setValue
-			BLG_GDC.SG.objData[%objId].setValue(getField(%msg, 2));
+			BLG_GDC.SG.objData[%objId].object.setValue(getField(%msg, 2));
 
 		case 9:
 			%obj = BLG_GDC.SG.objData[%objId];

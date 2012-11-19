@@ -60,5 +60,3 @@ function serverCmdMissionPreparePhaseBLG2Ack(%client) {
 function serverCmdMissionPreparePhaseBLG2Complete(%client) {
 	BLG_IDS.endPhase(%client);
 }
-
-BLG_IDS.newImage("http://blockland.zivle.com/style/img/logo.jpg", "BLG.jpg");

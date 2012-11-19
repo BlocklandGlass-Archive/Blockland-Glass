@@ -130,9 +130,14 @@ function BLG_GuiObject::getAttributes(%this) {
 				%this.attributes++;
 			}
 		}
+
+		%this.attributeData[%this.attributes] = "profile";
+		%this.attributeValue[%this.attributes] = %this.baseObj.filepro;
+		%this.attributes++;
+
 		%fo.close();
 		%fo.delete();
-		fileDelete(%file);
+		//fileDelete(%file);
 	}
 }
 
